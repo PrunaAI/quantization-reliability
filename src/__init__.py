@@ -1,0 +1,1 @@
+from src.smash import smash

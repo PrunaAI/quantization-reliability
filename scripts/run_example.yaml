@@ -1,0 +1,29 @@
+seml:
+  conda_environment: 'quantization-reliability'
+  project_root_dir: '/nfs/homedirs/username/quantization-reliability/src/'
+  executable: 'run.py'
+  name: 'collection_name'
+  output_dir: '/nfs/homedirs/username/slurm-output'
+
+slurm:
+  experiments_per_job: 1
+  sbatch_options:
+    gres: 'gpu:1'       # num GPUs
+    mem: 128G          # memory
+    cpus-per-task: 2  # num cores
+    time: '1-00:00'     # max time, D-HH:MM
+#    partition: 'gpu_all' # partition
+#    exclude: gpu[18,19],mdsi-gpu[01,02]
+    exclude: gpu[15,17,20]
+    partition: 'gpu_large' # partition
+
+###### BEGIN PARAMETER CONFIGURATION ######
+
+fixed:
+  ...
+
+random:
+...
+
+grid:
+  ...

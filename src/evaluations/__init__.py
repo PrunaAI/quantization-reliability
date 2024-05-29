@@ -1,0 +1,70 @@
+from src.evaluations.evaluate_memory import evaluate_gpu_memory
+from src.evaluations.evaluate_inference import (
+    evaluate_inference_latency,
+    evaluate_inference_throughput,
+    evaluate_inference_CO2_emissions,
+    evaluate_inference_energy_consumption,
+    evaluate_inference_macs,
+)
+from src.evaluations.evaluate_money_cost import evaluate_gpu_money_cost
+from src.evaluations.evaluate_classification import evaluate_accuracy
+from src.evaluations.evaluate_text_generation import (
+    evaluate_perplexity,
+    evaluate_token_generation_latency,
+    evaluate_token_generation_throughput,
+    evaluate_token_generation_CO2_emissions,
+    evaluate_token_generation_energy_consumption,
+)
+from src.evaluations.evaluate_deviation import evaluate_deviation_bleu, evaluate_deviation_norm
+
+evaluate_metrics = {
+    "accuracy": evaluate_accuracy,
+    "perplexity": evaluate_perplexity,
+    "memory_disk_first": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="disk"),
+    "memory_disk": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="disk"),
+    "memory_inference_first": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="inference"),
+    "memory_inference": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="inference"),
+    "memory_training": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="training"),
+    "token_generation_latency_sync": evaluate_token_generation_latency,
+    "token_generation_latency_async": evaluate_token_generation_latency,
+    "token_generation_throughput_sync": evaluate_token_generation_throughput,
+    "token_generation_throughput_async": evaluate_token_generation_throughput,
+    "token_generation_CO2_emissions": evaluate_token_generation_CO2_emissions,
+    "token_generation_energy_consumption": evaluate_token_generation_energy_consumption,
+    "inference_latency_sync": evaluate_inference_latency,
+    "inference_latency_async": evaluate_inference_latency,
+    "inference_throughput_sync": evaluate_inference_throughput,
+    "inference_throughput_async": evaluate_inference_throughput,
+    "gpu_money_cost": evaluate_gpu_money_cost,
+    "inference_CO2_emissions": evaluate_inference_CO2_emissions,
+    "inference_energy_consumption": evaluate_inference_energy_consumption,
+    "inference_flops": evaluate_inference_macs,
+    "inference_deviation_bleu": evaluate_deviation_bleu,
+    "inference_deviation_norm": evaluate_deviation_norm,
+}
+
+name_metrics = {
+    "accuracy": "Accuracy (%)",
+    "perplexity": "Perplexity",
+    "memory_disk_first": "Disk memory first (MB)",
+    "memory_disk": "Disk memory (MB)",
+    "memory_inference_first": "Inference memory first (MB)",
+    "memory_inference": "Inference memory (MB)",
+    "memory_training": "Training memory (MB)",
+    "token_generation_latency_sync": "Sync. token gen. latency (ms/token)",
+    "token_generation_latency_async": "Async. Token gen. latency (ms/token)",
+    "token_generation_throughput_sync": "Sync. Token gen. throughput (token/ms)",
+    "token_generation_throughput_async": "Async. Token gen. throughput (token/ms)",
+    "token_generation_CO2_emissions": "Token gen. CO2 emissions (KgCO2e/token)",
+    "token_generation_energy_consumption": "Token gen. energy consumption (KWh/token)",
+    "inference_latency_sync": "Sync. inference latency (ms/pass)",
+    "inference_latency_async": "Async. inference latency (ms/pass)",
+    "inference_throughput_sync": "Sync. inference throughput (pass/ms)",
+    "inference_throughput_async": "Async. inference throughput (pass/ms)",
+    "inference_money_cost": "Inference money cost ($/pass)",
+    "inference_CO2_emissions": "Inference CO2 emissions (KgCO2e)",
+    "inference_energy_consumption": "Inference energy consumption (KWh)",
+    "inference_macs": "Inference MACs (G)",
+    "inference_deviation_bleu": "Inference deviation Bleu (%)",
+    "inference_deviation_norm": "Inference deviation norm (%)",
+}
