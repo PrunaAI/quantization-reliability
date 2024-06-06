@@ -49,8 +49,9 @@ def config():
         ex.observers.append(seml.create_mongodb_observer(db_collection, overwrite=overwrite))
 
 
+#TODO
 @ex.automain
-def run_evaluate(
+def run_quantize(
     # Dataset parameters,
     seed_dataset=123,
     directory_dataset="",
@@ -64,6 +65,9 @@ def run_evaluate(
     model_name="",
     weight_name="DEFAULT",
     task=None,
+    # Quantization parameters
+    quantize_methods=[],
+    quantize_params={},
     # Evaluation metrics
     evaluation_metrics=[
         "perplexity",
