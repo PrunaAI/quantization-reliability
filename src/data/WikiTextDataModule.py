@@ -60,7 +60,6 @@ class WikiTextDataModule(LightningDataModule):
         self.train_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
         self.val_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="validation")
         self.test_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
-        print(len(self.train_dataset), len(self.val_dataset), len(self.test_dataset))
 
     def train_dataloader(self, batch_size=None, sequence_length=None):
         if batch_size is None:
