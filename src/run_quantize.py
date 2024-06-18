@@ -7,7 +7,7 @@ import tempfile
 # To avoid the following problem when running seml (see https://github.com/pytorch/pytorch/issues/37377)
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 if re.match(".*username.*", os.getcwd()):
-    CACHE_PATH = "/ceph/hdd/staff/username/.cache/models"
+    CACHE_PATH = "~/.cache/"
 os.environ["TORCH_HOME"] = CACHE_PATH
 os.environ["HF_HOME"] = CACHE_PATH
 os.environ["HUGGINGFACE_HUB_CACHE"] = CACHE_PATH
@@ -17,7 +17,6 @@ os.environ["TRANSFORMERS_CACHE"] = CACHE_PATH
 import time
 import random
 import torch
-
 
 torch.hub.set_dir(CACHE_PATH)
 
@@ -49,7 +48,6 @@ def config():
         ex.observers.append(seml.create_mongodb_observer(db_collection, overwrite=overwrite))
 
 
-#TODO
 @ex.automain
 def run_quantize(
     # Dataset parameters,
@@ -66,7 +64,10 @@ def run_quantize(
     weight_name="DEFAULT",
     task=None,
     # Quantization parameters
-    quantize_methods=[],
+    quantize_methods=[
+        "BNB",
+        "AWQ"
+    ],
     quantize_params={},
     # Evaluation metrics
     evaluation_metrics=[
@@ -74,6 +75,16 @@ def run_quantize(
     ],
     device="cuda",
 ):
+    ##################
+    ## Print config ##
+    ##################
+    logging.info("Received the following configuration:")
+    logging.info(
+        f"Calibration dataset: {calibration_dataset_name}, evaluation dataset: {evaluation_dataset_name}, "
+        f"batch size: {batch_size}, model: {model_name}, "
+        f"quantize methods: {quantize_methods}, quantize params: {quantize_params}, "
+        f"evaluation metrics: {evaluation_metrics}, device: {device}"
+    )
     ###############
     ## Load data ##
     ###############
@@ -95,17 +106,20 @@ def run_quantize(
     )
     evaluation_dataloader = evaluation_data_module.test_dataloader()
 
-    model = get_model(
+    model, tokenizer = get_model(
         model_name=model_name,
         weight_name=weight_name,
         task=task,
         seed=seed_model,
         directory_model=directory_model,
+        device=device,
     )
 
-    # TODO: quantize the model
-    model = quantize(model, calibration_dataloader)
+    # Quantize the model using specified methods and parameters
+    for method in quantize_methods:
+        model = quantize(model, calibration_dataloader, method, quantize_params)
 
+    # Evaluate the quantized model
     results = evaluate(
         model=model,
         dataloader=evaluation_dataloader,
