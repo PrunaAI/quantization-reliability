@@ -1,6 +1,5 @@
 import torch
 import json
-from src.algorithms.smash_config_mapping import smash_config_mapping
 from huggingface_hub import HfApi
 from huggingface_hub import ModelFilter
 from transformers.models.auto.modeling_auto import MODEL_FOR_CAUSAL_LM_MAPPING_NAMES

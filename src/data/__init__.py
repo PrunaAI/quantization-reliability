@@ -5,6 +5,7 @@ from src.data.WikiTextDataModule import WikiTextDataModule
 from src.data.OpenAssistantDataModule import OpenAssistantDataModule
 from src.data.C4DataModule import C4DataModule
 
+# Define the base datasets dictionary
 base_datasets = {
     "Polyglot": lambda directory_dataset, batch_size, shape, tokenizer_name, seed, **kwargs: PolyglotDataModule(
         directory_dataset=directory_dataset,
@@ -39,7 +40,6 @@ base_datasets = {
     ),
 }
 
-
 def get_dataset(dataset_name, directory_dataset, batch_size=1, seed=123, tokenizer_name=None, **kwargs):
     # Extract data shape from dataset name (if present)
     shape = [int(n) for n in re.findall(r"\d+", dataset_name)]
@@ -55,7 +55,8 @@ def get_dataset(dataset_name, directory_dataset, batch_size=1, seed=123, tokeniz
             shape=shape,
             tokenizer_name=tokenizer_name,
             seed=seed,
-            **kwargs,
+            **kwargs
         )
     else:
         raise ValueError(f"Dataset {dataset_name} is unknown.")
+
