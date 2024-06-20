@@ -37,8 +37,8 @@ grid:
   evaluation_dataset_name:
     type: choice
     options:
-      - 'wikitext'
-      - 'openassistant'
+      - 'WikiText'
+      - 'OpenAssistant'
 
   quantize_methods:
     type: choice
