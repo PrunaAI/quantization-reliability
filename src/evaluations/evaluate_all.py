@@ -4,7 +4,7 @@ import logging
 import torch
 from tqdm import tqdm
 from torchmetrics import BrierScore
-from src.evaluations.evaluate_text_generation import evaluate_brier_score, evaluate_perplexity
+from src.evaluations.evaluate_text_generation import evaluate_perplexity
 
 logger = logging.getLogger("quant_logger")
 
@@ -31,5 +31,6 @@ def evaluate(
         results[f"{prefix}perplexity"] = evaluate_perplexity(model=model, dataloader=dataloader, device=device)
     if "brier_score" in evaluation_metrics:
         logger.info("Evaluate Brier score")
-        results[f"{prefix}brier_score"] = evaluate_brier_score(model=model, tokenizer=model.tokenizer, data_module=dataloader.dataset, device=device)
+        raise NotImplementedError("Brier score evaluation is not yet implemented.")
+        # results[f"{prefix}brier_score"] = evaluate_brier_score(model=model, tokenizer=model.tokenizer, data_module=dataloader.dataset, device=device)
     return results

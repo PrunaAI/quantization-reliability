@@ -1,6 +1,5 @@
 import logging
 import torch
-from torchmetrics import BrierScore
 from tqdm import tqdm
 
 from sklearn.metrics import roc_auc_score, average_precision_score
@@ -46,39 +45,39 @@ def evaluate_perplexity(model, tokenizer, data_module, device="cuda"):
     
     return ppl
 
-@torch.no_grad()
-def evaluate_brier_score(model, tokenizer, data_module, device="cuda"):
-    encodings = tokenizer("\n\n".join(data_module.train_dataset["text"]), return_tensors="pt")
-    max_length = 2048
-    stride = 512
-    seq_len = encodings.input_ids.size(1)
+# @torch.no_grad()
+# def evaluate_brier_score(model, tokenizer, data_module, device="cuda"):
+#     encodings = tokenizer("\n\n".join(data_module.train_dataset["text"]), return_tensors="pt")
+#     max_length = 2048
+#     stride = 512
+#     seq_len = encodings.input_ids.size(1)
 
-    brier_score_metric = BrierScore(num_classes=tokenizer.vocab_size).to(device)
+#     brier_score_metric = BrierScore(num_classes=tokenizer.vocab_size).to(device)
     
-    prev_end_loc = 0
-    for begin_loc in tqdm(range(0, seq_len, stride)):
-        end_loc = min(begin_loc + max_length, seq_len)
-        input_ids = encodings.input_ids[:, begin_loc:end_loc].to(device)
-        target_ids = input_ids.clone()
+#     prev_end_loc = 0
+#     for begin_loc in tqdm(range(0, seq_len, stride)):
+#         end_loc = min(begin_loc + max_length, seq_len)
+#         input_ids = encodings.input_ids[:, begin_loc:end_loc].to(device)
+#         target_ids = input_ids.clone()
 
-        with torch.no_grad():
-            outputs = model(input_ids)
-            logits = outputs.logits
-            probabilities = torch.softmax(logits, dim=-1)
+#         with torch.no_grad():
+#             outputs = model(input_ids)
+#             logits = outputs.logits
+#             probabilities = torch.softmax(logits, dim=-1)
 
-            for i in range(input_ids.size(1)):
-                actual = target_ids[:, i]
-                predicted = probabilities[:, i, :]
-                brier_score_metric.update(predicted, actual)
+#             for i in range(input_ids.size(1)):
+#                 actual = target_ids[:, i]
+#                 predicted = probabilities[:, i, :]
+#                 brier_score_metric.update(predicted, actual)
 
-        prev_end_loc = end_loc
-        if end_loc == seq_len:
-            break
+#         prev_end_loc = end_loc
+#         if end_loc == seq_len:
+#             break
 
-    avg_brier_score = brier_score_metric.compute().item()
-    print(f"Brier Score of model {model.name_or_path}: {avg_brier_score:.4f}")
+#     avg_brier_score = brier_score_metric.compute().item()
+#     print(f"Brier Score of model {model.name_or_path}: {avg_brier_score:.4f}")
     
-    return avg_brier_score
+#     return avg_brier_score
 
 def compute_conf_metrics(y_true, y_confs):
     result_matrics = {}
