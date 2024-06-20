@@ -4,7 +4,7 @@ seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
   name: 'quantize_tinyllama'
-  output_dir: '/nfs/homedirs/daro/slurm-output'
+  output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/src/'
 
 slurm:
