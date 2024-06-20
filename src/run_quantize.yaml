@@ -25,36 +25,41 @@ fixed:
   device: cuda
   clean_cache: True
   evaluation_metrics:
-    - perplexity
+    - 'perplexity'
 
 grid:
   calibration_dataset_name:
     type: choice
     options:
-      - wikitext
-      - openassistant
+      - 'wikitext'
+      - 'openassistant'
 
   evaluation_dataset_name:
     type: choice
     options:
-      - wikitext
-      - openassistant
+      - 'wikitext'
+      - 'openassistant'
 
   quantize_methods:
     type: choice
     options:
-      - BNB
-      - AWQ
+      - 'BNB'
+      - 'AWQ'
+
+  quantize_params:
+    type: choice
+    options:
+      - dict() # TODO
 
   model_name:
     type: choice
     options:
-      - tinyllama
+      - 'tinyllama'
 
   weight_name:
     type: choice
     options:
-      - DEFAULT
+      - 'DEFAULT'
 
 random:
   samples: 2
