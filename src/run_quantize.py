@@ -24,6 +24,17 @@ torch.hub.set_dir(CACHE_PATH)
 
 import logging
 
+#os.chdir('..')
+print("Current Working Directory " , os.getcwd())
+import sys
+sys.path.append("../") # Add directory containing src/data to path
+
+import importlib
+import src  # Assuming src is the package name
+
+# Reload the src module after making changes
+importlib.reload(src)
+
 from sacred import Experiment
 import seml
 
