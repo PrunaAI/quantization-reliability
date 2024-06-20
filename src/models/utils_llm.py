@@ -17,10 +17,10 @@ def calculate_model_size(model_path):
     # Loop through files in the model directory
     for filename in os.listdir(model_path):
         file_path = os.path.join(model_path, filename)
-    # Check if it's a file (not a directory)
-    if os.path.isfile(file_path):
-        file_size = os.path.getsize(file_path)
-        total_size += file_size
+        # Check if it's a file (not a directory)
+        if os.path.isfile(file_path):
+            file_size = os.path.getsize(file_path)
+            total_size += file_size
 
     # Convert to human-readable format
     if total_size > 1024**2:
