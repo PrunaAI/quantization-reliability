@@ -6,7 +6,6 @@ seml:
   name: 'quantize_tinyllama'
   output_dir: '/nfs/homedirs/daro/slurm-output'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/src/'
-  description: 'Quantization experiment for TinyLLaMA with perplexity evaluation.'
 
 slurm:
   experiments_per_job: 1
