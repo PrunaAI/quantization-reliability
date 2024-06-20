@@ -23,7 +23,10 @@ def calculate_model_size(model_path):
             total_size += file_size
 
     # Convert to human-readable format
-    if total_size > 1024**2:
+    if total_size > 1024**3:
+        total_size_gb = total_size / (1024**3)
+        print(f"Total Model Size for {model_path}: {total_size_gb:.2f} GB")
+    elif total_size > 1024**2:
         total_size_mb = total_size / (1024**2)
         print(f"Total Model Size for {model_path}: {total_size_mb:.2f} MB")
     elif total_size > 1024:
