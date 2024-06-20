@@ -8,6 +8,8 @@ import tempfile
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 if re.match(".*username.*", os.getcwd()):
     CACHE_PATH = "~/.cache/"
+else:
+    CACHE_PATH = "/tmp/"
 os.environ["TORCH_HOME"] = CACHE_PATH
 os.environ["HF_HOME"] = CACHE_PATH
 os.environ["HUGGINGFACE_HUB_CACHE"] = CACHE_PATH
@@ -50,7 +52,7 @@ def config():
 
 @ex.automain
 def run_quantize(
-    # Dataset parameters,
+    # Dataset parameters
     seed_dataset=123,
     directory_dataset="",
     calibration_dataset_name="",
@@ -74,6 +76,8 @@ def run_quantize(
         "perplexity",
     ],
     device="cuda",
+    save_quantized_model=False,
+    quantized_model_save_path="",
 ):
     ##################
     ## Print config ##
@@ -115,9 +119,35 @@ def run_quantize(
         device=device,
     )
 
+    # Set quantization parameters
+    if quantize_methods == "BNB":
+        quantize_params.update({
+            "num_bits": 8,
+            "llm_int8_threshold": 6.0,
+            "llm_int8_enable_fp32_cpu_offload": False,
+            "llm_int8_has_fp16_weight": False,
+            "bnb_4bit_compute_dtype": torch.bfloat16,
+            "bnb_4bit_quant_type": "fp4",
+            "bnb_4bit_use_double_quant": False,
+        })
+    elif quantize_methods == "AWQ":
+        quantize_params.update({
+            "zero_point": True,
+            "q_group_size": 128,
+            "w_bit": 4,
+            "version": "GEMM"
+        })
+
     # Quantize the model using specified methods and parameters
     for method in quantize_methods:
-        model = quantize(model, calibration_dataloader, method, quantize_params)
+        model = quantize(
+            model,
+            calibration_dataloader,
+            method,
+            quantize_params,
+            save_model=save_quantized_model,
+            save_path=quantized_model_save_path
+        )
 
     # Evaluate the quantized model
     results = evaluate(

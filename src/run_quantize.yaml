@@ -1,0 +1,66 @@
+# Experiment configuration file.
+
+seml:
+  conda_environment: 'env-quant-rel-310'
+  executable: 'run_quantize.py'
+  name: 'quantize_tinyllama'
+  ooutput_dir: '/nfs/homedirs/daro/slurm-output'
+  project_root_dir: '/nfs/homedirs/username/quantization-reliability/src/'
+  description: 'Quantization experiment for TinyLLaMA with perplexity evaluation.'
+
+slurm:
+  experiments_per_job: 1
+  sbatch_options:
+    gres: 'gpu:1'       # num GPUs
+    mem: 128G          # memory
+    cpus-per-task: 2  # num cores
+    time: '1-00:00'     # max time, D-HH:MM
+    partition: 'gpu_a100' # partition
+#    partition: 'gpu_gtx1080' # partition
+#    exclude: gpu[18,19],mdsi-gpu[01,02]
+#    exclude: gpu[15,17,20]
+
+###### BEGIN PARAMETER CONFIGURATION ######
+
+fixed:
+  device: cuda
+  clean_cache: True
+  evaluation_metrics:
+    - perplexity
+
+grid:
+  calibration_dataset_name:
+    type: choice
+    options:
+      - wikitext
+      - openassistant
+
+  evaluation_dataset_name:
+    type: choice
+    options:
+      - wikitext
+      - openassistant
+
+  quantize_methods:
+    type: choice
+    options:
+      - BNB
+      - AWQ
+
+  model_name:
+    type: choice
+    options:
+      - tinyllama
+
+  weight_name:
+    type: choice
+    options:
+      - DEFAULT
+
+random:
+  samples: 2
+  seed: 12345
+  batch_size:
+    type: uniform
+    min: 1
+    max: 4

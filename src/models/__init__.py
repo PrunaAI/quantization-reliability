@@ -1,7 +1,7 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-def get_model(model_name, weight_name=None, cache_dir=None, task=None, seed=123, directory_model=None, device="cuda"):
+def get_model(model_name, weight_name=None, cache_dir=None, seed=123, directory_model=None, device="cuda"):
     """
     Load a model from the Huggingface transformers library.
 
@@ -20,11 +20,16 @@ def get_model(model_name, weight_name=None, cache_dir=None, task=None, seed=123,
     """
     torch.manual_seed(seed)
     
+    if model_name == 'tinyllama':
+        model_name_full = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    elif model_name == 'llama-3-8b':
+        model_name_full = "meta-llama/Meta-Llama-3-8B"
+        
     # Tokenizer loading
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
+    tokenizer = AutoTokenizer.from_pretrained(model_name_full, cache_dir=cache_dir)
 
     # Model loading
-    model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=cache_dir)
+    model = AutoModelForCausalLM.from_pretrained(model_name_full, cache_dir=cache_dir)
     model.to(device)
 
     return model, tokenizer
