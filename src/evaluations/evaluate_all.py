@@ -9,8 +9,9 @@ logger = logging.getLogger("quant_logger")
 
 def evaluate(
     model,
-    dataloader,
-    evaluation_metrics,
+    eval_tokenizer,
+    eval_dataloader,
+    eval_metrics,
     device="cuda",
     prefix="",
 ) -> Dict:
@@ -24,10 +25,11 @@ def evaluate(
         results[f"{prefix}current_gpu_total_memory"] = (
             torch.cuda.get_device_properties(torch.cuda.device(0)).total_memory / 1024**2
         )
-    if "perplexity" in evaluation_metrics:
+        
+    if "perplexity" in eval_metrics:
         logger.info("Evaluate perplexity")
-        results[f"{prefix}perplexity"] = evaluate_perplexity(model=model, dataloader=dataloader, device=device)
-    if "brier_score" in evaluation_metrics:
+        results[f"{prefix}perplexity"] = evaluate_perplexity(model=model, dataloader=eval_dataloader, device=device)
+    if "brier_score" in eval_metrics:
         logger.info("Evaluate Brier score")
         raise NotImplementedError("Brier score evaluation is not yet implemented.")
         # results[f"{prefix}brier_score"] = evaluate_brier_score(model=model, tokenizer=model.tokenizer, data_module=dataloader.dataset, device=device)

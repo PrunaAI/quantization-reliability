@@ -1,4 +1,13 @@
 import os
+from pynvml import *
+from transformers import MarianMTModel
+
+def print_gpu_utilization():
+    nvmlInit()
+    handle = nvmlDeviceGetHandleByIndex(0)
+    info = nvmlDeviceGetMemoryInfo(handle)
+    print(f"GPU memory occupied: {info.used//1024**2} MB.")
+    
 
 def calculate_model_size(model_path):
     """
@@ -34,6 +43,7 @@ def calculate_model_size(model_path):
         print(f"Total Model Size for {model_path}: {total_size_kb:.2f} KB")
     else:
         print(f"Total Model Size for {model_path}: {total_size} bytes")  # Keep as bytes for small sizes
+
 
 def prompt_large_language_model(model, tokenizer, input_text, device=None):
     """

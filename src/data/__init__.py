@@ -40,6 +40,12 @@ base_datasets = {
     ),
 }
 
+data_loader_map = lambda data_module: {
+    "train": data_module.train_dataloader(),
+    "val": data_module.val_dataloader(),
+    "test": data_module.test_dataloader()
+}
+
 def get_dataset(dataset_name, directory_dataset, batch_size=1, seed=123, tokenizer_name=None, **kwargs):
     # Extract data shape from dataset name (if present)
     shape = [int(n) for n in re.findall(r"\d+", dataset_name)]

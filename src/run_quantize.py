@@ -23,6 +23,7 @@ import torch
 torch.hub.set_dir(CACHE_PATH)
 
 import logging
+logger = logging.getLogger("quant_logger")
 
 #os.chdir('..')
 print("Current Working Directory " , os.getcwd())
@@ -42,6 +43,7 @@ from src.models import get_model
 from src.data import get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
+from src.data import data_loader_map
 
 # Set the SEML experiment
 ex = Experiment(save_git_info=False)
@@ -57,24 +59,22 @@ def run_quantize(
     # Dataset parameters
     seed_dataset=123,
     directory_dataset="",
-    calibration_dataset_name="",
-    evaluation_dataset_name="",
+    calib_dataset_name="",
+    calib_dataset_split="",
+    eval_dataset_name="",
+    eval_dataset_split="",
     batch_size=1,
     # Model parameters
     seed_model=123,
     directory_model="",
     clean_cache=True,
     model_name="",
-    weight_name="DEFAULT",
-    task=None,
     # Quantization parameters
-    quantize_methods=[
-        "BNB",
-        "AWQ"
-    ],
+    quantize_method="",
+    quantize_bits=8,
     quantize_params={},
     # Evaluation metrics
-    evaluation_metrics=[
+    eval_metrics=[
         "perplexity",
     ],
     device="cuda",
@@ -84,82 +84,95 @@ def run_quantize(
     ##################
     ## Print config ##
     ##################
-    logging.info("Received the following configuration:")
-    logging.info(
-        f"Calibration dataset: {calibration_dataset_name}, evaluation dataset: {evaluation_dataset_name}, "
-        f"batch size: {batch_size}, model: {model_name}, "
-        f"quantize methods: {quantize_methods}, quantize params: {quantize_params}, "
-        f"evaluation metrics: {evaluation_metrics}, device: {device}"
+    logger.info("Received the following configuration:")
+    logger.info(
+        f"Calibration dataset: {calib_dataset_name}\n"
+        f"Calibration split: {calib_dataset_split}\n"
+        f"Evaluation dataset: {eval_dataset_name}\n"
+        f"Evaluation split: {eval_dataset_split}\n"
+        f"Batch size: {batch_size}\n"
+        f"Model: {model_name}\n"
+        f"Quantize method: {quantize_method}\n"
+        f"Quantize params: {quantize_params}\n"
+        f"Evaluation metrics: {eval_metrics}\n"
+        f"Device: {device}\n"
     )
+    
     ###############
     ## Load data ##
     ###############
-    print("Load datasets")
-    calibration_data_module = get_dataset(
-        dataset_name=calibration_dataset_name,
+    logger.info("Load calibration and evaluation data modules")
+    calib_data_module = get_dataset(
+        dataset_name=calib_dataset_name,
         directory_dataset=directory_dataset,
         batch_size=batch_size,
         tokenizer_name=model_name,
         seed=seed_dataset,
     )
-    calibration_dataloader = calibration_data_module.val_dataloader()
-    evaluation_data_module = get_dataset(
-        dataset_name=evaluation_dataset_name,
+    eval_data_module = get_dataset(
+        dataset_name=eval_dataset_name,
         directory_dataset=directory_dataset,
         batch_size=batch_size,
         tokenizer_name=model_name,
         seed=seed_dataset,
     )
-    evaluation_dataloader = evaluation_data_module.test_dataloader()
-
+    
+    calib_tokenizer = calib_data_module.tokenizer
+    calib_dataloader = data_loader_map(calib_data_module)[calib_dataset_split]
+    
+    eval_tokenizer = eval_data_module.tokenizer
+    eval_dataloader = data_loader_map(eval_data_module)[eval_dataset_split]
+    
+    ################
+    ## Load model ##
+    ################
+    logger.info("Load base model")
     model, tokenizer = get_model(
         model_name=model_name,
-        weight_name=weight_name,
-        task=task,
         seed=seed_model,
         directory_model=directory_model,
         device=device,
     )
 
-    # Set quantization parameters
-    if quantize_methods == "BNB":
-        quantize_params.update({
-            "num_bits": 8,
-            "llm_int8_threshold": 6.0,
-            "llm_int8_enable_fp32_cpu_offload": False,
-            "llm_int8_has_fp16_weight": False,
-            "bnb_4bit_compute_dtype": torch.bfloat16,
-            "bnb_4bit_quant_type": "fp4",
-            "bnb_4bit_use_double_quant": False,
-        })
-    elif quantize_methods == "AWQ":
-        quantize_params.update({
-            "zero_point": True,
-            "q_group_size": 128,
-            "w_bit": 4,
-            "version": "GEMM"
-        })
+    ################################
+    ## Update quantize parameters ##
+    ################################
+    logger.info("Defining quantize parameters")
+    quantize_params.update(quantize_params)
+    logger.info(f"Default parameters adjusted from {quantize_params}")
 
-    # Quantize the model using specified methods and parameters
-    for method in quantize_methods:
-        model = quantize(
-            model,
-            calibration_dataloader,
-            method,
-            quantize_params,
-            save_model=save_quantized_model,
-            save_path=quantized_model_save_path
-        )
-
-    # Evaluate the quantized model
-    results = evaluate(
+    ##############
+    ## Quantize ##
+    ##############
+    logger.info("Quantization")
+    quantized_model, tokenizers = quantize(
         model=model,
-        dataloader=evaluation_dataloader,
-        evaluation_metrics=evaluation_metrics,
+        calib_tokenizer=calib_tokenizer,
+        calib_dataloader=calib_dataloader,
+        quantize_method=quantize_method,
+        quantize_config=quantize_params,
+        save_model=save_quantized_model,
+        save_path=quantized_model_save_path,
+        device=device
+    )
+
+    ##############
+    ## Evaluate ##
+    ##############
+    logger.info("Evaluating the quantized models")
+    results = evaluate(
+        model=quantized_model,
+        eval_tokenizer=eval_tokenizer,
+        eval_dataloader=eval_dataloader,
+        eval_metrics=eval_metrics,
         device=device,
         prefix="",
     )
 
+    ####################
+    ## Cleaning cache ##
+    ####################
+    logger.info
     if clean_cache:
         for root, dirs, files in os.walk(CACHE_PATH, topdown=False):
             for dir_name in dirs:

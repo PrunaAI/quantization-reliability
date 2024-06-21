@@ -11,21 +11,23 @@ slurm:
   experiments_per_job: 1
   sbatch_options:
     gres: 'gpu:1'       # num GPUs
-    mem: 128G          # memory
+    mem: '128G'          # memory
     cpus-per-task: 2  # num cores
     time: '1-00:00'     # max time, D-HH:MM
     partition: 'gpu_a100' # partition
 #    partition: 'gpu_gtx1080' # partition
-#    exclude: gpu[18,19],mdsi-gpu[01,02]
-#    exclude: gpu[15,17,20]
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 
 fixed:
-  device: cuda
+  device: 'cuda'
   clean_cache: True
   evaluation_metrics:
     - 'perplexity'
+  calibration_dataset_split:
+    - 'validation'
+  evaluation_dataset_split:
+    - 'test'
 
 grid:
   calibration_dataset_name:
@@ -46,10 +48,11 @@ grid:
       - 'BNB'
       - 'AWQ'
 
-  quantize_params:
+  quantize_bits:
     type: choice
     options:
-      - dict() # TODO
+      - 4
+      - 8
 
   model_name:
     type: choice
