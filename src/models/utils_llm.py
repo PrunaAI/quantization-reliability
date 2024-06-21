@@ -3,10 +3,20 @@ from pynvml import *
 from transformers import MarianMTModel
 
 def print_gpu_utilization():
-    nvmlInit()
-    handle = nvmlDeviceGetHandleByIndex(0)
-    info = nvmlDeviceGetMemoryInfo(handle)
-    print(f"GPU memory occupied: {info.used//1024**2} MB.")
+  nvmlInit()
+  handle = nvmlDeviceGetHandleByIndex(0)
+  info = nvmlDeviceGetMemoryInfo(handle)
+
+  # Calculate memory usage in MB
+  memory_used = info.used // 1024**2
+
+  # Determine unit based on usage
+  unit = "MB"
+  if memory_used > 1024:
+    memory_used = memory_used / 1024  # Convert to GB
+    unit = "GB"
+
+  print(f"GPU memory occupied: {memory_used:.2f} {unit}.")
     
 
 def calculate_model_size(model_path):
