@@ -22,47 +22,60 @@ slurm:
 fixed:
   device: 'cuda'
   clean_cache: True
-  evaluation_metrics:
+  save_quantized_model: True
+  seed_model: 123
+  seed_dataset: 123
+  eval_metrics:
     - 'perplexity'
-  calibration_dataset_split:
+  calib_dataset_split:
     - 'validation'
-  evaluation_dataset_split:
+  eval_dataset_split:
     - 'test'
 
 grid:
-  calibration_dataset_name:
+  calib_dataset_name:
     type: choice
     options:
       - 'wikitext'
       - 'openassistant'
 
-  evaluation_dataset_name:
+  eval_dataset_name:
     type: choice
     options:
       - 'WikiText'
       - 'OpenAssistant'
 
-  quantize_methods:
+  quantize_method:
     type: choice
     options:
       - 'BNB'
       - 'AWQ'
 
-  quantize_bits:
+  quantize_params:
     type: choice
     options:
-      - 4
-      - 8
+      - {
+        "num_bits": 8,
+        "llm_int8_threshold": 6.0,
+        "llm_int8_enable_fp32_cpu_offload": False,
+        "llm_int8_has_fp16_weight": False
+      }
+      - {
+        "num_bits": 4,
+        "bnb_4bit_compute_dtype": torch.bfloat16,
+        "bnb_4bit_quant_type": "fp4",
+        "bnb_4bit_use_double_quant": False,
+      }
 
   model_name:
     type: choice
     options:
       - 'tinyllama'
 
-  weight_name:
-    type: choice
-    options:
-      - 'DEFAULT'
+  # weight_name:
+  #   type: choice
+  #   options:
+  #     - 'DEFAULT'
 
 random:
   samples: 2
