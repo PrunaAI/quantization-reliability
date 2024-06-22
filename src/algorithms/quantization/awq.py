@@ -40,16 +40,22 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
         calib_data=calib_text,
     )
 
-    model_path = os.path.join(MODEL_SAVE_PATH, f"{model_name.split('/')[1]}-awq")
-    os.makedirs(model_path, exist_ok=True)
-    awq_model.save_quantized(model_path)
-    awq_model.tokenizer.save_pretrained(model_path)
+    awq_model_name = f"{model_name.split('/')[1]}-awq"
+    awq_model_path = os.path.join(MODEL_SAVE_PATH, awq_model_name)
+    os.makedirs(awq_model_path, exist_ok=True)
+    awq_model.save_quantized(awq_model_path)
+    awq_model.tokenizer.save_pretrained(awq_model_path)
+    awq_model.NAME = awq_model_name
     
-    # Calculate model size
-    calculate_model_size(model_path)
+    print(f'Model is quantized and saved at "{awq_model_path}"')
+    
+    # Calculate model size and GPU utilization
+    calculate_model_size(awq_model_path)
+    from src.models.utils_llm import print_gpu_utilization
+    print_gpu_utilization()
 
     if save_model:
-        save_dir = save_path if save_path else model_path
+        save_dir = save_path if save_path else awq_model_path
         awq_model.save_pretrained(save_dir)
 
     return awq_model, tokenizer

@@ -38,16 +38,22 @@ def quantize_bnb(model_name, quantize_config, save_model=False, save_path="", de
         device_map=device
     )
 
-    model_path = os.path.join(MODEL_SAVE_PATH, f"{model_name.split('/')[1]}-bnb-{quantize_config['num_bits']}bit")
-    os.makedirs(model_path, exist_ok=True)
+    bnb_model_name = f"{model_name.split('/')[1]}-bnb-{quantize_config['num_bits']}bit"
+    bnb_model_path = os.path.join(MODEL_SAVE_PATH, bnb_model_name)
+    os.makedirs(bnb_model_path, exist_ok=True)
     accelerator = Accelerator()
-    accelerator.save_model(bnb_model, model_path)
+    accelerator.save_model(bnb_model, bnb_model_path)
+    bnb_model.NAME = bnb_model_name
     
-    # Calculate model size
-    calculate_model_size(model_path)
+    print(f'Model is quantized and saved at "{bnb_model_path}"')
+    
+    # Calculate model size and GPU utilization
+    calculate_model_size(bnb_model_path)
+    from src.models.utils_llm import print_gpu_utilization
+    print_gpu_utilization()
 
     if save_model:
-        save_dir = save_path if save_path else model_path
+        save_dir = save_path if save_path else bnb_model_path
         bnb_model.save_pretrained(save_dir)
 
     return bnb_model, tokenizer

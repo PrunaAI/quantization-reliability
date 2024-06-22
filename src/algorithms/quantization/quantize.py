@@ -1,5 +1,5 @@
-from awq import quantize_awq, awq_config
-from bnb import quantize_bnb, bnb_config
+from src.algorithms.quantization.awq import quantize_awq, awq_config
+from src.algorithms.quantization.bnb import quantize_bnb, bnb_config
 
 quantize_config_map = {
     "BNB": bnb_config,

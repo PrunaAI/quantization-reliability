@@ -71,7 +71,6 @@ def run_quantize(
     model_name="",
     # Quantization parameters
     quantize_method="",
-    quantize_bits=8,
     quantize_params={},
     # Evaluation metrics
     eval_metrics=[
@@ -121,7 +120,6 @@ def run_quantize(
     calib_dataloader = data_loader_map(calib_data_module)[calib_dataset_split]
     
     eval_tokenizer = eval_data_module.tokenizer
-    eval_dataloader = data_loader_map(eval_data_module)[eval_dataset_split]
     
     ################
     ## Load model ##
@@ -145,7 +143,7 @@ def run_quantize(
     ## Quantize ##
     ##############
     logger.info("Quantization")
-    quantized_model, tokenizers = quantize(
+    quantized_model, quantized_tokenizer = quantize(
         model=model,
         calib_tokenizer=calib_tokenizer,
         calib_dataloader=calib_dataloader,
@@ -163,7 +161,7 @@ def run_quantize(
     results = evaluate(
         model=quantized_model,
         eval_tokenizer=eval_tokenizer,
-        eval_dataloader=eval_dataloader,
+        eval_data_module=eval_data_module,
         eval_metrics=eval_metrics,
         device=device,
         prefix="",

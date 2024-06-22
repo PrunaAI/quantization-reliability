@@ -98,3 +98,72 @@ print(BitsAndBytesConfig.__dict__)
 
 from transformers import TextStreamer
 text_streamer = TextStreamer(tokenizer)
+
+import numpy as np
+import evaluate
+
+brier_score = evaluate.load("brier_score")
+predictions = np.array([0, 0, 1, 1])
+references = np.array([0.1, 0.9, 0.8, 0.3])
+results = brier_score.compute(predictions=predictions, references=references)
+print(results)
+
+def brier_score(Y, alpha):
+    batch_size = alpha.size(0)
+
+    p = torch.nn.functional.normalize(alpha, p=1, dim=-1)
+    indices = torch.arange(batch_size)
+    p[indices, Y.squeeze()] -= 1
+    brier_score = p.norm(dim=-1).mean().cpu().detach().numpy()
+    return brier_score
+
+import torch
+import tqdm
+
+def evaluate_perplexity(model, tokenizer, dataloader, device="cuda"):
+    model.eval()
+    
+    nlls = []
+    for batch in tqdm.tqdm(dataloader):
+        input_ids, target_ids = batch
+        input_ids = input_ids.to(device)
+        target_ids = target_ids.to(device)
+        
+        with torch.no_grad():
+            outputs = model(input_ids, labels=target_ids)
+            neg_log_likelihood = outputs.loss
+
+        nlls.append(neg_log_likelihood)
+
+    # print(len(nlls))
+    # print(nlls)
+    # print(torch.stack(nlls))
+    # print(torch.stack(nlls).mean())
+    # print(torch.exp(torch.stack(nlls).mean()))
+    ppl = torch.exp(torch.stack(nlls).mean())
+    print(f"Perplexity of model {model.NAME}: {ppl:.2f}")
+    
+    return ppl
+
+evaluate_perplexity(model, tokenizer, wikitext_dataloader, device="cuda")
+
+import numpy as np
+
+logits = outputs["logits"][0].cpu().numpy()
+sequences = logits.reshape(-1, 512, logits.shape[-1])
+argmax_indices = np.argmax(sequences, axis=2)
+
+print(tokenizer.decode(labels[0][0:25], skip_special_tokens=True))
+print(tokenizer.decode(labels[0][0:25], skip_special_tokens=True))
+print(tokenizer.decode(argmax_indices[0][0:25], skip_special_tokens=True))
+
+        # print(f"Step {begin_loc}: NLL = {neg_log_likelihood:.2f}")
+        # import numpy as np
+
+        # logits = outputs["logits"][0].cpu().numpy()
+        # sequences = logits.reshape(-1, 2048, logits.shape[-1])
+        # argmax_indices = np.argmax(sequences, axis=2)
+
+        # print(f"Input: {tokenizer.decode(input_ids[0][-20:], skip_special_tokens=True)}")
+        # print(f"Target: {tokenizer.decode(target_ids[0][-20:], skip_special_tokens=True)}")
+        # print(f"Prediction: {tokenizer.decode(argmax_indices[0][-20:], skip_special_tokens=True)}")
