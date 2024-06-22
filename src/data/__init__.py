@@ -52,7 +52,7 @@ def get_dataset(dataset_name, directory_dataset, batch_size=1, seed=123, tokeniz
     match = re.match(r"([^0-9]+)_", dataset_name)
     if match is not None:
         dataset_name = match.group(1)
-
+    
     # Get dataset
     if dataset_name in base_datasets:
         return base_datasets[dataset_name](

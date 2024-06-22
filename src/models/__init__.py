@@ -5,8 +5,8 @@ import re
 
 # Define the base datasets dictionary
 base_models = {
-    "tinyllama": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-    "llama-3-8b": "meta-llama/Meta-Llama-3-8B",
+    "TinyLlama": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "Llama-3-8B": "meta-llama/Meta-Llama-3-8B",
 }
 
 def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):

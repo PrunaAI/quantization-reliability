@@ -36,8 +36,8 @@ grid:
   calib_dataset_name:
     type: choice
     options:
-      - 'wikitext'
-      - 'openassistant'
+      - 'WikiText'
+      - 'OpenAssistant'
 
   eval_dataset_name:
     type: choice
@@ -70,7 +70,7 @@ grid:
   model_name:
     type: choice
     options:
-      - 'tinyllama'
+      - 'TinyLlama'
 
   # weight_name:
   #   type: choice
