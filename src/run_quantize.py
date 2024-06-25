@@ -64,6 +64,7 @@ def run_quantize(
     eval_dataset_name="",
     eval_dataset_split="",
     batch_size=1,
+    stride=512,
     # Model parameters
     seed_model=123,
     directory_model="",
@@ -97,30 +98,6 @@ def run_quantize(
         f"Device: {device}\n"
     )
     
-    ###############
-    ## Load data ##
-    ###############
-    logger.info("Load calibration and evaluation data modules")
-    calib_data_module = get_dataset(
-        dataset_name=calib_dataset_name,
-        directory_dataset=directory_dataset,
-        batch_size=batch_size,
-        tokenizer_name=model_name,
-        seed=seed_dataset,
-    )
-    eval_data_module = get_dataset(
-        dataset_name=eval_dataset_name,
-        directory_dataset=directory_dataset,
-        batch_size=batch_size,
-        tokenizer_name=model_name,
-        seed=seed_dataset,
-    )
-    
-    calib_tokenizer = calib_data_module.tokenizer
-    calib_dataloader = data_loader_map(calib_data_module)[calib_dataset_split]
-    
-    eval_tokenizer = eval_data_module.tokenizer
-    
     ################
     ## Load model ##
     ################
@@ -131,6 +108,32 @@ def run_quantize(
         directory_model=directory_model,
         device=device,
     )
+    
+    ###############
+    ## Load data ##
+    ###############
+    logger.info("Load calibration and evaluation data modules")
+    calib_data_module = get_dataset(
+        dataset_name=calib_dataset_name,
+        directory_dataset=directory_dataset,
+        batch_size=batch_size,
+        sequence_length=stride,
+        tokenizer_name=model_name,
+        seed=seed_dataset,
+    )
+    eval_data_module = get_dataset(
+        dataset_name=eval_dataset_name,
+        directory_dataset=directory_dataset,
+        batch_size=batch_size,
+        sequence_length=stride,
+        tokenizer_name=model_name,
+        seed=seed_dataset,
+    )
+    
+    calib_tokenizer = calib_data_module.tokenizer
+    calib_dataloader = data_loader_map(calib_data_module)[calib_dataset_split]
+    
+    eval_tokenizer = eval_data_module.tokenizer
 
     ################################
     ## Update quantize parameters ##
@@ -163,6 +166,8 @@ def run_quantize(
         eval_tokenizer=eval_tokenizer,
         eval_data_module=eval_data_module,
         eval_metrics=eval_metrics,
+        stride=stride,
+        factor=100,
         device=device,
         prefix="",
     )

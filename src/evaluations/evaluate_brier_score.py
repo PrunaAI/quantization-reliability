@@ -2,7 +2,7 @@ import torch
 import tqdm
 import torch.nn.functional as F
 
-def evaluate_brier_score(model, tokenizer, data_module, data_split="validation", max_length=None, stride=None, factor=1, to_device=False, device="cuda"):
+def evaluate_brier_score(model, tokenizer, data_module, data_split="validation", max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
     model.eval()
     dataset_map = {
         "train": data_module.train_dataset,
@@ -12,8 +12,6 @@ def evaluate_brier_score(model, tokenizer, data_module, data_split="validation",
     
     if max_length is None:
         max_length = tokenizer.model_max_length
-    if stride is None:
-        stride = data_module.sequence_length
     if to_device:
         model.to(device)
         

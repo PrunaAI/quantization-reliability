@@ -146,4 +146,57 @@ def search_vis_answers(result_dict, task_type, prompt_type, sampling_type):
 
 
         
-score_dict = search_vis_answers(data, args.task_type, prompt_type=args.prompt_type, sampling_type=args.sampling_type)    
+score_dict = search_vis_answers(data, args.task_type, prompt_type=args.prompt_type, sampling_type=args.sampling_type)   
+
+import logging
+import torch
+from tqdm import tqdm
+
+from sklearn.metrics import roc_auc_score, average_precision_score
+import numpy as np
+from netcal.metrics import ECE
+
+import numpy as np
+
+pruna_logger = logging.getLogger("quant_logger")
+
+def compute_conf_metrics(y_true, y_confs):
+    result_matrics = {}
+    # ACC
+    accuracy = sum(y_true) / len(y_true)
+    print("accuracy: ", accuracy)
+    result_matrics['acc'] = accuracy
+
+    # use np to test if y_confs are all in [0, 1]
+    assert all([x >= 0 and x <= 1 for x in y_confs]), y_confs
+    y_confs, y_true = np.array(y_confs), np.array(y_true)
+
+    # AUCROC
+    roc_auc = roc_auc_score(y_true, y_confs)
+    print("ROC AUC score:", roc_auc)
+    result_matrics['auroc'] = roc_auc
+
+    # AUPRC-Positive
+    auprc = average_precision_score(y_true, y_confs)
+    print("AUC PRC Positive score:", auprc)
+    result_matrics['auprc_p'] = auprc
+
+    # AUPRC-Negative
+    auprc = average_precision_score(1- y_true, 1 - y_confs)
+    print("AUC PRC Negative score:", auprc)
+    result_matrics['auprc_n'] = auprc
+
+    # AURC from https://github.com/IML-DKFZ/fd-shifts/tree/main
+    # aurc = area_under_risk_coverage_score(y_confs, y_true)
+    # result_matrics['aurc'] = aurc
+    # print("AURC score:", aurc)
+
+    # ECE
+    n_bins = 10
+    # diagram = ReliabilityDiagram(n_bins)
+    ece = ECE(n_bins)
+    ece_score = ece.measure(np.array(y_confs), np.array(y_true))
+    print("ECE:", ece_score)
+    result_matrics['ece'] = ece_score
+
+    return result_matrics

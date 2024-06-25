@@ -1,7 +1,7 @@
 import torch
 import tqdm
 
-def evaluate_perplexity(model, tokenizer, data_module, data_split="validation", max_length=None, stride=None, to_device=False, device="cuda"):
+def evaluate_perplexity(model, tokenizer, data_module, data_split="validation", max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
     model.eval()
     dataset_map = {
         "train": data_module.train_dataset,
@@ -11,8 +11,6 @@ def evaluate_perplexity(model, tokenizer, data_module, data_split="validation", 
     
     if max_length is None:
         max_length = tokenizer.model_max_length
-    if stride is None:
-        stride = data_module.sequence_length
     if to_device:
         model.to(device)
         
@@ -21,7 +19,7 @@ def evaluate_perplexity(model, tokenizer, data_module, data_split="validation", 
 
     nlls = []
     prev_end_loc = 0
-    for begin_loc in tqdm.tqdm(range(0, seq_len//100, stride)):
+    for begin_loc in tqdm.tqdm(range(0, seq_len//factor, stride)):
         end_loc = min(begin_loc + max_length, seq_len)
         trg_len = end_loc - prev_end_loc  # may be different from stride on last loop
         input_ids = encodings.input_ids[:, begin_loc:end_loc].to(device)
