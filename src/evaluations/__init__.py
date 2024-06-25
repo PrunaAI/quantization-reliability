@@ -1,4 +1,4 @@
-from src.evaluations.evaluate_text_generation import (
+from src.evaluations.evaluate_perplexity import (
     evaluate_perplexity
 )
 
