@@ -8,6 +8,7 @@ from datasets import load_dataset
 class TextDataset(Dataset):
     def __init__(self, dataset, tokenizer, sequence_length=2048):
         self.tokenizer = tokenizer
+        self.dataset=dataset
         self.texts = dataset["text"]
         tokenized_dataset = self.tokenizer(" ".join(dataset["text"]), return_tensors="pt")
         self.data = tokenized_dataset.input_ids[0, :-1]
