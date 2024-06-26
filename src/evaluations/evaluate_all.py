@@ -16,6 +16,7 @@ def evaluate(
     stride=512,
     factor=100,
     device="cuda",
+    to_device=False,
     prefix="",
 ) -> Dict:
     """
@@ -37,7 +38,8 @@ def evaluate(
             dataloader=eval_dataloader,
             stride=stride,
             factor=factor,
-            device=device
+            device=device,
+            to_device=to_device
         )
     if "brier_score" in eval_metrics:
         logger.info("Evaluate Brier score")
@@ -47,6 +49,7 @@ def evaluate(
             dataloader=eval_dataloader,
             stride=stride,
             factor=factor,
-            device=device
+            device=device,
+            to_device=to_device
         )
     return results
