@@ -102,7 +102,7 @@ def run_quantize(
     ## Load model ##
     ################
     logger.info("Load base model")
-    model_full_name = get_model_name[model_name]
+    model_full_name = get_model_name(model_name)
     model, tokenizer = get_model(
         model_name=model_full_name,
         seed=seed_model,
@@ -148,7 +148,7 @@ def run_quantize(
     ##############
     logger.info("Quantization")
     quantized_model, quantized_tokenizer = quantize(
-        model=model,
+        model_name=model_full_name,
         calib_tokenizer=calib_tokenizer,
         calib_dataloader=calib_dataloader,
         quantize_method=quantize_method,

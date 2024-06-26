@@ -19,17 +19,21 @@ def quantize_bnb(model_name, quantize_config, save_model=False, save_path="", de
     if "num_bits" not in quantize_config or quantize_config["num_bits"] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for BNB: {quantize_config.get('num_bits')}")
 
-    bnb_config = BitsAndBytesConfig(
-        load_in_8bit=(quantize_config["num_bits"] == 8),
-        load_in_4bit=(quantize_config["num_bits"] == 4),
-        llm_int8_threshold=quantize_config["llm_int8_threshold"] if quantize_config["num_bits"] == 8 else None,
-        llm_int8_enable_fp32_cpu_offload=quantize_config["llm_int8_enable_fp32_cpu_offload"] if quantize_config["num_bits"] == 8 else None,
-        llm_int8_has_fp16_weight=quantize_config["llm_int8_has_fp16_weight"] if quantize_config["num_bits"] == 8 else None,
-        bnb_4bit_compute_dtype=quantize_config["bnb_4bit_compute_dtype"] if quantize_config["num_bits"] == 4 else None,
-        bnb_4bit_quant_type=quantize_config["bnb_4bit_quant_type"] if quantize_config["num_bits"] == 4 else None,
-        bnb_4bit_use_double_quant=quantize_config["bnb_4bit_use_double_quant"] if quantize_config["num_bits"] == 4 else None,
-    )
-
+    bnb_config = BitsAndBytesConfig()
+    if quantize_config["num_bits"] == 8:
+        bnb_config = BitsAndBytesConfig(
+            load_in_8bit=(quantize_config["num_bits"] == 8),
+            llm_int8_threshold=quantize_config["llm_int8_threshold"] if quantize_config["num_bits"] == 8 else None,
+            llm_int8_enable_fp32_cpu_offload=quantize_config["llm_int8_enable_fp32_cpu_offload"] if quantize_config["num_bits"] == 8 else None,
+            llm_int8_has_fp16_weight=quantize_config["llm_int8_has_fp16_weight"] if quantize_config["num_bits"] == 8 else None,
+        )
+    else:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=(quantize_config["num_bits"] == 4),
+            bnb_4bit_compute_dtype=quantize_config["bnb_4bit_compute_dtype"] if quantize_config["num_bits"] == 4 else None,
+            bnb_4bit_quant_type=quantize_config["bnb_4bit_quant_type"] if quantize_config["num_bits"] == 4 else None,
+            bnb_4bit_use_double_quant=quantize_config["bnb_4bit_use_double_quant"] if quantize_config["num_bits"] == 4 else None,
+        )
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
     bnb_model = AutoModelForCausalLM.from_pretrained(
         model_name, 
