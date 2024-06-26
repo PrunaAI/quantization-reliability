@@ -1,20 +1,15 @@
 import torch
 import tqdm
 
-def evaluate_perplexity(model, tokenizer, data_module, data_split="validation", max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
+def evaluate_perplexity(model, tokenizer, dataloader, max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
     model.eval()
-    dataset_map = {
-        "train": data_module.train_dataset,
-        "validation": data_module.val_dataset,
-        "test": data_module.test_dataset
-    }
     
     if max_length is None:
         max_length = tokenizer.model_max_length
     if to_device:
         model.to(device)
         
-    encodings = tokenizer("\n\n".join(dataset_map[data_split]["text"]), return_tensors="pt")
+    encodings = tokenizer("\n\n".join(dataloader.dataset.dataset["text"]), return_tensors="pt")
     seq_len = encodings.input_ids.size(1)
 
     nlls = []

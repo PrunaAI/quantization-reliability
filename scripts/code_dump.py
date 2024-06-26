@@ -167,3 +167,9 @@ print(tokenizer.decode(argmax_indices[0][0:25], skip_special_tokens=True))
         # print(f"Input: {tokenizer.decode(input_ids[0][-20:], skip_special_tokens=True)}")
         # print(f"Target: {tokenizer.decode(target_ids[0][-20:], skip_special_tokens=True)}")
         # print(f"Prediction: {tokenizer.decode(argmax_indices[0][-20:], skip_special_tokens=True)}")
+
+print(wikitext_data_module.val_dataset["text"][:100])
+print(wikitext_dataloader.dataset.dataset["text"][:100])
+
+print(len(wikitext_data_module.val_dataset["text"]))
+print(len(wikitext_dataloader.dataset.dataset["text"]))

@@ -135,6 +135,7 @@ def run_quantize(
     calib_dataloader = get_data_loader_from_split(calib_data_module, calib_dataset_split)
     
     eval_tokenizer = eval_data_module.tokenizer
+    eval_dataloader = get_data_loader_from_split(eval_data_module, eval_dataset_split)
 
     ################################
     ## Update quantize parameters ##
@@ -165,7 +166,7 @@ def run_quantize(
     results = evaluate(
         model=quantized_model,
         eval_tokenizer=eval_tokenizer,
-        eval_data_module=eval_data_module,
+        eval_dataloader=eval_dataloader,
         eval_metrics=eval_metrics,
         stride=stride,
         factor=100,
