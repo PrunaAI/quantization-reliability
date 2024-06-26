@@ -2,7 +2,7 @@ import os
 from transformers import AutoTokenizer
 from awq import AutoAWQForCausalLM
 from src import MODEL_SAVE_PATH
-from src.models.utils_llm import calculate_model_size
+from src.evaluations.evaluate_memory import evaluate_model_size
 
 awq_config = {
   "zero_point": True,
@@ -49,9 +49,9 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
     print(f'Model is quantized and saved at "{awq_model_path}"')
     
     # Calculate model size and GPU utilization
-    calculate_model_size(awq_model_path)
-    from src.models.utils_llm import print_gpu_utilization
-    print_gpu_utilization()
+    # calculate_model_size(awq_model_path)
+    # from src.models.utils_llm import print_gpu_utilization
+    # print_gpu_utilization()
 
     if save_model:
         save_dir = save_path if save_path else awq_model_path
