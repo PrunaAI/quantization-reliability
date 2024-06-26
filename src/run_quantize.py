@@ -171,6 +171,7 @@ def run_quantize(
         stride=stride,
         factor=100,
         device=device,
+        to_device=(quantize_method in ["AWQ"]),
         prefix="",
     )
 

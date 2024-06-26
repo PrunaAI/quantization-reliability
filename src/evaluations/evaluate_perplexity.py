@@ -18,7 +18,7 @@ def evaluate_perplexity(model, tokenizer, dataloader, max_length=None, stride=51
         end_loc = min(begin_loc + max_length, seq_len)
         trg_len = end_loc - prev_end_loc  # may be different from stride on last loop
         input_ids = encodings.input_ids[:, begin_loc:end_loc].to(device)
-        target_ids = input_ids.clone()
+        target_ids = input_ids.clone().to(device)
         target_ids[:, :-trg_len] = -100
 
         with torch.no_grad():
