@@ -40,7 +40,7 @@ from seml.experiment import Experiment
 import seml
 
 from src.models import get_model
-from src.data import get_dataset
+from src.data import get_data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
 from src.data import data_loader_map
@@ -131,7 +131,7 @@ def run_quantize(
     )
     
     calib_tokenizer = calib_data_module.tokenizer
-    calib_dataloader = data_loader_map(calib_data_module)[calib_dataset_split]
+    calib_dataloader = get_data_loader_from_split(calib_data_module, calib_dataset_split)
     
     eval_tokenizer = eval_data_module.tokenizer
 

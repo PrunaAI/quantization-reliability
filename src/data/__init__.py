@@ -1,5 +1,7 @@
 import re
 
+from pytorch_lightning.utilities.exceptions import MisconfigurationException
+
 from src.data.PolyglotDataModule import PolyglotDataModule
 from src.data.WikiTextDataModule import WikiTextDataModule
 from src.data.OpenAssistantDataModule import OpenAssistantDataModule
@@ -40,11 +42,17 @@ base_datasets = {
     ),
 }
 
-data_loader_map = lambda data_module: {
-    "train": data_module.train_dataloader(),
-    "val": data_module.val_dataloader(),
-    "test": data_module.test_dataloader()
-}
+def get_data_loader_from_split(data_module, split):
+    data_loader_map = {
+        "train": data_module.train_dataloader(),
+        "validation": data_module.val_dataloader(),
+        "test": data_module.test_dataloader()
+    }
+    try:
+        return data_loader_map[split]
+    except MisconfigurationException as e:
+        print(f"Split {split} is not in {data_loader_map.keys()} for data module {data_module}. Returning validation data loader.")
+        return data_loader_map["validation"]
 
 def get_dataset(dataset_name, directory_dataset, batch_size=1, sequence_length=512, seed=123, tokenizer_name=None, **kwargs):
     # Get dataset
