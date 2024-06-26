@@ -26,6 +26,7 @@ fixed:
   seed_model: 123
   seed_dataset: 123
   batch_size: 1
+  stride: 512
   eval_metrics:
     - 'perplexity'
     - 'brier_score'

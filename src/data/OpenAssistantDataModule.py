@@ -30,6 +30,7 @@ class OpenAssistantDataModule(LightningDataModule):
         self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
         self.sequence_length = sequence_length
+        self.splits = ["train", "validation"]
         self.prepare_data()
 
     def prepare_data(self):

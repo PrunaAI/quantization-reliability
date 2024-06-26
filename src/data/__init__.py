@@ -43,16 +43,15 @@ base_datasets = {
 }
 
 def get_data_loader_from_split(data_module, split):
-    data_loader_map = {
-        "train": data_module.train_dataloader(),
-        "validation": data_module.val_dataloader(),
-        "test": data_module.test_dataloader()
-    }
-    try:
-        return data_loader_map[split]
-    except MisconfigurationException as e:
-        print(f"Split {split} is not in {data_loader_map.keys()} for data module {data_module}. Returning validation data loader.")
-        return data_loader_map["validation"]
+    if split not in data_module.splits:
+        print(f"Split {split} is not in {data_module.splits} for data module {data_module}. Returning validation data loader.")
+        split = "validation"
+        
+    if split == "train":
+        return data_module.train_dataloader()
+    if split == "validation":
+        return data_module.val_dataloader()
+    return data_module.test_dataloader()
 
 def get_dataset(dataset_name, directory_dataset, batch_size=1, sequence_length=512, seed=123, tokenizer_name=None, **kwargs):
     # Get dataset
