@@ -28,7 +28,7 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
         "version": quantize_config.get("version", "GEMM")
     }
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
+    awq_tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, device_map=device)
     awq_model = AutoAWQForCausalLM.from_pretrained(
         model_name,
         device_map=device
@@ -43,7 +43,6 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
     awq_model_name = f"{model_name.split('/')[1]}-awq"
     awq_model_path = os.path.join(MODEL_SAVE_PATH, awq_model_name)
     os.makedirs(awq_model_path, exist_ok=True)
-    awq_model.save_quantized(awq_model_path)
     awq_model.NAME = awq_model_name
     
     print(f'Model is quantized and saved at "{awq_model_path}"')
@@ -55,6 +54,7 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
 
     if save_model:
         save_dir = save_path if save_path else awq_model_path
-        awq_model.save_pretrained(save_dir)
+        awq_model.save_quantized(save_dir)
+        awq_tokenizer.save_pretrained(save_dir)
 
-    return awq_model, tokenizer
+    return awq_model, awq_tokenizer
