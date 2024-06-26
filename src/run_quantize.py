@@ -39,7 +39,7 @@ importlib.reload(src)
 from seml.experiment import Experiment
 import seml
 
-from src.models import get_model
+from src.models import get_model, get_model_name
 from src.data import get_data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
@@ -102,8 +102,9 @@ def run_quantize(
     ## Load model ##
     ################
     logger.info("Load base model")
+    model_full_name = get_model_name[model_name]
     model, tokenizer = get_model(
-        model_name=model_name,
+        model_name=model_full_name,
         seed=seed_model,
         directory_model=directory_model,
         device=device,
@@ -118,7 +119,7 @@ def run_quantize(
         directory_dataset=directory_dataset,
         batch_size=batch_size,
         sequence_length=stride,
-        tokenizer_name=model_name,
+        tokenizer_name=model_full_name,
         seed=seed_dataset,
     )
     eval_data_module = get_dataset(
@@ -126,7 +127,7 @@ def run_quantize(
         directory_dataset=directory_dataset,
         batch_size=batch_size,
         sequence_length=stride,
-        tokenizer_name=model_name,
+        tokenizer_name=model_full_name,
         seed=seed_dataset,
     )
     
@@ -179,7 +180,7 @@ def run_quantize(
     if clean_cache:
         for root, dirs, files in os.walk(CACHE_PATH, topdown=False):
             for dir_name in dirs:
-                pattern = re.compile(f"^.*{model_name.split('/')[-1]}.*")
+                pattern = re.compile(f"^.*{model_full_name.split('/')[-1]}.*")
                 dir_path = os.path.join(root, dir_name)
                 if re.match(pattern, dir_path):
                     try:

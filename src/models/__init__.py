@@ -11,15 +11,12 @@ base_models = {
 
 def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):
     torch.manual_seed(seed)
-    if model_name in base_models:
-        model_name_full = base_models[model_name]
+    if model_name is not None:
         # Load model and tokenizer
-        tokenizer = AutoTokenizer.from_pretrained(model_name_full, cache_dir=cache_dir)
-        model = AutoModelForCausalLM.from_pretrained(model_name_full, cache_dir=cache_dir)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
+        model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=cache_dir)
         model.to(device)
-    elif isinstance(model_name, str):
-        raise NotImplementedError(f"Model {model_name} is not yet supported")
-    elif model_name is None and directory_model:
+    elif model_name is None and directory_model is not None:
         # Load model from local directory
         try:
             tokenizer = AutoTokenizer.from_pretrained(directory_model)
@@ -32,3 +29,10 @@ def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, d
         raise ValueError("Please specify either model_name or directory_model")
     
     return model, tokenizer
+
+def get_model_name(model_name):
+    try:
+        return base_models[model_name]
+    except KeyError:
+        raise NotImplementedError(f"Model {model_name} is not spelled correctly or not yet supported")
+    
