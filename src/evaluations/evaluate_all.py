@@ -14,6 +14,7 @@ def evaluate(
     eval_data_module,
     eval_metrics,
     stride=512,
+    factor=100,
     device="cuda",
     prefix="",
 ) -> Dict:
@@ -35,7 +36,7 @@ def evaluate(
             tokenizer=eval_tokenizer,
             data_module=eval_data_module,
             stride=stride,
-            factor=100,
+            factor=factor,
             device=device
         )
     if "brier_score" in eval_metrics:
@@ -45,7 +46,7 @@ def evaluate(
             tokenizer=eval_tokenizer,
             data_module=eval_data_module,
             stride=stride,
-            factor=100,
+            factor=factor,
             device=device
         )
     return results
