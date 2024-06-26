@@ -43,7 +43,6 @@ from src.models import get_model, get_model_name
 from src.data import get_data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
-from src.data import data_loader_map
 
 # Set the SEML experiment
 ex = Experiment(save_git_info=False)
