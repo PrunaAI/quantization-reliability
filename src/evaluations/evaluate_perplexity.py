@@ -2,8 +2,6 @@ import torch
 import tqdm
 
 def evaluate_perplexity(model, tokenizer, dataloader, max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
-    model.eval()
-    
     if max_length is None:
         max_length = tokenizer.model_max_length
     if to_device:

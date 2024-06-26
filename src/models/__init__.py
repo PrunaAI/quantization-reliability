@@ -16,11 +16,13 @@ def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, d
         tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
         model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=cache_dir)
         model.to(device)
+        model.NAME = model_name
     elif model_name is None and directory_model is not None:
         # Load model from local directory
         try:
             tokenizer = AutoTokenizer.from_pretrained(directory_model)
             model = AutoModelForCausalLM.from_pretrained(directory_model)
+            model.NAME = model_name
         except (OSError, HTTPError) as e:
             print(f"Error loading model from directory: {directory_model}")
             print(f"Error message: {e}")

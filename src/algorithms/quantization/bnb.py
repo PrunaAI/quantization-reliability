@@ -45,6 +45,8 @@ def quantize_bnb(model_name, quantize_config, save_model=False, save_path="", de
     bnb_model_name = f"{model_name.split('/')[1]}-bnb-{quantize_config['num_bits']}bit"
     bnb_model_path = os.path.join(MODEL_SAVE_PATH, bnb_model_name)
     os.makedirs(bnb_model_path, exist_ok=True)
+    bnb_model.PATH = bnb_model_path
+    
     accelerator = Accelerator()
     accelerator.save_model(bnb_model, bnb_model_path)
     bnb_model.NAME = bnb_model_name

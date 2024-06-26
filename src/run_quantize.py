@@ -25,6 +25,24 @@ torch.hub.set_dir(CACHE_PATH)
 import logging
 logger = logging.getLogger("quant_logger")
 
+# Empty the cache
+import torch
+with torch.no_grad():
+    torch.cuda.empty_cache()
+    
+# HuggingFace authentication
+import os
+from dotenv import load_dotenv
+from huggingface_hub import login
+
+load_dotenv()
+huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
+if huggingface_token is None:
+    raise ValueError("Please set the HUGGINGFACE_TOKEN environment variable.")
+else:
+    print("Hugging Face token loaded successfully.")
+login(token=huggingface_token)
+
 #os.chdir('..')
 print("Current Working Directory " , os.getcwd())
 import sys
@@ -75,6 +93,8 @@ def run_quantize(
     # Evaluation metrics
     eval_metrics=[
         "perplexity",
+        "model_size",
+        "gpu_utilization"
     ],
     device="cuda",
     save_quantized_model=False,
@@ -171,7 +191,7 @@ def run_quantize(
         factor=100,
         device=device,
         to_device=(quantize_method in ["AWQ"]),
-        prefix="",
+        prefix=f"{model_name}_",
     )
 
     ####################

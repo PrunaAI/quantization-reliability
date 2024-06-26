@@ -30,6 +30,8 @@ fixed:
   eval_metrics:
     - 'perplexity'
     - 'brier_score'
+    - 'model_size'
+    - 'gpu_utilization'
   calib_dataset_split:
     - 'validation'
   eval_dataset_split:
