@@ -25,8 +25,10 @@ fixed:
   save_quantized_model: True
   seed_model: 123
   seed_dataset: 123
+  batch_size: 1
   eval_metrics:
     - 'perplexity'
+    - 'brier_score'
   calib_dataset_split:
     - 'validation'
   eval_dataset_split:
@@ -70,17 +72,17 @@ grid:
   model_name:
     type: choice
     options:
-      - 'TinyLlama'
+      - 'Llama-3-8B'
 
   # weight_name:
   #   type: choice
   #   options:
   #     - 'DEFAULT'
 
-random:
-  samples: 2
-  seed: 12345
-  batch_size:
-    type: uniform
-    min: 1
-    max: 4
+# random:
+#   samples: 2
+#   seed: 12345
+#   batch_size:
+#     type: uniform
+#     min: 1
+#     max: 4

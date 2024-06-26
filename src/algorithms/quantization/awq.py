@@ -44,7 +44,6 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
     awq_model_path = os.path.join(MODEL_SAVE_PATH, awq_model_name)
     os.makedirs(awq_model_path, exist_ok=True)
     awq_model.save_quantized(awq_model_path)
-    awq_model.tokenizer.save_pretrained(awq_model_path)
     awq_model.NAME = awq_model_name
     
     print(f'Model is quantized and saved at "{awq_model_path}"')
