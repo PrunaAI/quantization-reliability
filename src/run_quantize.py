@@ -47,7 +47,7 @@ from dotenv import load_dotenv
 from huggingface_hub import login
 
 load_dotenv()
-logging.info(f"Looking in {os.path.join(os.getcwd(), '.env')}")
+# logging.info(f"Looking in {os.path.join(os.getcwd(), '.env')}")
 huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
 if huggingface_token is None:
     raise ValueError("Please set the HUGGINGFACE_TOKEN environment variable.")
