@@ -29,22 +29,9 @@ logger = logging.getLogger("quant_logger")
 import torch
 with torch.no_grad():
     torch.cuda.empty_cache()
-    
-# HuggingFace authentication
-import os
-from dotenv import load_dotenv
-from huggingface_hub import login
-
-load_dotenv()
-huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
-if huggingface_token is None:
-    raise ValueError("Please set the HUGGINGFACE_TOKEN environment variable.")
-else:
-    print("Hugging Face token loaded successfully.")
-login(token=huggingface_token)
 
 #os.chdir('..')
-print("Current Working Directory " , os.getcwd())
+logging.info("Current Working Directory " , os.getcwd())
 import sys
 sys.path.append("../") # Add directory containing src/data to path
 
@@ -53,6 +40,19 @@ import src  # Assuming src is the package name
 
 # Reload the src module after making changes
 importlib.reload(src)
+
+# HuggingFace authentication
+import os
+from dotenv import load_dotenv
+from huggingface_hub import login
+
+load_dotenv()
+huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
+if huggingface_token is None:
+    raise ValueError(f"Please set the HUGGINGFACE_TOKEN environment variable. Currently looking in {os.path.join(os.getcwd(), ".env")}")
+else:
+    logging.info("Hugging Face token loaded successfully.")
+login(token=huggingface_token)
 
 from seml.experiment import Experiment
 import seml
