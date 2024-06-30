@@ -7,12 +7,12 @@ quantize_config_map = {
 }
 
 # Wrapper class for quantization
-def quantize(model_name, calib_tokenizer, calib_dataloader, quantize_method, quantize_config=None, save_model=False, save_path="", device="cuda"):    
+def quantize(model_name, tokenizer, calib_dataloader, quantize_method, quantize_config=None, save_model=False, save_path="", device="cuda"):    
     if quantize_config is None:
         quantize_config = quantize_config_map[quantize_method]
         
     if quantize_method == "BNB":
-        model, tokenizer = quantize_bnb(
+        model = quantize_bnb(
             model_name=model_name,
             quantize_config=quantize_config,
             save_model=save_model,
@@ -20,9 +20,9 @@ def quantize(model_name, calib_tokenizer, calib_dataloader, quantize_method, qua
             device=device
         )
     elif quantize_method == "AWQ":
-        model, tokenizer = quantize_awq(
+        model = quantize_awq(
             model_name=model_name,
-            calib_tokenizer=calib_tokenizer,
+            tokenizer=tokenizer,
             calib_dataloader=calib_dataloader,
             quantize_config=quantize_config,
             save_model=save_model,
@@ -32,4 +32,4 @@ def quantize(model_name, calib_tokenizer, calib_dataloader, quantize_method, qua
     else:
         raise NotImplementedError(f"Quantization method {quantize_method} not yet implemented.")
 
-    return model, tokenizer
+    return model

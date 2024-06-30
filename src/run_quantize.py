@@ -6,15 +6,12 @@ import tempfile
 
 # To avoid the following problem when running seml (see https://github.com/pytorch/pytorch/issues/37377)
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
-if re.match(".*username.*", os.getcwd()):
-    CACHE_PATH = "~/.cache/"
-else:
-    CACHE_PATH = "/tmp/"
+CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
+
 os.environ["TORCH_HOME"] = CACHE_PATH
 os.environ["HF_HOME"] = CACHE_PATH
 os.environ["HUGGINGFACE_HUB_CACHE"] = CACHE_PATH
 os.environ["HUGGINGFACE_ASSETS_CACHE"] = CACHE_PATH
-os.environ["TRANSFORMERS_CACHE"] = CACHE_PATH
 
 import time
 import random
@@ -59,7 +56,7 @@ from seml.experiment import Experiment
 import seml
 
 from src.models import get_model, get_model_name
-from src.data import get_data_loader_from_split, get_dataset
+from src.data import data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
 
@@ -94,6 +91,7 @@ def run_quantize(
     # Evaluation metrics
     eval_metrics=[
         "perplexity",
+        "brier_score",
         "model_size",
         "gpu_utilization"
     ],
@@ -151,11 +149,8 @@ def run_quantize(
         seed=seed_dataset,
     )
     
-    calib_tokenizer = calib_data_module.tokenizer
-    calib_dataloader = get_data_loader_from_split(calib_data_module, calib_dataset_split)
-    
-    eval_tokenizer = eval_data_module.tokenizer
-    eval_dataloader = get_data_loader_from_split(eval_data_module, eval_dataset_split)
+    calib_dataloader = data_loader_from_split(calib_data_module)[calib_dataset_split]
+    eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
 
     ################################
     ## Update quantize parameters ##
@@ -168,9 +163,9 @@ def run_quantize(
     ## Quantize ##
     ##############
     logger.info("Quantization")
-    quantized_model, quantized_tokenizer = quantize(
+    quantized_model = quantize(
         model_name=model_full_name,
-        calib_tokenizer=calib_tokenizer,
+        tokenizer=tokenizer,
         calib_dataloader=calib_dataloader,
         quantize_method=quantize_method,
         quantize_config=quantize_params,
@@ -185,7 +180,7 @@ def run_quantize(
     logger.info("Evaluating the quantized models")
     results = evaluate(
         model=quantized_model,
-        eval_tokenizer=eval_tokenizer,
+        tokenizer=tokenizer,
         eval_dataloader=eval_dataloader,
         eval_metrics=eval_metrics,
         stride=stride,

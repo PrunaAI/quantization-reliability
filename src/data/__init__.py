@@ -42,16 +42,11 @@ base_datasets = {
     ),
 }
 
-def get_data_loader_from_split(data_module, split):
-    if split not in data_module.splits:
-        print(f"Split {split} is not in {data_module.splits} for data module {data_module}. Returning validation data loader.")
-        split = "validation"
-        
-    if split == "train":
-        return data_module.train_dataloader()
-    if split == "validation":
-        return data_module.val_dataloader()
-    return data_module.test_dataloader()
+data_loader_from_split = lambda data_module: {
+    "train": data_module.train_dataloader(),
+    "validation": data_module.val_dataloader(),
+    "test": data_module.test_dataloader()
+}
 
 def get_dataset(dataset_name, directory_dataset, batch_size=1, sequence_length=512, seed=123, tokenizer_name=None, **kwargs):
     # Get dataset

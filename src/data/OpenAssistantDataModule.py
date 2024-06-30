@@ -31,13 +31,13 @@ class OpenAssistantDataModule(LightningDataModule):
         self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
         self.sequence_length = sequence_length
-        self.splits = ["train", "validation"]
         self.prepare_data()
 
     def prepare_data(self):
         # Load train, val, and test datasets
-        self.train_dataset = load_dataset("OpenAssistant/oasst1", split="train")
+        self.train_dataset = load_dataset("OpenAssistant/oasst1", split="train[:95%]")
         self.val_dataset = load_dataset("OpenAssistant/oasst1", split="validation")
+        self.test_dataset = load_dataset("OpenAssistant/oasst1", split="train[95%:]")
 
     def train_dataloader(self, batch_size=None, sequence_length=None):
         if batch_size is None:
@@ -60,3 +60,14 @@ class OpenAssistantDataModule(LightningDataModule):
         dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length)
         val_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         return val_dataloader
+    
+    def test_dataloader(self, batch_size=None, sequence_length=None):
+        if batch_size is None:
+            batch_size = self.batch_size
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        else:
+            sequence_length = min(self.sequence_length, sequence_length)
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length)
+        test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+        return test_dataloader

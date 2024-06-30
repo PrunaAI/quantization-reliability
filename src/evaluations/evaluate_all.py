@@ -3,14 +3,14 @@ import logging
 
 import torch
 from src.evaluations.evaluate_brier_score import evaluate_brier_score
-from src.evaluations.evaluate_memory import evaluate_gpu_utilization, evaluate_model_size
+from src.evaluations.evaluate_memory import evaluate_gpu_utilization, evaluate_model_size, evaluate_quantize_runtime
 from src.evaluations.evaluate_perplexity import evaluate_perplexity
 
 logger = logging.getLogger("quant_logger")
 
 def evaluate(
     model,
-    eval_tokenizer,
+    tokenizer,
     eval_dataloader,
     eval_metrics,
     stride=512,
@@ -34,7 +34,7 @@ def evaluate(
         logger.info("Evaluate Perplexity")
         results[f"{prefix}perplexity"] = evaluate_perplexity(
             model=model,
-            tokenizer=eval_tokenizer,
+            tokenizer=tokenizer,
             dataloader=eval_dataloader,
             stride=stride,
             factor=factor,
@@ -45,7 +45,7 @@ def evaluate(
         logger.info("Evaluate Brier Score")
         results[f"{prefix}brier_score"] = evaluate_brier_score(
             model=model,
-            tokenizer=eval_tokenizer,
+            tokenizer=tokenizer,
             dataloader=eval_dataloader,
             stride=stride,
             factor=factor,
@@ -60,4 +60,7 @@ def evaluate(
     if "gpu_utilization" in eval_metrics:
         logger.info("Evaluate GPU Utilization")
         results[f"{prefix}gpu_utilization"] = evaluate_gpu_utilization()
+    if "quantize_runtime" in eval_metrics:
+        logger.info("Evaluate Quantize Runtime")
+        results[f"{prefix}quantize_runtime"] = evaluate_quantize_runtime(model)
     return results

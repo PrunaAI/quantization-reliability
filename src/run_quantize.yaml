@@ -23,6 +23,7 @@ fixed:
   device: 'cuda'
   clean_cache: True
   save_quantized_model: True
+  quantized_model_save_path: "nfs/students/daro/models"
   seed_model: 123
   seed_dataset: 123
   batch_size: 1
@@ -30,8 +31,6 @@ fixed:
   eval_metrics:
     - 'perplexity'
     - 'brier_score'
-    - 'model_size'
-    - 'gpu_utilization'
   calib_dataset_split:
     - 'validation'
   eval_dataset_split:

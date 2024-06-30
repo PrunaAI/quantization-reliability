@@ -1,6 +1,7 @@
 import os
+import time
 import torch
-from transformers import AutoModelForCausalLM, BitsAndBytesConfig, AutoTokenizer
+from transformers import AutoModelForCausalLM, BitsAndBytesConfig
 from accelerate import Accelerator
 from src import MODEL_SAVE_PATH
 from src.evaluations.evaluate_memory import evaluate_model_size
@@ -34,13 +35,16 @@ def quantize_bnb(model_name, quantize_config, save_model=False, save_path="", de
             bnb_4bit_quant_type=quantize_config["bnb_4bit_quant_type"] if quantize_config["num_bits"] == 4 else None,
             bnb_4bit_use_double_quant=quantize_config["bnb_4bit_use_double_quant"] if quantize_config["num_bits"] == 4 else None,
         )
-    tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
+    
+    start_time = time.time()
     bnb_model = AutoModelForCausalLM.from_pretrained(
         model_name, 
         quantization_config=bnb_config, 
         torch_dtype=torch.float32,
         device_map=device
     )
+    end_time = time.time()  # End time measurement
+    bnb_model.QUANT_TIME = end_time - start_time
 
     bnb_model_name = f"{model_name.split('/')[1]}-bnb-{quantize_config['num_bits']}bit"
     bnb_model_path = os.path.join(MODEL_SAVE_PATH, bnb_model_name)
@@ -62,4 +66,4 @@ def quantize_bnb(model_name, quantize_config, save_model=False, save_path="", de
         save_dir = save_path if save_path else bnb_model_path
         bnb_model.save_pretrained(save_dir)
 
-    return bnb_model, tokenizer
+    return bnb_model

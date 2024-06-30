@@ -173,3 +173,32 @@ print(wikitext_dataloader.dataset.dataset["text"][:100])
 
 print(len(wikitext_data_module.val_dataset["text"]))
 print(len(wikitext_dataloader.dataset.dataset["text"]))
+
+wikitext_dataset = []
+
+# Loop through each batch in the dataloader
+for batch in wikitext_dataloader:
+  # Assuming the batch contains input_ids (tokenized text) and labels
+  input_ids, labels = batch
+  
+  # Decode the input IDs back to text using the tokenizer
+  decoded_text = wikitext_data_module.tokenizer.decode(input_ids[0].tolist())  # Assuming first element in batch
+  wikitext_dataset.append(decoded_text)
+  
+print(f"Sample texts from train dataloader: {wikitext_dataset[1][:1000]}")
+print(f"Type: {type(wikitext_dataset)}, Length: {len(wikitext_dataset)}")
+
+oasst_dataset = []
+
+# Loop through each batch in the dataloader
+for batch in oasst_dataloader:
+  # Assuming the batch contains input_ids (tokenized text) and labels
+  input_ids, labels = batch
+  
+  # Decode the input IDs back to text using the tokenizer
+  decoded_text = oasst_data_module.tokenizer.decode(input_ids[0].tolist())  # Assuming first element in batch
+  oasst_dataset.append(decoded_text)
+  
+print(f"Sample texts from train dataloader: {oasst_dataset[1][:1000]}")
+print(f"Type: {type(oasst_dataset)}, Length: {len(oasst_dataset)}")
+

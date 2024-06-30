@@ -9,7 +9,7 @@ from datasets import load_dataset
 #  This is not ideal since sometimes sentences might switch from a topic to another.
 #  However, it was done similarly on Wanda and SparseGPT code.
 class TextDataset(Dataset):
-    def __init__(self, dataset, tokenizer, sequence_length=2048):
+    def __init__(self, dataset, tokenizer, sequence_length=2048, stride=512):
         self.tokenizer = tokenizer
         self.dataset=dataset
         self.texts = dataset["text"]
@@ -17,13 +17,14 @@ class TextDataset(Dataset):
         self.data = tokenized_dataset.input_ids[0, :-1]
         self.labels = tokenized_dataset.input_ids[0]
         self.sequence_length = sequence_length
+        self.stride = stride
 
     def __len__(self):
         return len(self.data) // self.sequence_length
 
     def __getitem__(self, index):
-        start_index = index * self.sequence_length
-        end_index = (index + 1) * self.sequence_length
+        start_index = index * self.stride
+        end_index = start_index + self.sequence_length
         return self.data[start_index:end_index], self.labels[start_index + 1 : end_index + 1]
 
 
@@ -47,13 +48,13 @@ class TextDataset(Dataset):
 
 
 class WikiTextDataModule(LightningDataModule):
-    def __init__(self, directory_dataset=os.getcwd(), batch_size=64, sequence_length=2048, tokenizer_name=None, seed=1):
+    def __init__(self, directory_dataset=os.getcwd(), batch_size=64, sequence_length=2048, stride=512, tokenizer_name=None, seed=1):
         super().__init__()
         self.directory_dataset = directory_dataset
         self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
         self.sequence_length = sequence_length
-        self.splits = ["train", "validation", "test"]
+        self.stride = stride
         self.prepare_data()
 
     def prepare_data(self):
@@ -62,35 +63,41 @@ class WikiTextDataModule(LightningDataModule):
         self.val_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="validation")
         self.test_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
 
-    def train_dataloader(self, batch_size=None, sequence_length=None):
+    def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
             batch_size = self.batch_size
         if sequence_length is None:
             sequence_length = self.sequence_length
         else:
             sequence_length = min(self.sequence_length, sequence_length)
-        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length)
+        if stride is None:
+            stride = self.stride
+        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length, stride=stride)
         train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         return train_dataloader
 
-    def val_dataloader(self, batch_size=None, sequence_length=None):
+    def val_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
             batch_size = self.batch_size
         if sequence_length is None:
             sequence_length = self.sequence_length
         else:
             sequence_length = min(self.sequence_length, sequence_length)
-        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length)
+        if stride is None:
+            stride = self.stride
+        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length, stride=stride)
         val_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         return val_dataloader
 
-    def test_dataloader(self, batch_size=None, sequence_length=None):
+    def test_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
             batch_size = self.batch_size
         if sequence_length is None:
             sequence_length = self.sequence_length
         else:
             sequence_length = min(self.sequence_length, sequence_length)
-        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length)
+        if stride is None:
+            stride = self.stride
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, sequence_length=sequence_length, stride=stride)
         test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         return test_dataloader

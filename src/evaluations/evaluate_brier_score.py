@@ -2,6 +2,27 @@ import torch
 import tqdm
 import torch.nn.functional as F
 
+def evaluate_brier_score(model, dataloader, device="cuda"):
+    if isinstance(model, torch.nn.Module):
+        model.eval()
+
+    model.to(device)
+
+    metric = torchmetrics.text.Perplexity(ignore_index=-100).to(device)  # -100 is the padding token.
+
+    for i, (x, y) in enumerate(dataloader):
+        x, y = x.to(device), y.to(device)
+        logits = model(x).logits
+
+        # Metric on current batch
+        brier_score = (y-logits) ** 2 #TODO
+
+    # Metric on all batches using custom accumulation
+    perplexity = metric.compute()
+
+    torch.cuda.empty_cache()
+    return perplexity.item()
+
 def evaluate_brier_score(model, tokenizer, dataloader, max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
     if max_length is None:
         max_length = tokenizer.model_max_length

@@ -2,29 +2,11 @@ from src.evaluations.evaluate_perplexity import (
     evaluate_perplexity
 )
 
+# Evaluating reliability
 evaluate_metrics = {
     "perplexity": evaluate_perplexity,
-    # "memory_disk_first": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="disk"),
-    # "memory_disk": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="disk"),
-    # "memory_inference_first": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="inference"),
-    # "memory_inference": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="inference"),
-    # "memory_training": lambda *args, **kwargs: evaluate_gpu_memory(*args, **kwargs, mode="training"),
-    # "token_generation_latency_sync": evaluate_token_generation_latency,
-    # "token_generation_latency_async": evaluate_token_generation_latency,
-    # "token_generation_throughput_sync": evaluate_token_generation_throughput,
-    # "token_generation_throughput_async": evaluate_token_generation_throughput,
-    # "token_generation_CO2_emissions": evaluate_token_generation_CO2_emissions,
-    # "token_generation_energy_consumption": evaluate_token_generation_energy_consumption,
-    # "inference_latency_sync": evaluate_inference_latency,
-    # "inference_latency_async": evaluate_inference_latency,
-    # "inference_throughput_sync": evaluate_inference_throughput,
-    # "inference_throughput_async": evaluate_inference_throughput,
-    # "gpu_money_cost": evaluate_gpu_money_cost,
-    # "inference_CO2_emissions": evaluate_inference_CO2_emissions,
-    # "inference_energy_consumption": evaluate_inference_energy_consumption,
-    # "inference_flops": evaluate_inference_macs,
-    # "inference_deviation_bleu": evaluate_deviation_bleu,
-    # "inference_deviation_norm": evaluate_deviation_norm,
+    "brier_score": evaluate_brier_score,
+    # TODO: new metrics for reliability
 }
 
 name_metrics = {

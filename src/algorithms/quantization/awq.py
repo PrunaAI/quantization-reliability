@@ -1,5 +1,5 @@
 import os
-from transformers import AutoTokenizer
+import time
 from awq import AutoAWQForCausalLM
 from src import MODEL_SAVE_PATH
 from src.evaluations.evaluate_memory import evaluate_model_size
@@ -11,14 +11,14 @@ awq_config = {
   "version": "GEMM"
 }
 
-def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config, save_model=False, save_path="", device="cuda"):
+def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config, save_model=False, save_path="", device="cuda"):
     if "num_bits" not in quantize_config or quantize_config["num_bits"] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for AWQ: {quantize_config.get('num_bits')}")
 
     calib_text = []
     for batch in calib_dataloader:
         input_ids, labels = batch
-        decoded_text = calib_tokenizer.decode(input_ids[0].tolist())
+        decoded_text = tokenizer.decode(input_ids[0].tolist())
         calib_text.append(decoded_text)
 
     awq_config = {
@@ -28,17 +28,19 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
         "version": quantize_config.get("version", "GEMM")
     }
 
-    awq_tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, device_map=device)
     awq_model = AutoAWQForCausalLM.from_pretrained(
         model_name,
         device_map=device
     )
 
+    start_time = time.time()
     awq_model.quantize(
-        tokenizer=calib_tokenizer,
+        tokenizer=tokenizer,
         quant_config=awq_config,
         calib_data=calib_text,
     )
+    end_time = time.time()  # End time measurement
+    awq_model.QUANT_TIME = end_time - start_time
 
     awq_model_name = f"{model_name.split('/')[1]}-awq"
     awq_model_path = os.path.join(MODEL_SAVE_PATH, awq_model_name)
@@ -47,15 +49,9 @@ def quantize_awq(model_name, calib_tokenizer, calib_dataloader, quantize_config,
     awq_model.NAME = awq_model_name
     
     print(f'Model is quantized and saved at "{awq_model_path}"')
-    
-    # Calculate model size and GPU utilization
-    # calculate_model_size(awq_model_path)
-    # from src.models.utils_llm import print_gpu_utilization
-    # print_gpu_utilization()
 
     if save_model:
         save_dir = save_path if save_path else awq_model_path
         awq_model.save_quantized(save_dir)
-        awq_tokenizer.save_pretrained(save_dir)
 
-    return awq_model, awq_tokenizer
+    return awq_model

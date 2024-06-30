@@ -8,32 +8,17 @@ def evaluate_gpu_utilization():
 
     # Calculate memory usage in MB
     memory_used = info.used // 1024**2
-
-    # Determine unit based on usage
     unit = "MB"
     if memory_used > 1024:
-      memory_used = memory_used / 1024  # Convert to GB
-      unit = "GB"
+        memory_used = memory_used / 1024  # Convert to GB
+        unit = "GB"
 
     # print(f"GPU memory occupied: {memory_used:.2f} {unit}.")
-    return memory_used, unit
-      
+    return f"{memory_used} {unit}"
 
 def evaluate_model_size(model_path):
-    """
-    This function calculates the total size of a model directory containing saved model files.
-
-    Args:
-        model_path (str): The path to the directory containing the model files.
-
-    Returns:
-        None: The function directly prints the total model size in human-readable format.
-    """
-
-    # Initialize total size variable
-    total_size = 0
-
     # Loop through files in the model directory
+    total_size = 0
     for filename in os.listdir(model_path):
         file_path = os.path.join(model_path, filename)
         # Check if it's a file (not a directory)
@@ -43,17 +28,18 @@ def evaluate_model_size(model_path):
 
     # Convert to human-readable format
     if total_size > 1024**3:
-        total_size_gb = total_size / (1024**3)
-        return total_size_gb, "GB"
-        # print(f"Total Model Size for {model_path}: {total_size_gb:.2f} GB")
+        total_size = total_size / (1024**3)
+        unit = "GB"
     elif total_size > 1024**2:
-        total_size_mb = total_size / (1024**2)
-        return total_size_mb, "MB"
-        # print(f"Total Model Size for {model_path}: {total_size_mb:.2f} MB")
+        total_size = total_size / (1024**2)
+        unit = "MB"
     elif total_size > 1024:
-        total_size_kb = total_size / 1024
-        return total_size_kb, "KB"
-        # print(f"Total Model Size for {model_path}: {total_size_kb:.2f} KB")
-    
-    return total_size, "B"
-    # print(f"Total Model Size for {model_path}: {total_size} bytes")  # Keep as bytes for small sizes
+        total_size = total_size / 1024
+        unit = "KB"
+    else:
+        unit = "B"
+
+    return f"{total_size} {unit}"
+
+def evaluate_quantize_runtime(model):
+    return model.QUANT_TIME
