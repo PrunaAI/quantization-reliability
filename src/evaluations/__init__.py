@@ -1,3 +1,4 @@
+from src.evaluations.evaluate_brier_score import evaluate_brier_score
 from src.evaluations.evaluate_perplexity import (
     evaluate_perplexity
 )
