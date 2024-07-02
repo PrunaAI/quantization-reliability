@@ -24,7 +24,9 @@ class TextDataset(Dataset):
 
     def __getitem__(self, index):
         start_index = index * self.stride
-        end_index = start_index + self.sequence_length
+        end_index = min(start_index + self.sequence_length, len(self.data))
+        if end_index - start_index <= 0:
+            raise IndexError("Index out of bounds")
         return self.data[start_index:end_index], self.labels[start_index + 1 : end_index + 1]
 
 

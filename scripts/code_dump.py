@@ -206,3 +206,45 @@ print(f"Type: {type(oasst_dataset)}, Length: {len(oasst_dataset)}")
 import gc
 gc.collect()
 
+import torch
+import torchmetrics
+import tqdm
+from torch.cuda.amp import autocast, GradScaler
+
+with torch.no_grad():
+    torch.cuda.empty_cache()
+
+def evaluate_perplexity_v2(model, dataloader, stride=512, max_length=None, device="cuda", to_device=False):
+    if isinstance(model, torch.nn.Module):
+        model.eval()
+        print(f"Model in evaluation mode. Device: {device}")
+    if to_device:
+        model.to(device)
+
+    metric = torchmetrics.text.Perplexity(ignore_index=-100).to(device)  # -100 is the padding token.
+    !nvidia-smi --query-gpu=memory.free --format=csv | tail -n +2 | awk -F ' ' '{print "Free GPU Memory (GB):", $1 / 1024}'
+    
+    for i, (x, y) in enumerate(dataloader):
+        print(f"Processing batch {i}")
+        x, y = x.to(device), y.to(device)
+        
+        with torch.no_grad() and autocast():
+            outputs = model(x)
+            logits = outputs.logits
+            !nvidia-smi --query-gpu=memory.free --format=csv | tail -n +2 | awk -F ' ' '{print "Free GPU Memory (GB):", $1 / 1024}'
+            
+            # Metric on current batch
+            perplexity = metric(logits.float(), y)
+            print(f"Perplexity: {perplexity:.2f}")
+            
+        del outputs, logits, perplexity
+        torch.cuda.empty_cache()
+
+    # Metric on all batches using custom accumulation
+    perplexity = metric.compute()
+    return perplexity.item()
+
+wikitext_dataloader = wikitext_data_module.val_dataloader()
+perpl = evaluate_perplexity_v2(model=model, dataloader=wikitext_dataloader, device="cuda")
+print(f"Perplexity: {perpl:.2f}")
+
