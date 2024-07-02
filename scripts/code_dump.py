@@ -202,3 +202,7 @@ for batch in oasst_dataloader:
 print(f"Sample texts from train dataloader: {oasst_dataset[1][:1000]}")
 print(f"Type: {type(oasst_dataset)}, Length: {len(oasst_dataset)}")
 
+%reset -f
+import gc
+gc.collect()
+

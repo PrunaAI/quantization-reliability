@@ -48,20 +48,25 @@ class TextDataset(Dataset):
 
 
 class WikiTextDataModule(LightningDataModule):
-    def __init__(self, directory_dataset=os.getcwd(), batch_size=64, sequence_length=2048, stride=512, tokenizer_name=None, seed=1):
+    def __init__(self, directory_dataset=os.getcwd(), batch_size=64, sequence_length=2048, stride=512, n_lines=None, tokenizer_name=None, seed=1):
         super().__init__()
         self.directory_dataset = directory_dataset
         self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
         self.sequence_length = sequence_length
         self.stride = stride
+        self.n_lines = n_lines
         self.prepare_data()
 
     def prepare_data(self):
         # Load train, val, and test datasets
-        self.train_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
-        self.val_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="validation")
-        self.test_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
+        train_split = "train" if self.n_lines is None else f"train[:{self.n_lines}]"
+        validation_split = "validation" if self.n_lines is None else f"validation[:{self.n_lines}]"
+        test_split = "test" if self.n_lines is None else f"test[:{self.n_lines}]"
+        
+        self.train_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split=train_split)
+        self.val_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split=validation_split)
+        self.test_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split=test_split)
 
     def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
