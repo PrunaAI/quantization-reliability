@@ -1,29 +1,59 @@
+import logging
 import torch
+import torchmetrics
 import tqdm
 import torch.nn.functional as F
+from torch.cuda.amp import autocast
 
-def evaluate_brier_score(model, dataloader, device="cuda"):
+logger = logging.getLogger("quant_logger")
+
+def evaluate_perplexity(model, dataloader, device="cuda", to_device=False):
+    if to_device:
+        model.to(device)
     if isinstance(model, torch.nn.Module):
         model.eval()
-
-    model.to(device)
-
-    metric = torchmetrics.text.Perplexity(ignore_index=-100).to(device)  # -100 is the padding token.
+        print(f"Model in evaluation mode. Device: {device}")
+        
+    brier_sum = 0
 
     for i, (x, y) in enumerate(dataloader):
+        print(f"Processing batch {i}")
         x, y = x.to(device), y.to(device)
-        logits = model(x).logits
+        
+        with torch.no_grad() and autocast():
+            outputs = model(x)
+            logits = outputs.logits
+            
+            # Shift logits and target_ids to the left by 1 for calculating the Brier score
+            shifted_logits = logits[:, :-1].contiguous()
+            shifted_target_ids = x[:, 1:].contiguous()
 
-        # Metric on current batch
-        brier_score = (y-logits) ** 2 #TODO
+            # Flatten the logits and target_ids for calculation
+            shifted_logits = shifted_logits.view(-1, shifted_logits.size(-1))
+            shifted_target_ids = shifted_target_ids.view(-1)
 
-    # Metric on all batches using custom accumulation
-    perplexity = metric.compute()
+            # Filter out the -100 targets
+            valid_indices = shifted_target_ids != -100
+            valid_logits = shifted_logits[valid_indices]
+            valid_target_ids = shifted_target_ids[valid_indices]
 
-    torch.cuda.empty_cache()
-    return perplexity.item()
+            # Get the probabilities
+            probs = F.softmax(valid_logits, dim=-1)
 
-def evaluate_brier_score(model, tokenizer, dataloader, max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
+            # Create one-hot target vectors
+            targets = F.one_hot(valid_target_ids, num_classes=probs.size(-1)).float()
+
+            # Calculate the Brier score
+            brier_score = torch.mean((probs - targets) ** 2)
+            print(f"Brier Score: {brier_score:.4f}")
+            brier_sum += brier_score
+
+    avg_brier_score = brier_sum / len(dataloader)
+    print(f"Final Brier Score: {avg_brier_score:.4f}")
+    
+    return avg_brier_score
+
+def evaluate_brier_score_old(model, tokenizer, dataloader, max_length=None, stride=512, factor=1, to_device=False, device="cuda"):
     if max_length is None:
         max_length = tokenizer.model_max_length
     if to_device:
