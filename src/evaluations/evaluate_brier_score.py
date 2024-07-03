@@ -7,7 +7,7 @@ from torch.cuda.amp import autocast
 
 logger = logging.getLogger("quant_logger")
 
-def evaluate_perplexity(model, dataloader, device="cuda", to_device=False):
+def evaluate_brier_score(model, dataloader, device="cuda", to_device=False):
     if to_device:
         model.to(device)
     if isinstance(model, torch.nn.Module):
