@@ -53,7 +53,7 @@ class OpenAssistantDataModule(LightningDataModule):
         self.val_dataset = load_dataset("OpenAssistant/oasst1", split=validation_split)
         self.test_dataset = load_dataset("OpenAssistant/oasst1", split=test_split)
 
-    def train_dataloader(self, batch_size=None, sequence_length=None):
+    def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
             batch_size = self.batch_size
         if sequence_length is None:
@@ -66,7 +66,7 @@ class OpenAssistantDataModule(LightningDataModule):
         train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         return train_dataloader
 
-    def val_dataloader(self, batch_size=None, sequence_length=None):
+    def val_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
             batch_size = self.batch_size
         if sequence_length is None:
@@ -79,7 +79,7 @@ class OpenAssistantDataModule(LightningDataModule):
         val_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         return val_dataloader
     
-    def test_dataloader(self, batch_size=None, sequence_length=None):
+    def test_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
             batch_size = self.batch_size
         if sequence_length is None:

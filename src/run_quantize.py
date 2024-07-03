@@ -211,6 +211,17 @@ def run_quantize(
     )
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
 
+    parameters = {
+        'model_name': model_name,
+        'calib_dataset_name': calib_dataset_name,
+        'eval_dataset_name': eval_dataset_name,
+        'quantize_method': quantize_method,
+        'quantize_params': quantize_params,
+        'batch_size': batch_size,
+        'dataset_stride': dataset_stride,
+        'dataset_seq_length': dataset_seq_length,
+    }
+    
     ####################
     ## Cleaning cache ##
     ####################
@@ -230,4 +241,4 @@ def run_quantize(
         "fail_trace": seml.evaluation.get_results,
     }
 
-    return {**results, **fail_trace}
+    return {**results, **parameters, **fail_trace}
