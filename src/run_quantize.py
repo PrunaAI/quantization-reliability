@@ -6,7 +6,6 @@ import tempfile
 
 import logging
 
-from src.evaluations.evaluate_memory import record_gpu_memory
 logger = logging.getLogger("quant_logger")
 
 logger.info("Setting up cache paths...")
@@ -61,10 +60,6 @@ else:
     logging.info("Hugging Face token loaded successfully.")
 login(token=huggingface_token)
 
-logging.info("Setting up GPU memory usage list...")
-# Global list to store GPU memory usage
-gpu_memory_usage = []
-
 from seml.experiment import Experiment
 import seml
 
@@ -72,6 +67,11 @@ from src.models import get_model, get_model_name
 from src.data import data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
+from src.evaluations.evaluate_memory import record_gpu_memory
+
+logging.info("Setting up GPU memory usage list...")
+# Global list to store GPU memory usage
+gpu_memory_usage = {}
 
 logging.info("Setting up SEML experiment...")
 

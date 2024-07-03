@@ -11,7 +11,9 @@ def quantize(model_name, tokenizer, calib_dataloader, quantize_method, quantize_
     if quantize_config is None:
         quantize_config = quantize_config_map[quantize_method]
         
-    if quantize_method == "BNB":
+    if quantize_method == "fp16":
+        model = model
+    elif quantize_method == "BNB":
         model = quantize_bnb(
             model_name=model_name,
             quantize_config=quantize_config,
