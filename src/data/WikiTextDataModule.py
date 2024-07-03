@@ -23,11 +23,15 @@ class TextDataset(Dataset):
         return len(self.data) // self.sequence_length
 
     def __getitem__(self, index):
-        start_index = index * self.stride
-        end_index = min(start_index + self.sequence_length, len(self.data))
-        if end_index - start_index <= 0:
+        start_index = max(index * self.stride + self.stride - self.sequence_length, 0)
+        end_index = start_index + self.stride
+        if end_index > len(self.data):
             raise IndexError("Index out of bounds")
-        return self.data[start_index:end_index], self.labels[start_index + 1 : end_index + 1]
+        input_ids = self.data[start_index:end_index]
+        target_ids = self.labels[start_index + 1 : end_index + 1]
+        target_ids[:-self.stride] = -100
+        
+        return input_ids, target_ids
 
 
 # TODO: This dataset look at each sentence individually as a batch sample.
