@@ -94,7 +94,8 @@ def run_quantize(
     eval_dataset_name="",
     eval_dataset_split="",
     batch_size=1,
-    stride=512,
+    dataset_stride=1024,
+    dataset_seq_length=1024,
     # Model parameters
     seed_model=123,
     directory_model="",
@@ -107,8 +108,8 @@ def run_quantize(
     eval_metrics=[
         "perplexity",
         "brier_score",
-        "model_size",
-        "gpu_utilization"
+        # "model_size",
+        # "gpu_utilization"
     ],
     device="cuda",
     save_quantized_model=False,
@@ -123,6 +124,8 @@ def run_quantize(
         f"Calibration split: {calib_dataset_split}\n"
         f"Evaluation dataset: {eval_dataset_name}\n"
         f"Evaluation split: {eval_dataset_split}\n"
+        f"Dataloader stride: {dataset_stride}\n"
+        f"Dataloader sequence length: {dataset_seq_length}\n"
         f"Batch size: {batch_size}\n"
         f"Model: {model_name}\n"
         f"Quantize method: {quantize_method}\n"
@@ -152,7 +155,7 @@ def run_quantize(
         dataset_name=calib_dataset_name,
         directory_dataset=directory_dataset,
         batch_size=batch_size,
-        sequence_length=stride,
+        sequence_length=dataset_stride,
         tokenizer_name=model_full_name,
         seed=seed_dataset,
     )
@@ -160,13 +163,14 @@ def run_quantize(
         dataset_name=eval_dataset_name,
         directory_dataset=directory_dataset,
         batch_size=batch_size,
-        sequence_length=stride,
+        sequence_length=dataset_stride,
         tokenizer_name=model_full_name,
         seed=seed_dataset,
     )
     
     calib_dataloader = data_loader_from_split(calib_data_module)[calib_dataset_split]
     eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
+    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
     ################################
     ## Update quantize parameters ##
@@ -197,10 +201,9 @@ def run_quantize(
     logger.info("Evaluating the quantized models")
     results = evaluate(
         model=quantized_model,
-        tokenizer=tokenizer,
         eval_dataloader=eval_dataloader,
         eval_metrics=eval_metrics,
-        stride=stride,
+        stride=dataset_stride,
         factor=100,
         device=device,
         to_device=(quantize_method in ["AWQ"]),

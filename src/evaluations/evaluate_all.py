@@ -10,10 +10,8 @@ logger = logging.getLogger("quant_logger")
 
 def evaluate(
     model,
-    tokenizer,
     eval_dataloader,
     eval_metrics,
-    stride=512,
     factor=100,
     device="cuda",
     to_device=False,
@@ -34,9 +32,7 @@ def evaluate(
         logger.info("Evaluate Perplexity")
         results[f"{prefix}perplexity"] = evaluate_perplexity(
             model=model,
-            tokenizer=tokenizer,
             dataloader=eval_dataloader,
-            stride=stride,
             factor=factor,
             device=device,
             to_device=to_device
@@ -45,9 +41,7 @@ def evaluate(
         logger.info("Evaluate Brier Score")
         results[f"{prefix}brier_score"] = evaluate_brier_score(
             model=model,
-            tokenizer=tokenizer,
             dataloader=eval_dataloader,
-            stride=stride,
             factor=factor,
             device=device,
             to_device=to_device
