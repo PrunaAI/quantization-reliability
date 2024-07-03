@@ -4,6 +4,13 @@ import os
 import subprocess
 import tempfile
 
+import logging
+
+from src.evaluations.evaluate_memory import record_gpu_memory
+logger = logging.getLogger("quant_logger")
+
+logger.info("Setting up cache paths...")
+
 # To avoid the following problem when running seml (see https://github.com/pytorch/pytorch/issues/37377)
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
@@ -19,13 +26,12 @@ import torch
 
 torch.hub.set_dir(CACHE_PATH)
 
-import logging
-logger = logging.getLogger("quant_logger")
-
 # Empty the cache
 import torch
 with torch.no_grad():
     torch.cuda.empty_cache()
+    
+logging.info("Setting up working directory...")
 
 #os.chdir('..')
 logging.info(f"Current Working Directory: {os.getcwd()}")
@@ -38,19 +44,26 @@ import src  # Assuming src is the package name
 # Reload the src module after making changes
 importlib.reload(src)
 
+logging.info("Setting up working directory...")
+
 # HuggingFace authentication
 import os
 from dotenv import load_dotenv
 from huggingface_hub import login
 
+logging.info("Authenticating Hugging Face...")
+
 load_dotenv()
-logging.info(f"Looking in {os.path.join(os.getcwd(), '.env')}")
 huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
 if huggingface_token is None:
     raise ValueError("Please set the HUGGINGFACE_TOKEN environment variable.")
 else:
     logging.info("Hugging Face token loaded successfully.")
 login(token=huggingface_token)
+
+logging.info("Setting up GPU memory usage list...")
+# Global list to store GPU memory usage
+gpu_memory_usage = []
 
 from seml.experiment import Experiment
 import seml
@@ -59,6 +72,8 @@ from src.models import get_model, get_model_name
 from src.data import data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
+
+logging.info("Setting up SEML experiment...")
 
 # Set the SEML experiment
 ex = Experiment(save_git_info=False)
@@ -127,6 +142,7 @@ def run_quantize(
         directory_model=directory_model,
         device=device,
     )
+    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load model")
     
     ###############
     ## Load data ##
@@ -173,6 +189,7 @@ def run_quantize(
         save_path=quantized_model_save_path,
         device=device
     )
+    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
 
     ##############
     ## Evaluate ##
@@ -189,6 +206,7 @@ def run_quantize(
         to_device=(quantize_method in ["AWQ"]),
         prefix=f"{model_name}_",
     )
+    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
 
     ####################
     ## Cleaning cache ##

@@ -1,5 +1,7 @@
 import os
 from pynvml import *
+import subprocess
+import re
 
 def evaluate_gpu_utilization():
     nvmlInit()
@@ -43,3 +45,14 @@ def evaluate_model_size(model_path):
 
 def evaluate_quantize_runtime(model):
     return model.QUANT_TIME
+
+def get_gpu_memory():
+    result = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.free', '--format=csv,nounits,noheader'])
+    return float(result.decode('utf-8').strip()) / 1024  # Convert to GB
+
+def record_gpu_memory(gpu_memory_usage, context):
+    memory = get_gpu_memory()
+    gpu_memory_usage.append((context, memory))
+    print(f"Context: {context}: Free GPU Memory (GB): {memory:.4f}")
+    
+    return gpu_memory_usage
