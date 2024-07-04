@@ -1,5 +1,5 @@
-from src.algorithms.quantization.awq import quantize_awq, awq_config
-from src.algorithms.quantization.bnb import quantize_bnb, bnb_config
+from src.algorithms.quantization.awq import quantize_awq
+from src.algorithms.quantization.bnb import quantize_bnb
 from src.algorithms.quantization.hqq import quantize_hqq
 
 # Wrapper class for quantization
