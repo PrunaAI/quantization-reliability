@@ -15,20 +15,12 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, num_bits=None, save_mo
         raise ValueError(f"Invalid num_bits for AWQ: {num_bits}")
 
     awq_config = {}
-    if num_bits == 8:
-        awq_config = {
-            "zero_point": awq_base_config["zero_point"],
-            "q_group_size": awq_base_config["q_group_size"],
-            "w_bit": 8,
-            "version": awq_base_config["version"]
-        }
-    elif num_bits == 4:
-        awq_config = {
-            "zero_point": awq_base_config["zero_point"],
-            "q_group_size": awq_base_config["q_group_size"],
-            "w_bit": 4,
-            "version": awq_base_config["version"]
-        }
+    awq_config = {
+        "zero_point": awq_base_config["zero_point"],
+        "q_group_size": awq_base_config["q_group_size"],
+        "w_bit": 4,
+        "version": awq_base_config["version"]
+    }
         
     calib_text = []
     for batch in calib_dataloader:

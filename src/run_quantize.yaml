@@ -50,10 +50,12 @@ grid:
     type: choice
     options:
       - 'validation'
+      - 'test'
 
   eval_dataset_split:
     type: choice
     options:
+      - 'validation'
       - 'test'
 
   quantize_method:
@@ -61,6 +63,7 @@ grid:
     options:
       - 'BNB'
       - 'AWQ'
+      - 'HQQ'
 
   num_bits:
     type: choice

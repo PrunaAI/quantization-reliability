@@ -200,7 +200,7 @@ def run_quantize(
         model=quantized_model,
         eval_dataloader=eval_dataloader,
         eval_metrics=eval_metrics,
-        factor=100,
+        factor=1,
         device=device,
         to_device=(quantize_method in ["AWQ"]),
         prefix="",
