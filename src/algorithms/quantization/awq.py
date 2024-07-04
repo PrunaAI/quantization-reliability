@@ -2,31 +2,39 @@ import os
 import time
 from awq import AutoAWQForCausalLM
 from src import MODEL_SAVE_PATH
-from src.evaluations.evaluate_memory import evaluate_model_size
 
-awq_config = {
-  "zero_point": True,
-  "q_group_size": 128,
-  "w_bit": 4,
-  "version": "GEMM"
+awq_base_config = {
+    "zero_point": True,
+    "q_group_size": 128,
+    "w_bit": 4,
+    "version": "GEMM"
 }
 
-def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config, save_model=False, save_path="", device="cuda"):
-    if "num_bits" not in quantize_config or quantize_config["num_bits"] not in [4, 8]:
-        raise ValueError(f"Invalid num_bits for AWQ: {quantize_config.get('num_bits')}")
+def quantize_awq(model_name, tokenizer, calib_dataloader, num_bits=None, save_model=False, save_path="", device="cuda"):
+    if num_bits is None or num_bits not in [4, 8]:
+        raise ValueError(f"Invalid num_bits for AWQ: {num_bits}")
 
+    awq_config = {}
+    if num_bits == 8:
+        awq_config = {
+            "zero_point": awq_base_config["zero_point"],
+            "q_group_size": awq_base_config["q_group_size"],
+            "w_bit": 8,
+            "version": awq_base_config["version"]
+        }
+    elif num_bits == 4:
+        awq_config = {
+            "zero_point": awq_base_config["zero_point"],
+            "q_group_size": awq_base_config["q_group_size"],
+            "w_bit": 4,
+            "version": awq_base_config["version"]
+        }
+        
     calib_text = []
     for batch in calib_dataloader:
         input_ids, labels = batch
         decoded_text = tokenizer.decode(input_ids[0].tolist())
         calib_text.append(decoded_text)
-
-    awq_config = {
-        "zero_point": quantize_config.get("zero_point", True),
-        "q_group_size": quantize_config.get("q_group_size", 128),
-        "w_bit": quantize_config.get("w_bit", 4),
-        "version": quantize_config.get("version", "GEMM")
-    }
 
     awq_model = AutoAWQForCausalLM.from_pretrained(
         model_name,
@@ -42,7 +50,7 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config, save_
     end_time = time.time()  # End time measurement
     awq_model.QUANT_TIME = end_time - start_time
 
-    awq_model_name = f"{model_name.split('/')[1]}-awq"
+    awq_model_name = f"{model_name.split('/')[1]}-awq-{num_bits}bit"
     awq_model_path = os.path.join(MODEL_SAVE_PATH, awq_model_name)
     os.makedirs(awq_model_path, exist_ok=True)
     awq_model.PATH = awq_model_path
