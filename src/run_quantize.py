@@ -200,11 +200,10 @@ def run_quantize(
         model=quantized_model,
         eval_dataloader=eval_dataloader,
         eval_metrics=eval_metrics,
-        stride=dataset_stride,
         factor=100,
         device=device,
         to_device=(quantize_method in ["AWQ"]),
-        prefix=f"{model_name}_",
+        prefix="",
     )
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
     
