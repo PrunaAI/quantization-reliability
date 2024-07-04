@@ -56,7 +56,10 @@ logging.info("Authenticating Hugging Face...")
 load_dotenv()
 huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
 if huggingface_token is None:
-    raise ValueError(f"Please set the HUGGINGFACE_TOKEN environment variable. Looking in {os.path.join(os.getcwd(), ".env")}")
+    raise ValueError(
+        f"Please set the HUGGINGFACE_TOKEN environment variable."
+        f"Looking in {os.path.join(os.getcwd(), ".env")}"
+    )
 else:
     logging.info("Hugging Face token loaded successfully.")
 login(token=huggingface_token)
