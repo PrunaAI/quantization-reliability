@@ -10,6 +10,8 @@ with torch.no_grad():
     torch.cuda.empty_cache()
 
 def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=False):
+    if to_device:
+        model.to(device)
     if isinstance(model, torch.nn.Module):
         model.eval()
         print(f"Model in evaluation mode. Device: {device}")

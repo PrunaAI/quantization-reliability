@@ -33,7 +33,6 @@ class BrierScore:
 def evaluate_brier_score(model, dataloader, factor=1, device="cuda", to_device=False):
     if to_device:
         model.to(device)
-
     if isinstance(model, torch.nn.Module):
         model.eval()
         print(f"Model in evaluation mode. Device: {device}")
