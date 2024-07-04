@@ -176,13 +176,6 @@ def run_quantize(
     eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
-    ################################
-    ## Update quantize parameters ##
-    ################################
-    logger.info("Defining quantize parameters")
-    quantize_params.update(quantize_params)
-    logger.info(f"Default parameters adjusted from {quantize_params}")
-
     ##############
     ## Quantize ##
     ##############
