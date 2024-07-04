@@ -32,10 +32,6 @@ fixed:
   eval_metrics:
     - 'perplexity'
     - 'brier_score'
-  calib_dataset_split:
-    - 'validation'
-  eval_dataset_split:
-    - 'test'
 
 grid:
   calib_dataset_name:
@@ -49,6 +45,16 @@ grid:
     options:
       - 'WikiText'
       - 'OpenAssistant'
+
+  calib_dataset_split:
+    type: choice
+    options:
+      - 'validation'
+
+  eval_dataset_split:
+    type: choice
+    options:
+      - 'test'
 
   quantize_method:
     type: choice

@@ -13,6 +13,7 @@ logger.info("Setting up cache paths...")
 # To avoid the following problem when running seml (see https://github.com/pytorch/pytorch/issues/37377)
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
+print(f"Setting cache path to {CACHE_PATH}")
 
 os.environ["TORCH_HOME"] = CACHE_PATH
 os.environ["HF_HOME"] = CACHE_PATH
@@ -55,7 +56,7 @@ logging.info("Authenticating Hugging Face...")
 load_dotenv()
 huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
 if huggingface_token is None:
-    raise ValueError("Please set the HUGGINGFACE_TOKEN environment variable.")
+    raise ValueError(f"Please set the HUGGINGFACE_TOKEN environment variable. Looking in {os.path.join(os.getcwd(), ".env")}")
 else:
     logging.info("Hugging Face token loaded successfully.")
 login(token=huggingface_token)
@@ -210,17 +211,6 @@ def run_quantize(
         prefix=f"{model_name}_",
     )
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
-
-    parameters = {
-        'model_name': model_name,
-        'calib_dataset_name': calib_dataset_name,
-        'eval_dataset_name': eval_dataset_name,
-        'quantize_method': quantize_method,
-        'quantize_params': quantize_params,
-        'batch_size': batch_size,
-        'dataset_stride': dataset_stride,
-        'dataset_seq_length': dataset_seq_length,
-    }
     
     ####################
     ## Cleaning cache ##
@@ -241,4 +231,4 @@ def run_quantize(
         "fail_trace": seml.evaluation.get_results,
     }
 
-    return {**results, **parameters, **fail_trace}
+    return {**results, **fail_trace}
