@@ -107,7 +107,7 @@ def run_quantize(
     model_name="",
     # Quantization parameters
     quantize_method="",
-    quantize_params={},
+    num_bits=8,
     # Evaluation metrics
     eval_metrics=[
         "perplexity",
@@ -133,7 +133,7 @@ def run_quantize(
         f"Batch size: {batch_size}\n"
         f"Model: {model_name}\n"
         f"Quantize method: {quantize_method}\n"
-        f"Quantize params: {quantize_params}\n"
+        f"Quantize bits: {num_bits}\n"
         f"Evaluation metrics: {eval_metrics}\n"
         f"Device: {device}\n"
     )
@@ -185,7 +185,7 @@ def run_quantize(
         tokenizer=tokenizer,
         calib_dataloader=calib_dataloader,
         quantize_method=quantize_method,
-        quantize_config=quantize_params,
+        num_bits=num_bits,
         save_model=save_quantized_model,
         save_path=quantized_model_save_path,
         device=device

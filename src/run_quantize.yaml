@@ -62,21 +62,11 @@ grid:
       - 'BNB'
       - 'AWQ'
 
-  quantize_params:
+  num_bits:
     type: choice
     options:
-      - {
-        "num_bits": 8,
-        "llm_int8_threshold": 6.0,
-        "llm_int8_enable_fp32_cpu_offload": False,
-        "llm_int8_has_fp16_weight": False
-      }
-      - {
-        "num_bits": 4,
-        "bnb_4bit_compute_dtype": torch.bfloat16,
-        "bnb_4bit_quant_type": "fp4",
-        "bnb_4bit_use_double_quant": False,
-      }
+      - 4
+      - 8
 
   model_name:
     type: choice
