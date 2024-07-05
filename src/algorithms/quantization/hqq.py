@@ -61,10 +61,11 @@ def quantize_hqq(model_name, num_bits=None, dynamic_config=False, save_model=Fal
     
     start_time = time.time()
     hqq_model = AutoModelForCausalLM.from_pretrained(
-        model_name, 
+        model_name,
         quantization_config=hqq_config, 
-        torch_dtype=torch.float16,
-        device_map=device
+        torch_dtype="auto",
+        device_map=device,
+        force_download=True
     )
     end_time = time.time()  # End time measurement
     hqq_model.QUANT_TIME = end_time - start_time

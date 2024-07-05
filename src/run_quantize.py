@@ -62,7 +62,7 @@ if huggingface_token is None:
     )
 else:
     logging.info("Hugging Face token loaded successfully.")
-login(token=huggingface_token)
+login(token=huggingface_token, add_to_git_credential=True)
 
 from seml.experiment import Experiment
 import seml
