@@ -70,7 +70,7 @@ def quantize_hqq(model_name, num_bits=None, dynamic_config=False, save_model=Fal
     end_time = time.time()  # End time measurement
     hqq_model.QUANT_TIME = end_time - start_time
 
-    dynamic_flag = "dynamic" if dynamic_config else ""
+    dynamic_flag = "dynamic" if dynamic_config else "static"
     hqq_model_name = f"{model_name.split('/')[1]}-hqq-{num_bits}bit-{dynamic_flag}"
     hqq_model_path = os.path.join(MODEL_SAVE_PATH, hqq_model_name)
     hqq_model.PATH = hqq_model_path

@@ -4,7 +4,7 @@ from src.algorithms.quantization.hqq import quantize_hqq
 
 # Wrapper class for quantization
 def quantize(model_name, tokenizer, calib_dataloader, quantize_method, num_bits=None, save_model=False, save_path="", device="cuda"):        
-    if quantize_method == "fp16":
+    if quantize_method == "NONE":
         model = model
     elif quantize_method == "BNB":
         model = quantize_bnb(

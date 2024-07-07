@@ -20,6 +20,8 @@ def evaluate_gpu_utilization():
 
 def evaluate_model_size(model_path):
     # Loop through files in the model directory
+    if not os.path.exists(model_path):
+        return "nan"
     total_size = 0
     for filename in os.listdir(model_path):
         file_path = os.path.join(model_path, filename)
