@@ -3,7 +3,7 @@ import logging
 
 import torch
 from src.evaluations.evaluate_brier_score import evaluate_brier_score
-from src.evaluations.evaluate_memory import evaluate_gpu_utilization, evaluate_model_size, evaluate_quantize_runtime
+from src.evaluations.evaluate_memory import evaluate_gpu_utilization, evaluate_model_size, evaluate_quantize_runtime, get_gpu_memory
 from src.evaluations.evaluate_perplexity import evaluate_perplexity
 
 logger = logging.getLogger("quant_logger")
@@ -28,6 +28,8 @@ def evaluate(
         results[f"{prefix}current_gpu_total_memory"] = (
             torch.cuda.get_device_properties(torch.cuda.device(0)).total_memory / 1024**2
         )
+        results[f"{prefix}current_gpu_free_memory"] = get_gpu_memory()
+        
     if "perplexity" in eval_metrics:
         logger.info("Evaluate Perplexity")
         results[f"{prefix}perplexity"] = evaluate_perplexity(
@@ -51,10 +53,9 @@ def evaluate(
         results[f"{prefix}model_size"] = evaluate_model_size(
             model_path=model.PATH
         )
-    if "gpu_utilization" in eval_metrics:
-        logger.info("Evaluate GPU Utilization")
-        results[f"{prefix}gpu_utilization"] = evaluate_gpu_utilization()
     if "quantize_runtime" in eval_metrics:
         logger.info("Evaluate Quantize Runtime")
-        results[f"{prefix}quantize_runtime"] = evaluate_quantize_runtime(model)
+        results[f"{prefix}quantize_runtime"] = evaluate_quantize_runtime(
+            model=model
+        )
     return results

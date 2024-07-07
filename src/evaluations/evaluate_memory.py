@@ -53,4 +53,4 @@ def get_gpu_memory():
 def record_gpu_memory(gpu_memory_usage, context):
     memory = get_gpu_memory()
     gpu_memory_usage[context] = memory
-    print(f"Context: {context}. Free GPU Memory (GB): {memory:.4f}")
+    print(f"Free GPU Memory (GB): {memory:.4f}. Context: {context}.")

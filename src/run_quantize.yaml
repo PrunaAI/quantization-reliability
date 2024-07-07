@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
-  name: 'quantize_tinyllama'
+  name: 'quantize_tinyllama_hqq'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/src/'
 
@@ -32,6 +32,8 @@ fixed:
   eval_metrics:
     - 'perplexity'
     - 'brier_score'
+    - 'quantize_runtime'
+    - 'model_size'
 
 grid:
   calib_dataset_name:
@@ -50,19 +52,19 @@ grid:
     type: choice
     options:
       - 'validation'
-      - 'test'
+      # - 'test'
 
   eval_dataset_split:
     type: choice
     options:
-      - 'validation'
+      # - 'validation'
       - 'test'
 
   quantize_method:
     type: choice
     options:
-      - 'BNB'
-      - 'AWQ'
+      # - 'BNB'
+      # - 'AWQ'
       - 'HQQ'
 
   num_bits:

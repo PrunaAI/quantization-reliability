@@ -248,3 +248,96 @@ wikitext_dataloader = wikitext_data_module.val_dataloader()
 perpl = evaluate_perplexity_v2(model=model, dataloader=wikitext_dataloader, device="cuda")
 print(f"Perplexity: {perpl:.2f}")
 
+print(input_ids_list[0].shape)
+print(len(input_ids_list))
+print(len(wikitext_dataloader))
+
+print(tokenizer.decode(input_ids_list[0][0][:50], skip_special_tokens=True))
+# print(encodings.input_ids[:, :50])
+print(tokenizer.decode(encodings.input_ids[:, :50][0], skip_special_tokens=True))
+
+for i, (x, y) in enumerate(wikitext_dataloader):
+    if i < 1:
+        print(tokenizer.decode(x[0][:50], skip_special_tokens=True))
+        print(tokenizer.decode(y[0][:50], skip_special_tokens=True))
+        
+from tqdm import tqdm
+
+from datasets import load_dataset
+test = load_dataset('wikitext', 'wikitext-2-raw-v1', split='test')
+encodings = tokenizer('\n\n'.join(test['text']), return_tensors='pt')
+
+max_length = tokenizer.model_max_length
+stride = 1024
+
+lls = []
+input_ids_list = []
+target_ids_list = []
+for i in tqdm(range(0, encodings.input_ids.size(1), stride)):
+    # if i > stride:
+    #     break
+    begin_loc = max(i + stride - max_length, 0)
+    end_loc = i + stride
+    input_ids = encodings.input_ids[:,begin_loc:end_loc].to(device)
+    target_ids = input_ids.clone()
+    target_ids[:,:-stride] = -100
+    input_ids_list.append(input_ids)
+    target_ids_list.append(target_ids)
+    
+import logging
+from torch.cuda.amp import autocast
+import torch.nn.functional as F
+import torch
+
+def evaluate_brier_score(model, dataloader, device="cuda", to_device=False):
+    if to_device:
+        model.to(device)
+    if isinstance(model, torch.nn.Module):
+        model.eval()
+        logging.info(f"Model in evaluation mode. Device: {device}")
+        
+    brier_sum = 0
+
+    for i, (x, y) in enumerate(dataloader):
+        if i > 10:
+            break
+        print(f"Processing batch {i}")
+        x, y = x.to(device), y.to(device)
+        
+        with torch.no_grad() and autocast():
+            outputs = model(x)
+            logits = outputs.logits
+            !nvidia-smi --query-gpu=memory.free --format=csv | tail -n +2 | awk -F ' ' '{print "Free GPU Memory (GB):", $1 / 1024}'
+            
+            # Shift logits and target_ids to the left by 1 for calculating the Brier score
+            shifted_logits = logits[:, :-1].contiguous()
+            shifted_target_ids = x[:, 1:].contiguous()
+
+            # Flatten the logits and target_ids for calculation
+            shifted_logits = shifted_logits.view(-1, shifted_logits.size(-1))
+            shifted_target_ids = shifted_target_ids.view(-1)
+
+            # Filter out the -100 targets
+            valid_indices = shifted_target_ids != -100
+            valid_logits = shifted_logits[valid_indices]
+            valid_target_ids = shifted_target_ids[valid_indices]
+
+            # Get the probabilities
+            probs = F.softmax(valid_logits, dim=-1)
+
+            # Create one-hot target vectors
+            targets = F.one_hot(valid_target_ids, num_classes=probs.size(-1)).float()
+
+            # Calculate the Brier score
+            brier_score = torch.mean((probs - targets) ** 2)
+            print(f"Brier Score: {brier_score:.4f}")
+            brier_sum += brier_score
+            del brier_score
+
+    avg_brier_score = brier_sum / len(dataloader)
+    print(f"Final Brier Score: {avg_brier_score:.4f}")
+    
+    return avg_brier_score
+
+wikitext_dataloader = wikitext_data_module.test_dataloader()
+evaluate_brier_score(model, wikitext_dataloader, device=device)
