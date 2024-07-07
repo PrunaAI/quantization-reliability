@@ -180,16 +180,18 @@ def run_quantize(
     ## Quantize ##
     ##############
     logger.info("Quantization")
-    quantized_model = quantize(
-        model_name=model_full_name,
-        tokenizer=tokenizer,
-        calib_dataloader=calib_dataloader,
-        quantize_method=quantize_method,
-        num_bits=num_bits,
-        save_model=save_quantized_model,
-        save_path=quantized_model_save_path,
-        device=device
-    )
+    quantized_model = model
+    if quantize_method != "None":
+        quantized_model = quantize(
+            model_name=model_full_name,
+            tokenizer=tokenizer,
+            calib_dataloader=calib_dataloader,
+            quantize_method=quantize_method,
+            num_bits=num_bits,
+            save_model=save_quantized_model,
+            save_path=quantized_model_save_path,
+            device=device
+        )
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
 
     ##############

@@ -14,7 +14,7 @@ def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, d
     if model_name is not None:
         # Load model and tokenizer
         tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
-        model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device)
+        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map=device)
         model.NAME = model_name
     elif model_name is None and directory_model is not None:
         # Load model from local directory
