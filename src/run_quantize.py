@@ -67,7 +67,7 @@ login(token=huggingface_token, add_to_git_credential=True)
 from seml.experiment import Experiment
 import seml
 
-from src.models import get_model, get_model_name
+from src.models import get_model, get_model_name, get_tokenizer
 from src.data import data_loader_from_split, get_dataset
 from src.algorithms.quantization.quantize import quantize
 from src.evaluations.evaluate_all import evaluate
@@ -139,11 +139,11 @@ def run_quantize(
     )
     
     ################
-    ## Load model ##
+    ## Load tokenizer ##
     ################
     logger.info("Load base model")
     model_full_name = get_model_name(model_name)
-    model, tokenizer = get_model(
+    tokenizer = get_tokenizer(
         model_name=model_full_name,
         seed=seed_model,
         directory_model=directory_model,
@@ -180,8 +180,15 @@ def run_quantize(
     ## Quantize ##
     ##############
     logger.info("Quantization")
-    quantized_model = model
-    if quantize_method != "None":
+    quantized_model = None
+    if quantize_method == "NONE":
+        quantized_model = get_model(
+            model_name=model_full_name,
+            seed=seed_model,
+            directory_model=directory_model,
+            device=device,
+        )
+    else:
         quantized_model = quantize(
             model_name=model_full_name,
             tokenizer=tokenizer,
