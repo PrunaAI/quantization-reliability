@@ -12,7 +12,7 @@ logger.info("Setting up cache paths...")
 
 # To avoid the following problem when running seml (see https://github.com/pytorch/pytorch/issues/37377)
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
-CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
+CACHE_PATH = "/nfs/students/daro/.cache/huggingface/hub/"
 print(f"Setting cache path to {CACHE_PATH}")
 
 os.environ["TORCH_HOME"] = CACHE_PATH
@@ -141,7 +141,7 @@ def run_quantize(
     ################
     ## Load tokenizer ##
     ################
-    logger.info("Load base model")
+    logger.info("Load tokenizer")
     model_full_name = get_model_name(model_name)
     tokenizer = get_tokenizer(
         model_name=model_full_name,
@@ -149,7 +149,7 @@ def run_quantize(
         directory_model=directory_model,
         device=device,
     )
-    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load model")
+    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
     
     ###############
     ## Load data ##
@@ -188,6 +188,7 @@ def run_quantize(
             directory_model=directory_model,
             device=device,
         )
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
     else:
         quantized_model = quantize(
             model_name=model_full_name,
@@ -199,7 +200,7 @@ def run_quantize(
             save_path=quantized_model_save_path,
             device=device
         )
-    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
 
     ##############
     ## Evaluate ##

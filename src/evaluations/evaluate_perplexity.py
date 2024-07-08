@@ -2,7 +2,6 @@ import logging
 import torch
 import torchmetrics
 import tqdm
-from torch.cuda.amp import autocast
 
 logger = logging.getLogger("quant_logger")
 
@@ -23,7 +22,7 @@ def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=Fa
         print(f"Processing batch {i}")
         x, y = x.to(device), y.to(device)
         
-        with torch.no_grad() and autocast():
+        with torch.no_grad():
             outputs = model(x)
             logits = outputs.logits
             
