@@ -29,11 +29,6 @@ fixed:
   batch_size: 1
   dataset_stride: 1024
   dataset_seq_length: 1024
-  eval_metrics:
-    - 'perplexity'
-    - 'brier_score'
-    - 'quantize_runtime'
-    - 'model_size'
 
 grid:
   calib_dataset_name:
@@ -71,8 +66,14 @@ grid:
   num_bits:
     type: choice
     options:
-      # - 4
+      - 4
       - 8
+
+  eval_metrics:
+    type: choice
+    options:
+      - ['perplexity', 'quantize_runtime', 'model_size']
+      - ['brier_score', 'quantize_runtime', 'model_size']
 
   model_name:
     type: choice
