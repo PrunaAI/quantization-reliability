@@ -63,7 +63,7 @@ grid:
   quantize_method:
     type: choice
     options:
-      - "NONE"
+      - 'NONE'
       - 'BNB'
       - 'AWQ'
       - 'HQQ'
