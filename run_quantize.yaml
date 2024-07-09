@@ -5,7 +5,7 @@ seml:
   executable: 'run_quantize.py'
   name: 'quantize_tinyllama_07-09'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
-  project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/src/'
+  project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
 slurm:
   experiments_per_job: 1

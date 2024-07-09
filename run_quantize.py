@@ -12,6 +12,8 @@ logger.info("Setting up cache paths...")
 
 # To avoid the following problem when running seml (see https://github.com/pytorch/pytorch/issues/37377)
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
+# Disables parallelism to remove transformers warning
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 CACHE_PATH = "/nfs/students/daro/.cache/huggingface/hub/"
 print(f"Setting cache path to {CACHE_PATH}")
 
@@ -50,6 +52,22 @@ logging.info("Setting up working directory...")
 import os
 from dotenv import load_dotenv
 from huggingface_hub import login
+
+logging.info("Setting up cuda devices...")
+
+if torch.cuda.is_available():
+    logging.info("CUDA device is available!")
+    # Get the number of available CUDA devices
+    num_cuda_devices = torch.cuda.device_count()
+    logging.info(f"Number of CUDA devices: {num_cuda_devices}")
+    
+    # Loop through available devices and get name
+    for device_id in range(num_cuda_devices):
+        device = torch.device(f"cuda:{device_id}")
+        name = torch.cuda.get_device_name(device)
+        logging.info(f"  - CUDA Device {device_id+1}: {name}")
+else:
+    logging.info("CUDA device is not available.")
 
 logging.info("Authenticating Hugging Face...")
 
