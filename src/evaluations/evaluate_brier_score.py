@@ -23,7 +23,6 @@ class BrierScore:
     def update(self, probs, targets):
         brier_score = torch.mean((probs - targets) ** 2)
         self.total_brier_score += brier_score.item()
-        print(f"Brier score: {brier_score.item():.2f}")
         self.num_batches += 1
 
     def compute(self):

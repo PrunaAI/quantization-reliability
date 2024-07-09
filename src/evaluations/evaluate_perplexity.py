@@ -28,7 +28,6 @@ def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=Fa
             
             # Metric on current batch
             perplexity = metric(logits.float(), y)
-            print(f"Perplexity: {perplexity:.2f}")
 
     # Metric on all batches using custom accumulation
     perplexity = metric.compute()

@@ -18,10 +18,15 @@ def evaluate_gpu_utilization():
     # print(f"GPU memory occupied: {memory_used:.2f} {unit}.")
     return f"{memory_used} {unit}"
 
-def evaluate_model_size(model_path):
+def evaluate_model_size(model):
     # Loop through files in the model directory
+    if not hasattr(model, 'PATH'):
+        return "nan"
+    
+    model_path = model.PATH
     if not os.path.exists(model_path):
         return "nan"
+    
     total_size = 0
     for filename in os.listdir(model_path):
         file_path = os.path.join(model_path, filename)
@@ -46,6 +51,9 @@ def evaluate_model_size(model_path):
     return f"{total_size} {unit}"
 
 def evaluate_quantize_runtime(model):
+    if not hasattr(model, 'QUANT_TIME'):
+        return "nan"
+    
     return model.QUANT_TIME
 
 def get_gpu_memory():

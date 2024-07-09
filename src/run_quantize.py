@@ -136,6 +136,8 @@ def run_quantize(
         f"Quantize bits: {num_bits}\n"
         f"Evaluation metrics: {eval_metrics}\n"
         f"Device: {device}\n"
+        f"Quantized model save: {save_quantized_model}\n"
+        f"Quantized model save path: {quantized_model_save_path}\n"
     )
     
     ################
@@ -154,7 +156,7 @@ def run_quantize(
     ###############
     ## Load data ##
     ###############
-    logger.info("Load calibration and evaluation data modules")
+    logger.info("Load calibration data module")
     calib_data_module = get_dataset(
         dataset_name=calib_dataset_name,
         directory_dataset=directory_dataset,
@@ -163,6 +165,7 @@ def run_quantize(
         tokenizer_name=model_full_name,
         seed=seed_dataset,
     )
+    logger.info("Load evaluation data module")
     eval_data_module = get_dataset(
         dataset_name=eval_dataset_name,
         directory_dataset=directory_dataset,
@@ -172,16 +175,19 @@ def run_quantize(
         seed=seed_dataset,
     )
     
+    logger.info("Load calibration dataloader")
     calib_dataloader = data_loader_from_split(calib_data_module)[calib_dataset_split]
+    logger.info("Load evaluation dataloader")
     eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
     ##############
     ## Quantize ##
     ##############
-    logger.info("Quantization")
+    logger.info("Quantization...")
     quantized_model = None
     if quantize_method == "NONE":
+        logger.info("Quantize method is None, loading original model")
         quantized_model = get_model(
             model_name=model_full_name,
             seed=seed_model,
@@ -190,6 +196,7 @@ def run_quantize(
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
     else:
+        logger.info(f"Quantizing model using {quantize_method}")
         quantized_model = quantize(
             model_name=model_full_name,
             tokenizer=tokenizer,
@@ -205,7 +212,7 @@ def run_quantize(
     ##############
     ## Evaluate ##
     ##############
-    logger.info("Evaluating the quantized models")
+    logger.info("Evaluation...")
     results = evaluate(
         model=quantized_model,
         eval_dataloader=eval_dataloader,
