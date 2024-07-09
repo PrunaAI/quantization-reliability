@@ -1,12 +1,8 @@
 import logging
 import torch
 import torchmetrics
-import tqdm
 
 logger = logging.getLogger("quant_logger")
-
-with torch.no_grad():
-    torch.cuda.empty_cache()
 
 def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=False):
     if to_device:
@@ -14,6 +10,9 @@ def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=Fa
     if isinstance(model, torch.nn.Module):
         model.eval()
         print(f"Model in evaluation mode. Device: {device}")
+    with torch.no_grad():
+        torch.cuda.empty_cache()
+        
     metric = torchmetrics.text.Perplexity(ignore_index=-100).to(device)  # -100 is the padding token.
 
     for i, (x, y) in enumerate(dataloader):
@@ -31,5 +30,5 @@ def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=Fa
 
     # Metric on all batches using custom accumulation
     perplexity = metric.compute()
-    print(f"\nFinal Perplexity (PPL): {perplexity:.3f}")
+    logger.info(f"Final Perplexity: {perplexity:.3f}")
     return perplexity.item()

@@ -1,15 +1,8 @@
 import logging
 import torch
-import torchmetrics
-import tqdm
 import torch.nn.functional as F
-from torch.cuda.amp import autocast
 
 logger = logging.getLogger("quant_logger")
-
-import torch
-import torch.nn.functional as F
-from torch.cuda.amp import autocast
 
 class BrierScore:
     def __init__(self, device="cpu"):
@@ -36,6 +29,8 @@ def evaluate_brier_score(model, dataloader, factor=1, device="cuda", to_device=F
     if isinstance(model, torch.nn.Module):
         model.eval()
         print(f"Model in evaluation mode. Device: {device}")
+    with torch.no_grad():
+        torch.cuda.empty_cache()
     
     # Initialize BrierScore metric
     metric = BrierScore(device=device)
@@ -46,7 +41,7 @@ def evaluate_brier_score(model, dataloader, factor=1, device="cuda", to_device=F
         print(f"Processing batch {i}")
         x, y = x.to(device), y.to(device)
 
-        with torch.no_grad() and autocast():
+        with torch.no_grad():
             outputs = model(x)
             logits = outputs.logits
 
@@ -74,6 +69,5 @@ def evaluate_brier_score(model, dataloader, factor=1, device="cuda", to_device=F
 
     # Compute the final Brier score across all batches
     avg_brier_score = metric.compute()
-    print(f"Final Brier Score: {avg_brier_score:.10f}")
-
+    logger.info(f"Final Brier Score: {avg_brier_score:.6f}")
     return avg_brier_score

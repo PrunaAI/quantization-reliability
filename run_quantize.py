@@ -221,6 +221,7 @@ def run_quantize(
         device=device,
         to_device=(quantize_method in ["AWQ"]),
         prefix="",
+        gpu_memory_usage=gpu_memory_usage
     )
     record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
     
