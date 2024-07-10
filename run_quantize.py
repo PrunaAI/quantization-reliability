@@ -15,11 +15,10 @@ os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 # Disables parallelism to remove transformers warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
-HUB_PATH = os.path.join(CACHE_PATH, "hub")
 print(f"Setting cache path to {CACHE_PATH}")
 
 os.environ["TORCH_HOME"] = CACHE_PATH
-os.environ["HF_HOME"] = HUB_PATH
+os.environ["HF_HOME"] = CACHE_PATH
 
 import time
 import random
@@ -157,9 +156,9 @@ def run_quantize(
         f"Quantized model save path: {quantized_model_save_path}\n"
     )
     
-    ################
+    ####################
     ## Load tokenizer ##
-    ################
+    ####################
     logger.info("Load tokenizer")
     model_full_name = get_model_name(model_name)
     tokenizer = get_tokenizer(
@@ -245,7 +244,7 @@ def run_quantize(
     ####################
     ## Cleaning cache ##
     ####################
-    logger.info
+    logger.info("Cleaning cache...")
     if clean_cache:
         for root, dirs, files in os.walk(CACHE_PATH, topdown=False):
             for dir_name in dirs:
