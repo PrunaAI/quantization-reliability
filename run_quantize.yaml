@@ -36,31 +36,33 @@ grid:
     options:
       - 'WikiText'
       - 'OpenAssistant'
+      - 'C4'
+      - 'PTB'
 
   eval_dataset_name:
     type: choice
     options:
       - 'WikiText'
-      - 'OpenAssistant'
+      # - 'OpenAssistant'
 
   calib_dataset_split:
     type: choice
     options:
       - 'validation'
-      - 'test'
+      # - 'test'
 
   eval_dataset_split:
     type: choice
     options:
       - 'validation'
-      - 'test'
+      # - 'test'
 
   quantize_method:
     type: choice
     options:
-      # - 'NONE'
-      # - 'BNB'
-      # - 'AWQ'
+      - 'NONE'
+      - 'BNB'
+      - 'AWQ'
       - 'HQQ'
 
   num_bits:
