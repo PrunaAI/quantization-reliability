@@ -2,6 +2,7 @@ import re
 
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 
+from src.data.PTBDataModule import PTBDataModule
 from src.data.PolyglotDataModule import PolyglotDataModule
 from src.data.WikiTextDataModule import WikiTextDataModule
 from src.data.OpenAssistantDataModule import OpenAssistantDataModule
@@ -33,6 +34,14 @@ base_datasets = {
         **kwargs,
     ),
     "C4": lambda directory_dataset, batch_size, sequence_length, tokenizer_name, seed, **kwargs: C4DataModule(
+        directory_dataset=directory_dataset,
+        batch_size=batch_size,
+        sequence_length=sequence_length,
+        tokenizer_name=tokenizer_name,
+        seed=seed,
+        **kwargs,
+    ),
+    "PTB": lambda directory_dataset, batch_size, sequence_length, tokenizer_name, seed, **kwargs: PTBDataModule(
         directory_dataset=directory_dataset,
         batch_size=batch_size,
         sequence_length=sequence_length,

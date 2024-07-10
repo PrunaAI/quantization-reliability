@@ -13,7 +13,7 @@ class TextDataset(Dataset):
         self.tokenizer = tokenizer
         self.dataset = dataset
         self.texts = dataset["text"]
-        tokenized_dataset = self.tokenizer("\n\n".join(dataset["text"]), return_tensors="pt")
+        tokenized_dataset = self.tokenizer("\n\n".join(dataset["sentence"]), return_tensors="pt")
         self.data = tokenized_dataset.input_ids[0, :-1]
         self.labels = tokenized_dataset.input_ids[0]
         self.sequence_length = sequence_length
@@ -34,43 +34,45 @@ class TextDataset(Dataset):
         return input_ids, target_ids
 
 
-class C4DataModule(LightningDataModule):
+# TODO: This dataset look at each sentence individually as a batch sample.
+#  This is not ideal since sometimes sentences might not switch from a topic to another.
+# class TextDataset(Dataset):
+#     def __init__(self, dataset, tokenizer, sequence_length=2048):
+#         self.texts = dataset["text"]
+#         self.tokenizer = tokenizer
+#         tokenized_dataset = self.tokenizer(
+#             self.texts, return_tensors="pt", truncation=True, padding=True, max_length=sequence_length
+#         )
+#         self.data = tokenized_dataset.input_ids
+#         self.sequence_length = sequence_length
+#
+#     def __len__(self):
+#         return len(self.data)
+#
+#     def __getitem__(self, index):
+#         return self.data[index, :-1], self.data[index, 1:]
+
+
+class PTBDataModule(LightningDataModule):
     def __init__(self, directory_dataset=os.getcwd(), batch_size=64, sequence_length=2048, stride=512, n_lines=None, tokenizer_name=None, seed=1):
         super().__init__()
         self.directory_dataset = directory_dataset
         self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
-        self.sequence_length = sequence_length#
+        self.sequence_length = sequence_length
         self.stride = stride
         self.n_lines = n_lines
         self.prepare_data()
 
     def prepare_data(self):
         # Load train, val, and test datasets
-        train_split = "train[:95%]" if self.n_lines is None else f"train[:{self.n_lines}]"
+        train_split = "train" if self.n_lines is None else f"train[:{self.n_lines}]"
         validation_split = "validation" if self.n_lines is None else f"validation[:{self.n_lines}]"
-        test_split = "validation" if self.n_lines is None else f"validation[:{self.n_lines}]"
+        test_split = "test" if self.n_lines is None else f"test[:{self.n_lines}]"
         
-        self.train_dataset = load_dataset(
-            "allenai/c4",
-            "allenai--c4",
-            data_files={"train": "en/c4-train.00000-of-01024.json.gz"},
-            split=train_split
-        )
-        self.val_dataset = load_dataset(
-            "allenai/c4",
-            "allenai--c4",
-            data_files={"validation": "en/c4-validation.00000-of-00008.json.gz"},
-            split=validation_split,
-        )
-        # C4 does not have an explicit test set for now. We use the validation set instead.
-        # Check https://github.com/locuslab/wanda/blob/8e8fc87b4a2f9955baa7e76e64d5fce7fa8724a6/lib/data.py#L63 for other examples.
-        self.test_dataset = load_dataset(
-            "allenai/c4",
-            "allenai--c4",
-            data_files={"validation": "en/c4-validation.00001-of-00008.json.gz"},
-            split=test_split,
-        )
+        self.train_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=train_split)
+        self.val_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=validation_split)
+        self.test_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=test_split)
 
     def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
