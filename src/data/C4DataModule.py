@@ -47,9 +47,9 @@ class C4DataModule(LightningDataModule):
 
     def prepare_data(self):
         # Load train, val, and test datasets
-        train_split = "train[:95%]" if self.n_lines is None else f"train[:{self.n_lines}]"
+        train_split = "train" if self.n_lines is None else f"train[:{self.n_lines}]"
         validation_split = "validation" if self.n_lines is None else f"validation[:{self.n_lines}]"
-        test_split = "validation" if self.n_lines is None else f"validation[:{self.n_lines}]"
+        test_split = "validation" if self.n_lines is None else f"validation[{self.n_lines}:{2*self.n_lines}]"
         
         self.train_dataset = load_dataset(
             "allenai/c4",
