@@ -53,13 +53,13 @@ class C4DataModule(LightningDataModule):
         
         self.train_dataset = load_dataset(
             "allenai/c4",
-            "allenai--c4",
+            "en",
             data_files={"train": "en/c4-train.00000-of-01024.json.gz"},
             split=train_split
         )
         self.val_dataset = load_dataset(
             "allenai/c4",
-            "allenai--c4",
+            "en",
             data_files={"validation": "en/c4-validation.00000-of-00008.json.gz"},
             split=validation_split,
         )
@@ -67,7 +67,7 @@ class C4DataModule(LightningDataModule):
         # Check https://github.com/locuslab/wanda/blob/8e8fc87b4a2f9955baa7e76e64d5fce7fa8724a6/lib/data.py#L63 for other examples.
         self.test_dataset = load_dataset(
             "allenai/c4",
-            "allenai--c4",
+            "en",
             data_files={"validation": "en/c4-validation.00001-of-00008.json.gz"},
             split=test_split,
         )
