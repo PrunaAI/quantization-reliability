@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
-  name: 'quantize_tinyllama_07-10'
+  name: 'quantize_tinyllama_07-11'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -36,26 +36,26 @@ grid:
     options:
       - 'WikiText'
       - 'OpenAssistant'
-      - 'C4'
-      - 'PTB'
+      # - 'C4'
+      # - 'PTB'
 
   eval_dataset_name:
     type: choice
     options:
       - 'WikiText'
-      # - 'OpenAssistant'
+      - 'OpenAssistant'
 
   calib_dataset_split:
     type: choice
     options:
       - 'validation'
-      # - 'test'
+      - 'test'
 
   eval_dataset_split:
     type: choice
     options:
       - 'validation'
-      # - 'test'
+      - 'test'
 
   quantize_method:
     type: choice
