@@ -1,5 +1,17 @@
 # Project
 
+## Introduction
+
+This project aims to evaluate the reliability of large language models (LLMs) when subjected to various quantization methods. Our first focus is on assessing the zero-shot reliability of the Llama-3-8B model using methods like BnB, AWQ, HQQ, GPTQ, QuARoT, and many more. The ultimate goal is to identify scaling laws for the reliability of quantized models, similar to those established for sparse foundation models. 
+
+## Project Goals
+
+1. **Evaluate the Reliability of Quantized LLMs**: Assess the reliability of the Llama-3-8B model when quantized using various methods.
+2. **Zero-Shot Task Performance**: Measure the model's confidence and performance on zero-shot tasks.
+3. **Scaling Laws**: Investigate potential scaling laws for the reliability of quantized LLMs.
+4. **Calibration and Evaluation**: Use metrics like perplexity, Brier score, and others to evaluate model performance on both in-distribution (ID) and out-of-distribution (OOD) datasets.
+
+
 ## Repository structure
 
 - `notebooks` contains the notebooks including examples.
@@ -48,3 +60,21 @@ For more detail see [official instructions](https://wandb.ai/quickstart/pytorch)
 For more detail on seml see [official instructions](https://github.com/TUM-DAML/seml).
 
 For more detail on ray-tune see [official instructions](https://docs.ray.io/en/latest/tune/index.html).
+
+## Methods Used
+
+### Quantization Methods
+
+BnB: Bitsandbytes quantization.
+AWQ: Adaptive Weight Quantization.
+HQQ: Hierarchical Quantization.
+GPTQ: Generalized Quantization.
+QuARoT: Quantized Approximation of Rotational Transformations.
+
+### Evaluation Metrics
+Perplexity: Evaluated using datasets like WikiText.
+Brier Score: Evaluated using torch.metrics or HuggingFace.
+
+### Datasets
+Calibration Dataset: WikiText, OpenAssistantDataModule.
+Evaluation Dataset: WikiText, OpenAssistantDataModule.
