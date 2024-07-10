@@ -14,13 +14,12 @@ logger.info("Setting up cache paths...")
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 # Disables parallelism to remove transformers warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-CACHE_PATH = "/nfs/students/daro/.cache/huggingface/hub/"
+CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
+HUB_PATH = os.path.join(CACHE_PATH, "hub")
 print(f"Setting cache path to {CACHE_PATH}")
 
 os.environ["TORCH_HOME"] = CACHE_PATH
-os.environ["HF_HOME"] = CACHE_PATH
-os.environ["HUGGINGFACE_HUB_CACHE"] = CACHE_PATH
-os.environ["HUGGINGFACE_ASSETS_CACHE"] = CACHE_PATH
+os.environ["HF_HOME"] = HUB_PATH
 
 import time
 import random
