@@ -58,9 +58,9 @@ grid:
   quantize_method:
     type: choice
     options:
-      - 'NONE'
-      - 'BNB'
-      - 'AWQ'
+      # - 'NONE'
+      # - 'BNB'
+      # - 'AWQ'
       - 'HQQ'
 
   num_bits:
