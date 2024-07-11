@@ -49,21 +49,21 @@ grid:
     type: choice
     options:
       - 'validation'
-      - 'test'
+      # - 'test'
 
   eval_dataset_split:
     type: choice
     options:
       - 'validation'
-      - 'test'
+      # - 'test'
 
   quantize_method:
     type: choice
     options:
       - 'NONE'
-      - 'BNB'
-      - 'AWQ'
-      - 'HQQ'
+      # - 'BNB'
+      # - 'AWQ'
+      # - 'HQQ'
 
   num_bits:
     type: choice
@@ -80,7 +80,7 @@ grid:
     type: choice
     options:
       - 'Llama-3-8B'
-      - 'TinyLlama'
+      # - 'TinyLlama'
 
   # weight_name:
   #   type: choice

@@ -207,6 +207,29 @@ def run_quantize(
     ##############
     logger.info("Quantization...")
     quantized_model = None
+    
+    import os
+    original_dir = os.getcwd()
+    new_dir = HUB_PATH
+    logger.info(f"Changing directory to {new_dir}")
+    os.chdir(new_dir)
+
+    # This approach uses recursion (be cautious with very deep structures)
+    def print_structure(path, indent):
+        for item in os.listdir(path):
+            full_path = os.path.join(path, item)
+            if os.path.isdir(full_path):
+                logger.info(" " * indent, f"{item}/")
+                print_structure(full_path, indent + 2)
+            else:
+                logger.info(" " * indent, item)
+
+    if os.path.isdir(new_dir):
+        logger.info(f"\nFolder structure of '{new_dir}':")
+        print_structure(new_dir, 2)
+    os.chdir(original_dir)
+    logger.info(f"Back to original directory: {os.getcwd()}")
+    
     if quantize_method == "NONE":
         logger.info("Quantize method is None, loading original model")
         quantized_model = get_model(
