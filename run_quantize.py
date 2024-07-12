@@ -14,8 +14,8 @@ logger.info("Setting up cache paths...")
 os.environ["MKL_SERVICE_FORCE_INTEL"] = "1"
 # Disables parallelism to remove transformers warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-CACHE_PATH = "/nfs/students/daro/.cache/huggingface/"
-HUB_PATH = "/nfs/students/daro/.cache/huggingface/hub/"
+CACHE_PATH = "/nfs/students/daro/.cache/huggingface"
+HUB_PATH = os.path.join(CACHE_PATH, "hub")
 
 if not os.path.exists(HUB_PATH):
     os.makedirs(HUB_PATH)
@@ -24,6 +24,9 @@ if not os.path.exists(HUB_PATH):
 print(f"Setting cache path to {CACHE_PATH}")
 os.environ["TORCH_HOME"] = CACHE_PATH
 os.environ["HF_HOME"] = CACHE_PATH
+os.environ["HUGGINGFACE_HUB_CACHE"] = CACHE_PATH
+os.environ["HUGGINGFACE_ASSETS_CACHE"] = CACHE_PATH
+os.environ["TRANSFORMERS_CACHE"] = CACHE_PATH
 
 import time
 import random
@@ -161,128 +164,116 @@ def run_quantize(
         f"Quantized model save path: {quantized_model_save_path}\n"
     )
     
-    ####################
-    ## Load tokenizer ##
-    ####################
-    logger.info("Load tokenizer")
-    model_full_name = get_model_name(model_name)
-    tokenizer = get_tokenizer(
-        model_name=model_full_name,
-        seed=seed_model,
-        directory_model=directory_model,
-        device=device,
-    )
-    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
-    
-    ###############
-    ## Load data ##
-    ###############
-    logger.info("Load calibration data module")
-    calib_data_module = get_dataset(
-        dataset_name=calib_dataset_name,
-        directory_dataset=directory_dataset,
-        batch_size=batch_size,
-        sequence_length=dataset_stride,
-        tokenizer_name=model_full_name,
-        seed=seed_dataset,
-    )
-    logger.info("Load evaluation data module")
-    eval_data_module = get_dataset(
-        dataset_name=eval_dataset_name,
-        directory_dataset=directory_dataset,
-        batch_size=batch_size,
-        sequence_length=dataset_stride,
-        tokenizer_name=model_full_name,
-        seed=seed_dataset,
-    )
-    
-    logger.info("Load calibration dataloader")
-    calib_dataloader = data_loader_from_split(calib_data_module)[calib_dataset_split]
-    logger.info("Load evaluation dataloader")
-    eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
-    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
-
-    ##############
-    ## Quantize ##
-    ##############
-    logger.info("Quantization...")
-    quantized_model = None
-    
-    import os
-    original_dir = os.getcwd()
-    new_dir = HUB_PATH
-    logger.info(f"Changing directory to {new_dir}")
-    os.chdir(new_dir)
-
-    # This approach uses recursion (be cautious with very deep structures)
-    def print_structure(path, indent):
-        for item in os.listdir(path):
-            full_path = os.path.join(path, item)
-            if os.path.isdir(full_path):
-                logger.info(" " * indent, f"{item}/")
-                print_structure(full_path, indent + 2)
-            else:
-                logger.info(" " * indent, item)
-
-    if os.path.isdir(new_dir):
-        logger.info(f"\nFolder structure of '{new_dir}':")
-        print_structure(new_dir, 2)
-    os.chdir(original_dir)
-    logger.info(f"Back to original directory: {os.getcwd()}")
-    
-    if quantize_method == "NONE":
-        logger.info("Quantize method is None, loading original model")
-        quantized_model = get_model(
+    with tempfile.TemporaryDirectory(prefix=CACHE_PATH) as temp_cache_dir:
+        ####################
+        ## Load tokenizer ##
+        ####################
+        logger.info("Load tokenizer")
+        model_full_name = get_model_name(model_name)
+        tokenizer = get_tokenizer(
             model_name=model_full_name,
             seed=seed_model,
             directory_model=directory_model,
             device=device,
         )
-        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
-    else:
-        logger.info(f"Quantizing model using {quantize_method}")
-        quantized_model = quantize(
-            model_name=model_full_name,
-            tokenizer=tokenizer,
-            calib_dataloader=calib_dataloader,
-            quantize_method=quantize_method,
-            num_bits=num_bits,
-            save_model=save_quantized_model,
-            save_path=quantized_model_save_path,
-            device=device
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
+        
+        ###############
+        ## Load data ##
+        ###############
+        logger.info("Load calibration data module")
+        calib_data_module = get_dataset(
+            dataset_name=calib_dataset_name,
+            directory_dataset=directory_dataset,
+            batch_size=batch_size,
+            sequence_length=dataset_stride,
+            tokenizer_name=model_full_name,
+            seed=seed_dataset,
         )
-        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
+        logger.info("Load evaluation data module")
+        eval_data_module = get_dataset(
+            dataset_name=eval_dataset_name,
+            directory_dataset=directory_dataset,
+            batch_size=batch_size,
+            sequence_length=dataset_stride,
+            tokenizer_name=model_full_name,
+            seed=seed_dataset,
+        )
+        
+        logger.info("Load calibration dataloader")
+        calib_dataloader = data_loader_from_split(calib_data_module)[calib_dataset_split]
+        logger.info("Load evaluation dataloader")
+        eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
-    ##############
-    ## Evaluate ##
-    ##############
-    logger.info("Evaluation...")
-    results = evaluate(
-        model=quantized_model,
-        eval_dataloader=eval_dataloader,
-        eval_metrics=eval_metrics,
-        factor=1,
-        device=device,
-        to_device=(quantize_method in ["AWQ"]),
-        prefix="",
-        gpu_memory_usage=gpu_memory_usage
-    )
-    record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
-    
-    ####################
-    ## Cleaning cache ##
-    ####################
-    logger.info("Cleaning cache...")
-    if clean_cache:
-        for root, dirs, files in os.walk(HUB_PATH, topdown=False):
-            for dir_name in dirs:
-                pattern = re.compile(f"^.*{model_full_name.split('/')[-1]}.*")
-                dir_path = os.path.join(root, dir_name)
-                if re.match(pattern, dir_path):
-                    try:
-                        shutil.rmtree(dir_path)
-                    except:
-                        pass
+        ##############
+        ## Quantize ##
+        ##############
+        logger.info("Quantization...")
+        quantized_model = None
+
+        with tempfile.TemporaryDirectory(prefix=CACHE_PATH) as temp_cache_dir:
+            os.environ["TORCH_HOME"] = temp_cache_dir
+            os.environ["HF_HOME"] = temp_cache_dir
+            os.environ["HUGGINGFACE_HUB_CACHE"] = temp_cache_dir
+            os.environ["HUGGINGFACE_ASSETS_CACHE"] = temp_cache_dir
+            os.environ["TRANSFORMERS_CACHE"] = temp_cache_dir
+
+            torch.hub.set_dir(temp_cache_dir)
+
+            if quantize_method == "NONE":
+                logger.info("Quantize method is None, loading original model")
+                quantized_model = get_model(
+                    model_name=model_full_name,
+                    seed=seed_model,
+                    directory_model=directory_model,
+                    device=device,
+                )
+                record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
+            else:
+                logger.info(f"Quantizing model using {quantize_method}")
+                quantized_model = quantize(
+                    model_name=model_full_name,
+                    tokenizer=tokenizer,
+                    calib_dataloader=calib_dataloader,
+                    quantize_method=quantize_method,
+                    num_bits=num_bits,
+                    save_model=save_quantized_model,
+                    save_path=quantized_model_save_path,
+                    device=device
+                )
+                record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
+
+            ##############
+            ## Evaluate ##
+            ##############
+            logger.info("Evaluation...")
+            results = evaluate(
+                model=quantized_model,
+                eval_dataloader=eval_dataloader,
+                eval_metrics=eval_metrics,
+                factor=1,
+                device=device,
+                to_device=(quantize_method in ["AWQ"]),
+                prefix="",
+                gpu_memory_usage=gpu_memory_usage
+            )
+            record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
+            
+            # ####################
+            # ## Cleaning cache ##
+            # ####################
+            # logger.info("Cleaning cache...")
+            # if clean_cache:
+            #     for root, dirs, files in os.walk(HUB_PATH, topdown=False):
+            #         for dir_name in dirs:
+            #             pattern = re.compile(f"^.*{model_full_name.split('/')[-1]}.*")
+            #             dir_path = os.path.join(root, dir_name)
+            #             if re.match(pattern, dir_path):
+            #                 try:
+            #                     shutil.rmtree(dir_path)
+            #                 except:
+            #                     pass
 
     fail_trace = {
         "fail_trace": seml.evaluation.get_results,
