@@ -59,22 +59,6 @@ import os
 from dotenv import load_dotenv
 from huggingface_hub import login
 
-logging.info("Setting up cuda devices...")
-
-if torch.cuda.is_available():
-    logging.info("CUDA device is available!")
-    # Get the number of available CUDA devices
-    num_cuda_devices = torch.cuda.device_count()
-    logging.info(f"Number of CUDA devices: {num_cuda_devices}")
-    
-    # Loop through available devices and get name
-    for device_id in range(num_cuda_devices):
-        device = torch.device(f"cuda:{device_id}")
-        name = torch.cuda.get_device_name(device)
-        logging.info(f"  - CUDA Device {device_id+1}: {name}")
-else:
-    logging.info("CUDA device is not available.")
-
 logging.info("Authenticating Hugging Face...")
 
 load_dotenv()
@@ -106,6 +90,22 @@ logging.info("Setting up SEML experiment...")
 # Set the SEML experiment
 ex = Experiment(save_git_info=False)
 
+@ex.named_config
+def none():
+    """A named configuration that can be enabled in the configuration yaml file"""
+    preprocessing = {
+        "mean": 0.0,
+        "std": 1.0,
+    }
+
+
+@ex.named_config
+def preprocessing_none():
+    """A named configuration that can be enabled in the configuration yaml file"""
+    preprocessing = {
+        "mean": 0.0,
+        "std": 1.0,
+    }
 
 @ex.post_run_hook
 def collect_stats(_run):

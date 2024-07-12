@@ -49,12 +49,12 @@ grid:
     type: choice
     options:
       - 'validation'
-      - 'test'
+      # - 'test'
 
   eval_dataset_split:
     type: choice
     options:
-      - 'validation'
+      # - 'validation'
       - 'test'
 
   eval_metrics:
@@ -68,46 +68,15 @@ grid:
       - 'Llama-3-8B'
       # - 'TinyLlama'
 
-none:
-  grid:
-    num_bits:
-      type: choice
-      options:
-        - 4
-        # - 8
-
-  fixed:
-    quantize_method: 'NONE'
-
-bnb:
-  grid:
-    num_bits:
-      type: choice
-      options:
-        - 4
-
-  fixed:
-    quantize_method: 'BNB'
-
-awq:
-  grid:
-    num_bits:
-      type: choice
-      options:
-        - 4
-
-  fixed:
-    quantize_method: 'AWQ'
-
-hqq:
-  grid:
-    num_bits:
-      type: choice
-      options:
-        - 4
-  
-  fixed:
-    quantize_method: 'HQQ'
+  quantize_method:
+    type: choice
+    options:
+      - "NONE"
+      - "BNB-8bit"
+      - "BNB-4bit"
+      - "AWQ-4bit"
+      - "HQQ-8bit"
+      - "HQQ-4bit"
 
 # random:
 #   samples: 2
