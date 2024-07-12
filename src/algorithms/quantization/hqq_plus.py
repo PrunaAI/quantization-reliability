@@ -6,7 +6,7 @@ from hqq.models.hf.base import AutoHQQHFModel
 from hqq.core.quantize import BaseQuantizeConfig as HQQBaseQuantizeConfig
 from src import MODEL_SAVE_PATH
 
-def quantize_hqq(model_name, quantize_config={}, save_model=False, save_path="", device="cuda"):
+def quantize_hqq_plus(model_name, quantize_config={}, save_model=False, save_path="", device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for HQQ: {quantize_config['num_bits']}")
 
