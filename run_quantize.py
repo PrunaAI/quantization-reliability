@@ -90,22 +90,6 @@ logging.info("Setting up SEML experiment...")
 # Set the SEML experiment
 ex = Experiment(save_git_info=False)
 
-@ex.named_config
-def none():
-    """A named configuration that can be enabled in the configuration yaml file"""
-    preprocessing = {
-        "mean": 0.0,
-        "std": 1.0,
-    }
-
-
-@ex.named_config
-def preprocessing_none():
-    """A named configuration that can be enabled in the configuration yaml file"""
-    preprocessing = {
-        "mean": 0.0,
-        "std": 1.0,
-    }
 
 @ex.post_run_hook
 def collect_stats(_run):
@@ -130,8 +114,7 @@ def run_quantize(
     clean_cache=True,
     model_name="",
     # Quantization parameters
-    quantize_method="",
-    num_bits=8,
+    quantize_config={},
     # Evaluation metrics
     eval_metrics=[
         "perplexity",
@@ -156,8 +139,7 @@ def run_quantize(
         f"Dataloader sequence length: {dataset_seq_length}\n"
         f"Batch size: {batch_size}\n"
         f"Model: {model_name}\n"
-        f"Quantize method: {quantize_method}\n"
-        f"Quantize bits: {num_bits}\n"
+        f"Quantize config: {quantize_config}\n"
         f"Evaluation metrics: {eval_metrics}\n"
         f"Device: {device}\n"
         f"Quantized model save: {save_quantized_model}\n"
@@ -221,7 +203,7 @@ def run_quantize(
 
             torch.hub.set_dir(temp_cache_dir)
 
-            if quantize_method == "NONE":
+            if quantize_config['quantize_method'] == "NONE":
                 logger.info("Quantize method is None, loading original model")
                 quantized_model = get_model(
                     model_name=model_full_name,
@@ -231,13 +213,13 @@ def run_quantize(
                 )
                 record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
             else:
-                logger.info(f"Quantizing model using {quantize_method}")
+                logger.info(f"Quantizing model using {quantize_config['quantize_method']}")
                 quantized_model = quantize(
                     model_name=model_full_name,
                     tokenizer=tokenizer,
                     calib_dataloader=calib_dataloader,
-                    quantize_method=quantize_method,
-                    num_bits=num_bits,
+                    quantize_method=quantize_config['quantize_method'],
+                    num_bits=quantize_config['num_bits'],
                     save_model=save_quantized_model,
                     save_path=quantized_model_save_path,
                     device=device
@@ -254,7 +236,7 @@ def run_quantize(
                 eval_metrics=eval_metrics,
                 factor=1,
                 device=device,
-                to_device=(quantize_method in ["AWQ"]),
+                to_device=(quantize_config['quantize_method'] in ["AWQ"]),
                 prefix="",
                 gpu_memory_usage=gpu_memory_usage
             )

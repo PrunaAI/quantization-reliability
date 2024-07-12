@@ -68,15 +68,33 @@ grid:
       - 'Llama-3-8B'
       # - 'TinyLlama'
 
-  quantize_method:
+  quantize_config:
     type: choice
     options:
-      - "NONE"
-      - "BNB-8bit"
-      - "BNB-4bit"
-      - "AWQ-4bit"
-      - "HQQ-8bit"
-      - "HQQ-4bit"
+      - {
+        quantize_method: "NONE",
+        num_bits: 16
+      }
+      - {
+        quantize_method: "BNB",
+        num_bits: 4
+      }
+      - {
+        quantize_method: "BNB",
+        num_bits: 8
+      }
+      - {
+        quantize_method: "AWQ",
+        num_bits: 4
+      }
+      - {
+        quantize_method: "HQQ",
+        num_bits: 4
+      }
+      - {
+        quantize_method: "HQQ",
+        num_bits: 8
+      }
 
 # random:
 #   samples: 2
