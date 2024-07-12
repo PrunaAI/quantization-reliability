@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
-  name: 'quantize_tinyllama_07-11'
+  name: 'quantize_tinyllama_07-12'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -14,8 +14,8 @@ slurm:
     mem: '128G'          # memory
     cpus-per-task: 2  # num cores
     time: '1-00:00'     # max time, D-HH:MM
-#    partition: 'gpu_a100' # partition
-    partition: 'gpu_gtx1080' # partition
+    partition: 'gpu_a100' # partition
+#    partition: 'gpu_gtx1080' # partition
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 
@@ -35,14 +35,14 @@ grid:
     type: choice
     options:
       - 'WikiText'
-      - 'OpenAssistant'
+      # - 'OpenAssistant'
       # - 'C4'
       # - 'PTB'
 
   eval_dataset_name:
     type: choice
     options:
-      - 'WikiText'
+      # - 'WikiText'
       - 'OpenAssistant'
 
   calib_dataset_split:
@@ -65,36 +65,18 @@ grid:
   model_name:
     type: choice
     options:
-      # - 'Llama-3-8B'
+      - 'Llama-3-8B'
       - 'TinyLlama'
 
-  quantize_config:
+  quantize_method:
     type: choice
     options:
-      - {
-        quantize_method: "NONE",
-        num_bits: 16
-      }
-      - {
-        quantize_method: "BNB",
-        num_bits: 4
-      }
-      - {
-        quantize_method: "BNB",
-        num_bits: 8
-      }
-      - {
-        quantize_method: "AWQ",
-        num_bits: 4
-      }
-      - {
-        quantize_method: "HQQ",
-        num_bits: 4
-      }
-      - {
-        quantize_method: "HQQ",
-        num_bits: 8
-      }
+      - "NONE"
+      - "BNB-4"
+      - "BNB-8"
+      - "AWQ-4"
+      - "HQQ-8-uniform"
+      - "HQQ-mixed"
 
 # random:
 #   samples: 2
