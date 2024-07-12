@@ -4,12 +4,12 @@ import torchmetrics
 
 logger = logging.getLogger("quant_logger")
 
-def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=False):
+def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=False, verbose=False):
     if to_device:
         model.to(device)
     if isinstance(model, torch.nn.Module):
         model.eval()
-        print(f"Model in evaluation mode. Device: {device}")
+        logger.info(f"Model in evaluation mode. Device: {device}")
     with torch.no_grad():
         torch.cuda.empty_cache()
         
@@ -18,7 +18,8 @@ def evaluate_perplexity(model, dataloader, factor=1, device="cuda", to_device=Fa
     for i, (x, y) in enumerate(dataloader):
         if i >= len(dataloader) / factor:
             break
-        print(f"Processing batch {i}")
+        if verbose:
+            logger.info(f"Processing batch {i + 1}/{len(dataloader)}")
         x, y = x.to(device), y.to(device)
         
         with torch.no_grad():
