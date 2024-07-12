@@ -1,4 +1,3 @@
-from src.algorithms.quantization.quantize import quantize
 from hqq.core.quantize import BaseQuantizeConfig as HQQBaseQuantizeConfig
 
 NONE = {
