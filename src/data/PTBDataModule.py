@@ -70,9 +70,9 @@ class PTBDataModule(LightningDataModule):
         validation_split = "validation" if self.n_lines is None else f"validation[:{self.n_lines}]"
         test_split = "test" if self.n_lines is None else f"test[:{self.n_lines}]"
         
-        self.train_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=train_split)
-        self.val_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=validation_split)
-        self.test_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=test_split)
+        self.train_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=train_split, trust_remote_code=True)
+        self.val_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=validation_split, trust_remote_code=True)
+        self.test_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=test_split, trust_remote_code=True)
 
     def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
