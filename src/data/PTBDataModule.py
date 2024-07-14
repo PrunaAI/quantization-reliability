@@ -12,7 +12,7 @@ class TextDataset(Dataset):
     def __init__(self, dataset, tokenizer, sequence_length=2048, stride=512):
         self.tokenizer = tokenizer
         self.dataset = dataset
-        self.texts = dataset["text"]
+        self.texts = dataset["sentence"]
         tokenized_dataset = self.tokenizer("\n\n".join(dataset["sentence"]), return_tensors="pt")
         self.data = tokenized_dataset.input_ids[0, :-1]
         self.labels = tokenized_dataset.input_ids[0]
