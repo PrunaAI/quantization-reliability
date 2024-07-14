@@ -86,7 +86,7 @@ class OpenAssistantDataModule(LightningDataModule):
             sequence_length = min(self.sequence_length, sequence_length)
         if stride is None:
             stride = self.stride
-        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=self.n_samples sequence_length=sequence_length, stride=stride)
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=self.n_samples, sequence_length=sequence_length, stride=stride)
         test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         test_dataloader.ORIGINAL_DATASET = self.test_dataset
         return test_dataloader
