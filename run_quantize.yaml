@@ -78,7 +78,7 @@ grid:
       - "AWQ-4"
       - "HQQ-8-uniform"
       - "HQQ-mixed"
-      - "HQQ_LORA"
+      - "HQQ-LORA"
 
 # random:
 #   samples: 2

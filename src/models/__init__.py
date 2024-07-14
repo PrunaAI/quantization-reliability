@@ -32,11 +32,11 @@ def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, d
 def get_tokenizer(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):
     torch.manual_seed(seed)
     if model_name is not None:
-        tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device, trust_remote_code=True)
     elif model_name is None and directory_model is not None:
         # Load tokenizer from local directory
         try:
-            tokenizer = AutoTokenizer.from_pretrained(directory_model)
+            tokenizer = AutoTokenizer.from_pretrained(directory_model, trust_remote_code=True)
         except (OSError, HTTPError) as e:
             print(f"Error loading tokenizer from directory: {directory_model}")
             print(f"Error message: {e}")

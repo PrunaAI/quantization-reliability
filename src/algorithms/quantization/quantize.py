@@ -48,6 +48,14 @@ def quantize(model_name, tokenizer, calib_dataloader, quantize_method, num_bits=
             save_path=save_path,
             device=device
         )
+    elif quantize_method == "HQQ-LORA":
+        model = quantize_hqq(
+            model_name=model_name,
+            quantize_config=QUANT_CONFIGS[quantize_method],
+            save_model=save_model,
+            save_path=save_path,
+            device=device
+        )
     else:
         raise NotImplementedError(f"Quantization method {quantize_method} not yet implemented.")
 
