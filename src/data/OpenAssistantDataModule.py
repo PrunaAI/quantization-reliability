@@ -45,9 +45,9 @@ class OpenAssistantDataModule(LightningDataModule):
         self.prepare_data()
 
     def prepare_data(self):
-        self.train_dataset = load_dataset("OpenAssistant/oasst1", split="train")
+        self.train_dataset = load_dataset("OpenAssistant/oasst1", split="train[:95%]")
         self.val_dataset = load_dataset("OpenAssistant/oasst1", split="validation")
-        self.test_dataset = load_dataset("OpenAssistant/oasst1", split="test")
+        self.test_dataset = load_dataset("OpenAssistant/oasst1", split="train[95%:]")
 
     def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
@@ -86,7 +86,7 @@ class OpenAssistantDataModule(LightningDataModule):
             sequence_length = min(self.sequence_length, sequence_length)
         if stride is None:
             stride = self.stride
-        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=self.n_samples, sequence_length=sequence_length, stride=stride)
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=self.n_samples sequence_length=sequence_length, stride=stride)
         test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         test_dataloader.ORIGINAL_DATASET = self.test_dataset
         return test_dataloader
