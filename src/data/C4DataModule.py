@@ -55,15 +55,13 @@ class C4DataModule(LightningDataModule):
         
         self.train_dataset = load_dataset(
             "allenai/c4",
-            "en",
             data_files={"train": "en/c4-train.00000-of-01024.json.gz"},
-            split=train_split
+            split="train"
         )
         self.val_dataset = load_dataset(
             "allenai/c4",
-            "en",
             data_files={"validation": "en/c4-validation.00000-of-00008.json.gz"},
-            split=validation_split,
+            split="validation",
         )
         # C4 does not have an explicit test set for now. We use the validation set instead.
         # Check https://github.com/locuslab/wanda/blob/8e8fc87b4a2f9955baa7e76e64d5fce7fa8724a6/lib/data.py#L63 for other examples.
