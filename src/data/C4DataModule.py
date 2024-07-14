@@ -67,7 +67,6 @@ class C4DataModule(LightningDataModule):
         # Check https://github.com/locuslab/wanda/blob/8e8fc87b4a2f9955baa7e76e64d5fce7fa8724a6/lib/data.py#L63 for other examples.
         self.test_dataset = load_dataset(
             "allenai/c4",
-            "en",
             data_files={"validation": "en/c4-validation.00001-of-00008.json.gz"},
             split=test_split,
         )
