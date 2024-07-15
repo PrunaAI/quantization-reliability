@@ -34,17 +34,17 @@ grid:
   calib_dataset_name:
     type: choice
     options:
-      - 'WikiText'
-      - 'OpenAssistant'
+      # - 'WikiText'
+      # - 'OpenAssistant'
       - 'C4'
-      - 'PTB'
+      # - 'PTB'
 
   eval_dataset_name:
     type: choice
     options:
-      - 'WikiText'
-      - 'OpenAssistant'
-      - 'C4'
+      # - 'WikiText'
+      # - 'OpenAssistant'
+      # - 'C4'
       - 'PTB'
 
   calib_dataset_split:
@@ -68,16 +68,16 @@ grid:
     type: choice
     options:
       - 'Llama-3-8B'
-      - 'TinyLlama'
+      # - 'TinyLlama'
 
   quantize_method:
     type: choice
     options:
       - "NONE"
-      # - "BNB-4"
-      # - "BNB-8"
-      # - "AWQ-4"
-      # - "HQQ-8-uniform"
+      - "BNB-4"
+      - "BNB-8"
+      - "AWQ-4"
+      - "HQQ-8-uniform"
       - "HQQ-mixed"
       - "HQQ-LORA"
 

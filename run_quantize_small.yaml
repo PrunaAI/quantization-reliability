@@ -74,10 +74,10 @@ grid:
     type: choice
     options:
       - "NONE"
-      # - "BNB-4"
-      # - "BNB-8"
-      # - "AWQ-4"
-      # - "HQQ-8-uniform"
+      - "BNB-4"
+      - "BNB-8"
+      - "AWQ-4"
+      - "HQQ-8-uniform"
       - "HQQ-mixed"
       - "HQQ-LORA"
 
