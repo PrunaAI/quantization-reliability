@@ -2,9 +2,10 @@ from src.algorithms.quantization import QUANT_CONFIGS
 from src.algorithms.quantization.awq import quantize_awq
 from src.algorithms.quantization.bnb import quantize_bnb
 from src.algorithms.quantization.hqq import quantize_hqq
+from src.algorithms.quantization.hqq_plus import quantize_hqq_plus
 
 # Wrapper class for quantization
-def quantize(model_name, tokenizer, calib_dataloader, quantize_method, num_bits=None, save_model=False, save_path="", device="cuda"):        
+def quantize(model_name, tokenizer, calib_dataloader, quantize_method, save_model=False, save_path="", device="cuda"):        
     model = None
     if quantize_method == "BNB-4":
         model = quantize_bnb(
@@ -49,8 +50,10 @@ def quantize(model_name, tokenizer, calib_dataloader, quantize_method, num_bits=
             device=device
         )
     elif quantize_method == "HQQ-LORA":
-        model = quantize_hqq(
+        model = quantize_hqq_plus(
             model_name=model_name,
+            tokenizer=tokenizer,
+            calib_dataloader=calib_dataloader,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
             save_path=save_path,

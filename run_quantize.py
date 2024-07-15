@@ -220,7 +220,6 @@ def run_quantize(
                 tokenizer=tokenizer,
                 calib_dataloader=calib_dataloader,
                 quantize_method=quantize_method,
-                num_bits=quantize_method,
                 save_model=save_quantized_model,
                 save_path=quantized_model_save_path,
                 device=device
