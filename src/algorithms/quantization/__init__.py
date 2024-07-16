@@ -129,7 +129,7 @@ fine_tuning_params = {
     'save_steps': 10000000,
     'lr_scheduler_type': "linear",
     'max_tokens': 256,
-    'max_samples': 5000,
+    'max_samples': 100,
     'random_seed': 100,
     'eval_dataset': None,
     'peft_config': None,
