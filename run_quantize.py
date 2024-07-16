@@ -105,6 +105,8 @@ def run_quantize(
     calib_dataset_split="",
     eval_dataset_name="",
     eval_dataset_split="",
+    calib_sample_size=128,
+    eval_sample_size=None,
     batch_size=1,
     dataset_stride=1024,
     dataset_seq_length=1024,
@@ -133,8 +135,10 @@ def run_quantize(
     logger.info(
         f"Calibration dataset: {calib_dataset_name}\n"
         f"Calibration split: {calib_dataset_split}\n"
+        f"Calibration sample size: {calib_sample_size}\n"
         f"Evaluation dataset: {eval_dataset_name}\n"
         f"Evaluation split: {eval_dataset_split}\n"
+        f"Evaluation sample size: {eval_sample_size}\n"
         f"Dataloader stride: {dataset_stride}\n"
         f"Dataloader sequence length: {dataset_seq_length}\n"
         f"Batch size: {batch_size}\n"
@@ -177,7 +181,7 @@ def run_quantize(
             dataset_name=calib_dataset_name,
             directory_dataset=directory_dataset,
             batch_size=batch_size,
-            n_samples=128,
+            n_samples=calib_sample_size,
             sequence_length=dataset_stride,
             tokenizer_name=model_full_name,
             seed=seed_dataset,
@@ -187,7 +191,7 @@ def run_quantize(
             dataset_name=eval_dataset_name,
             directory_dataset=directory_dataset,
             batch_size=batch_size,
-            n_samples=None,
+            n_samples=eval_sample_size,
             sequence_length=dataset_stride,
             tokenizer_name=model_full_name,
             seed=seed_dataset,
