@@ -24,7 +24,7 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
     else:
         raise ValueError(f"Invalid quantize_config for HQQ: {quantize_config['name']}")
     
-    hqq_plus_base_params = hqq_config['hqq_plus_base_params']
+    hqq_plus_base_params = hqq_config['base_params']
     lora_params = hqq_config['lora_params']
     fine_tuning_params = hqq_config['fine_tuning_params']    
     
