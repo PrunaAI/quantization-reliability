@@ -60,6 +60,6 @@ def quantize(model_name, tokenizer, calib_dataloader, quantize_method, save_mode
             device=device
         )
     else:
-        raise NotImplementedError(f"Quantization method {quantize_method} not yet implemented.")
+        raise NotImplementedError(f"Quantization method {quantize_method} should be one of {list(QUANT_CONFIGS.keys())}")
 
     return model
