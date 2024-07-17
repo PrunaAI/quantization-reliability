@@ -18,6 +18,8 @@ class TextDataset(Dataset):
         self.dataset = dataset
         self.texts = dataset[text_key]
         self.n_samples = n_samples
+        if n_samples is None:
+            n_samples = len(self.dataset)
         self.sequence_length = sequence_length
         self.seed = seed
 

@@ -15,6 +15,8 @@ class TextDataset(Dataset):
         self.n_samples = n_samples
         self.sequence_length = sequence_length
         self.seed = seed
+        if n_samples is None:
+            n_samples = len(self.dataset)
 
         # Tokenize the entire dataset text
         tokenized_dataset = self.tokenizer("\n\n".join(self.texts), return_tensors="pt")
