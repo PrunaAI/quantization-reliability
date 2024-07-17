@@ -1,3 +1,4 @@
+import copy
 import os
 import random
 from pytorch_lightning import LightningDataModule
@@ -38,7 +39,7 @@ class TextDataset(Dataset):
         end_index = start_index + self.sequence_length
 
         input_ids = self.data[start_index:end_index]
-        target_ids = self.labels[start_index + 1 : end_index + 1]
+        target_ids = copy.deepcopy(self.labels[start_index + 1 : end_index + 1])
         target_ids[:-1] = -100
 
         return input_ids, target_ids
