@@ -20,6 +20,7 @@ class TextDataset(Dataset):
         # Tokenize the entire dataset text
         tokenized_dataset = self.tokenizer("\n\n".join(self.texts), return_tensors="pt")
         self.data = tokenized_dataset.input_ids[0]
+        self.labels = tokenized_dataset.input_ids[0]
 
         # Random sampling for indices
         random.seed(self.seed)
@@ -37,21 +38,20 @@ class TextDataset(Dataset):
         end_index = start_index + self.sequence_length
 
         input_ids = self.data[start_index:end_index]
-        target_ids = input_ids.clone()
+        target_ids = copy.deepcopy(self.labels[start_index + 1 : end_index + 1])
         target_ids[:-1] = -100
 
         return input_ids, target_ids
 
 
 class C4DataModule(LightningDataModule):
-    def __init__(self, directory_dataset=os.getcwd(), batch_size=1, sequence_length=2048, stride=512, n_samples=1100, tokenizer_name=None, seed=1):
+    def __init__(self, directory_dataset=os.getcwd(), batch_size=1, sequence_length=2048, n_samples=1100, tokenizer_name=None, seed=1):
         super().__init__()
         self.directory_dataset = directory_dataset
         self.batch_size = batch_size
         self.n_samples = n_samples
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
         self.sequence_length = sequence_length
-        self.stride = stride
         self.prepare_data()
 
     def prepare_data(self):
@@ -73,32 +73,38 @@ class C4DataModule(LightningDataModule):
             split="validation",
         )
 
-    def train_dataloader(self, batch_size=None, n_samples=None):
+    def train_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=sequence_length)
         train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         train_dataloader.ORIGINAL_DATASET = self.train_dataset
         return train_dataloader
 
-    def val_dataloader(self, batch_size=None, n_samples=None):
+    def val_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=sequence_length)
         val_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         val_dataloader.ORIGINAL_DATASET = self.val_dataset
         return val_dataloader
 
-    def test_dataloader(self, batch_size=None, n_samples=None):
+    def test_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=sequence_length)
         test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         test_dataloader.ORIGINAL_DATASET = self.test_dataset
         return test_dataloader

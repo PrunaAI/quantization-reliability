@@ -46,14 +46,13 @@ class TextDataset(Dataset):
 
 
 class WikiTextDataModule(LightningDataModule):
-    def __init__(self, directory_dataset=os.getcwd(), batch_size=1, sequence_length=2048, stride=512, n_samples=None, tokenizer_name=None, seed=1):
+    def __init__(self, directory_dataset=os.getcwd(), batch_size=1, sequence_length=2048, n_samples=None, tokenizer_name=None, seed=1):
         super().__init__()
         self.directory_dataset = directory_dataset
         self.batch_size = batch_size
         self.n_samples = n_samples
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, legacy=False)
         self.sequence_length = sequence_length
-        self.stride = stride
         self.prepare_data()
 
     def prepare_data(self):
