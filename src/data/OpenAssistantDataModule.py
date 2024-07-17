@@ -8,12 +8,10 @@ from datasets import load_dataset
 
 
 class TextDataset(Dataset):
-    def __init__(self, dataset, tokenizer, n_samples=None, text_key="text", sequence_length=2048, seed=0):
+    def __init__(self, dataset, tokenizer, n_samples=128, text_key="text", sequence_length=2048, seed=0):
         self.tokenizer = tokenizer
         self.dataset = dataset
         self.texts = dataset[text_key]
-        if n_samples is not None:
-            self.texts = self.texts[:n_samples]
         self.n_samples = n_samples
         self.sequence_length = sequence_length
         self.seed = seed
@@ -26,10 +24,9 @@ class TextDataset(Dataset):
         # Random sampling for indices
         random.seed(self.seed)
         self.indices = []
-        if n_samples is not None:
-            for _ in range(n_samples):
-                start_idx = random.randint(0, len(self.data) - sequence_length - 1)
-                self.indices.append(start_idx)
+        for _ in range(n_samples):
+            start_idx = random.randint(0, len(self.data) - sequence_length - 1)
+            self.indices.append(start_idx)
 
     def __len__(self):
         return len(self.indices)
@@ -46,7 +43,7 @@ class TextDataset(Dataset):
 
 
 class OpenAssistantDataModule(LightningDataModule):
-    def __init__(self, directory_dataset=os.getcwd(), batch_size=1, n_samples=None, sequence_length=2048, tokenizer_name=None, seed=1):
+    def __init__(self, directory_dataset=os.getcwd(), batch_size=1, n_samples=128, sequence_length=2048, tokenizer_name=None, seed=1):
         super().__init__()
         self.directory_dataset = directory_dataset
         self.batch_size = batch_size
