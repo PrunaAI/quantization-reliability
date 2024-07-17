@@ -27,8 +27,8 @@ fixed:
   seed_model: 123
   seed_dataset: 123
   batch_size: 1
-  dataset_stride: 1024
-  dataset_seq_length: 1024
+  calib_seq_length: 2048
+  eval_seq_length: 2048
   calib_sample_size: 128
   eval_sample_size: None
 
