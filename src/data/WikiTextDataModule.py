@@ -12,9 +12,9 @@ class TextDataset(Dataset):
         self.tokenizer = tokenizer
         self.dataset = dataset
         self.texts = dataset[text_key]
-        self.n_samples = n_samples
         if n_samples is None:
             n_samples = len(self.dataset)
+        self.n_samples = n_samples
         self.sequence_length = sequence_length
         self.seed = seed
 
