@@ -7,6 +7,11 @@ from transformers import AutoTokenizer
 from datasets import load_dataset
 
 
+# Function to rename a feature key
+def rename_feature(dataset, old_key, new_key):
+    return dataset.map(lambda example: {new_key: example[old_key]}, remove_columns=[old_key])
+
+
 class TextDataset(Dataset):
     def __init__(self, dataset, tokenizer, n_samples=128, text_key="sentence", sequence_length=2048, seed=0):
         self.tokenizer = tokenizer
@@ -56,6 +61,11 @@ class PTBDataModule(LightningDataModule):
         self.train_dataset = load_dataset('ptb_text_only', 'penn_treebank', split="train", trust_remote_code=True)
         self.val_dataset = load_dataset('ptb_text_only', 'penn_treebank', split="validation", trust_remote_code=True)
         self.test_dataset = load_dataset('ptb_text_only', 'penn_treebank', split="test", trust_remote_code=True)
+
+        # Rename 'sentence' to 'text' for each dataset
+        self.train_dataset = rename_feature(self.train_dataset, 'sentence', 'text')
+        self.val_dataset = rename_feature(self.val_dataset, 'sentence', 'text')
+        self.test_dataset = rename_feature(self.test_dataset, 'sentence', 'text')
 
     def train_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
