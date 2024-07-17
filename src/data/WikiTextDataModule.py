@@ -19,7 +19,8 @@ class TextDataset(Dataset):
 
         # Tokenize the entire dataset text
         tokenized_dataset = self.tokenizer("\n\n".join(self.texts), return_tensors="pt")
-        self.data = tokenized_dataset.input_ids[0]
+        self.data = tokenized_dataset.input_ids[0, :-1]
+        self.labels = tokenized_dataset.input_ids[0]
 
         # Random sampling for indices
         random.seed(self.seed)
@@ -37,7 +38,7 @@ class TextDataset(Dataset):
         end_index = start_index + self.sequence_length
 
         input_ids = self.data[start_index:end_index]
-        target_ids = input_ids.clone()
+        target_ids = self.labels[start_index + 1 : end_index + 1]
         target_ids[:-1] = -100
 
         return input_ids, target_ids
