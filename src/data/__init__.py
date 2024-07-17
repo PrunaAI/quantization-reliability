@@ -59,11 +59,15 @@ base_datasets = {
     ),
 }
 
-data_loader_from_split = lambda data_module: {
-    "train": data_module.train_dataloader(),
-    "validation": data_module.val_dataloader(),
-    "test": data_module.test_dataloader()
-}
+def data_loader_from_split(data_module, split, batch_size=None, n_samples=None, sequence_length=None):
+    if split == "train":
+        return data_module.train_dataloader(batch_size=batch_size, n_samples=n_samples, sequence_length=sequence_length)
+    elif split == "validation":
+        return data_module.val_dataloader(batch_size=batch_size, n_samples=n_samples, sequence_length=sequence_length)
+    elif split == "test":
+        return data_module.test_dataloader(batch_size=batch_size, n_samples=n_samples, sequence_length=sequence_length)
+    else:
+        raise MisconfigurationException(f"Split {split} is not valid. Must be one of ['train', 'validation', 'test']")
 
 def get_dataset(dataset_name, directory_dataset, batch_size=1, n_samples=128, sequence_length=512, seed=123, tokenizer_name=None, **kwargs):
     # Get dataset

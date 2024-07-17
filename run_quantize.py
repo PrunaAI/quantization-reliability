@@ -197,9 +197,17 @@ def run_quantize(
         )
         
         logger.info("Load calibration dataloader")
-        calib_dataloader = data_loader_from_split(calib_data_module)[calib_dataset_split]
+        calib_dataloader = data_loader_from_split(
+            data_module=calib_data_module,
+            split=calib_dataset_split,
+            sequence_length=512 if quantize_method in ["AWQ-4"] else calib_seq_length,
+        )
         logger.info("Load evaluation dataloader")
-        eval_dataloader = data_loader_from_split(eval_data_module)[eval_dataset_split]
+        eval_dataloader = data_loader_from_split(
+            data_module=eval_data_module,
+            split=eval_dataset_split,
+            sequence_length=512 if quantize_method in ["AWQ-4"] else eval_seq_length,
+        )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
         ##############

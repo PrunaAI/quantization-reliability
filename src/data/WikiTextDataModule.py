@@ -61,32 +61,38 @@ class WikiTextDataModule(LightningDataModule):
         self.val_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="validation")
         self.test_dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
 
-    def train_dataloader(self, batch_size=None, n_samples=None):
+    def train_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=sequence_length)
         train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         train_dataloader.ORIGINAL_DATASET = self.train_dataset
         return train_dataloader
 
-    def val_dataloader(self, batch_size=None, n_samples=None):
+    def val_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=sequence_length)
         val_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         val_dataloader.ORIGINAL_DATASET = self.val_dataset
         return val_dataloader
 
-    def test_dataloader(self, batch_size=None, n_samples=None):
+    def test_dataloader(self, batch_size=None, sequence_length=None, n_samples=None):
         if batch_size is None:
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
+        if sequence_length is None:
+            sequence_length = self.sequence_length
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=sequence_length)
         test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         test_dataloader.ORIGINAL_DATASET = self.test_dataset
         return test_dataloader
