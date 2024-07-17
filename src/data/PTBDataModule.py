@@ -64,7 +64,7 @@ class PTBDataModule(LightningDataModule):
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length, stride=self.stride)
+        dataset = TextDataset(self.train_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
         train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         train_dataloader.ORIGINAL_DATASET = self.train_dataset
         return train_dataloader
@@ -74,7 +74,7 @@ class PTBDataModule(LightningDataModule):
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length, stride=self.stride)
+        dataset = TextDataset(self.val_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
         val_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         val_dataloader.ORIGINAL_DATASET = self.val_dataset
         return val_dataloader
@@ -84,7 +84,7 @@ class PTBDataModule(LightningDataModule):
             batch_size = self.batch_size
         if n_samples is None:
             n_samples = self.n_samples
-        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length, stride=self.stride)
+        dataset = TextDataset(self.test_dataset, tokenizer=self.tokenizer, n_samples=n_samples, sequence_length=self.sequence_length)
         test_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
         test_dataloader.ORIGINAL_DATASET = self.test_dataset
         return test_dataloader
