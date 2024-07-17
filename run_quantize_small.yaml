@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
-  name: 'quantize_tinyllama_07-15'
+  name: 'quantize_tinyllama_07-17'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -76,11 +76,11 @@ grid:
     type: choice
     options:
       - "NONE"
-      - "BNB-4"
-      - "BNB-8"
-      - "AWQ-4"
-      - "HQQ-8-uniform"
-      - "HQQ-mixed"
+      # - "BNB-4"
+      # - "BNB-8"
+      # - "AWQ-4"
+      # - "HQQ-8-uniform"
+      # - "HQQ-mixed"
       - "HQQ-LORA"
 
 # random:
