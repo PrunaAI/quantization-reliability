@@ -8,19 +8,12 @@ from src.evaluations.evaluate_perplexity import evaluate_perplexity
 
 logger = logging.getLogger("quant_logger")
 
-def evaluate(
-    model,
-    eval_dataloader,
-    eval_metrics,
-    factor=100,
-    device="cuda",
-    to_device=False,
-    prefix="",
-    gpu_memory_usage={}
-) -> Dict:
-    """
-    Evaluate the model with specified metrics.
-    """
+def evaluate(model, eval_dataloader, eval_metrics, factor=1, device="cuda", to_device=False, prefix="", gpu_memory_usage={}) -> Dict:
+    logger.info(f"Evaluating model with the following configuration:")
+    logger.info(f"  Metrics: {eval_metrics}")
+    logger.info(f"  Eval dataloader: {eval_dataloader.dataset.__class__.__name__}")
+    logger.info(f"  Factor: {factor}")
+    
     model.eval()
     results = {}
     logger.info("Get device properties")
@@ -33,7 +26,7 @@ def evaluate(
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate GPU type")
         
     if "perplexity" in eval_metrics:
-        logger.info("Evaluate Perplexity")
+        logger.info("Evaluating Perplexity")
         results[f"{prefix}perplexity"] = evaluate_perplexity(
             model=model,
             dataloader=eval_dataloader,
@@ -43,7 +36,7 @@ def evaluate(
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate perplexity")
     if "brier_score" in eval_metrics:
-        logger.info("Evaluate Brier Score")
+        logger.info("Evaluating Brier Score")
         results[f"{prefix}brier_score"] = evaluate_brier_score(
             model=model,
             dataloader=eval_dataloader,
@@ -53,13 +46,13 @@ def evaluate(
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate brier score")
     if "model_size" in eval_metrics:
-        logger.info("Evaluate Model Size")
+        logger.info("Evaluating Model Size")
         results[f"{prefix}model_size"] = evaluate_model_size(
             model=model
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model size")
     if "quantize_runtime" in eval_metrics:
-        logger.info("Evaluate Quantize Runtime")
+        logger.info("Evaluating Quantize Runtime")
         results[f"{prefix}quantize_runtime"] = evaluate_quantize_runtime(
             model=model
         )

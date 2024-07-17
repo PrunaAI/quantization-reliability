@@ -4,8 +4,12 @@ from src.algorithms.quantization.bnb import quantize_bnb
 from src.algorithms.quantization.hqq import quantize_hqq
 from src.algorithms.quantization.hqq_plus import quantize_hqq_plus
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 # Wrapper class for quantization
-def quantize(model_name, tokenizer, calib_dataloader, quantize_method, save_model=False, save_path="", device="cuda"):        
+def quantize(model_name, tokenizer, calib_dataloader, quantize_method, save_model=False, save_path="", device="cuda"):
+    logger.info(f"Quantizing model {model_name} with method {quantize_method} and calibration data {calib_dataloader.dataset.__class__.__name__}")
     model = None
     if quantize_method == "BNB-4":
         model = quantize_bnb(

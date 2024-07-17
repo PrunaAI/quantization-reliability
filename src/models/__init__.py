@@ -3,6 +3,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from urllib.error import HTTPError
 import re
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 # Define the base datasets dictionary
 base_models = {
     "TinyLlama": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
@@ -10,6 +13,7 @@ base_models = {
 }
 
 def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):
+    logger.info(f"Loading model {model_name}")
     torch.manual_seed(seed)
     if model_name is not None:
         model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map=device)
@@ -30,6 +34,7 @@ def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, d
 
 
 def get_tokenizer(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):
+    logger.info(f"Loading tokenizer {model_name}")
     torch.manual_seed(seed)
     if model_name is not None:
         tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device, trust_remote_code=True)
