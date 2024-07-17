@@ -341,3 +341,31 @@ def evaluate_brier_score(model, dataloader, device="cuda", to_device=False):
 
 wikitext_dataloader = wikitext_data_module.test_dataloader()
 evaluate_brier_score(model, wikitext_dataloader, device=device)
+
+# Old TextDataset
+class TextDataset(Dataset):
+    def __init__(self, dataset, tokenizer, n_samples=None, sequence_length=2048, stride=512):
+        self.tokenizer = tokenizer
+        self.dataset = dataset
+        self.texts = dataset["text"]
+        if n_samples is not None:
+            self.texts = self.texts[:n_samples]
+        tokenized_dataset = self.tokenizer("\n\n".join(self.texts), return_tensors="pt")
+        self.data = tokenized_dataset.input_ids[0, :-1]
+        self.labels = tokenized_dataset.input_ids[0]
+        self.sequence_length = sequence_length
+        self.stride = stride
+
+    def __len__(self):
+        return len(self.data) // self.sequence_length
+
+    def __getitem__(self, index):
+        start_index = max(index * self.stride + self.stride - self.sequence_length, 0)
+        end_index = start_index + self.stride
+        if end_index > len(self.data):
+            raise IndexError("Index out of bounds")
+        input_ids = self.data[start_index:end_index]
+        target_ids = self.labels[start_index + 1: end_index + 1]
+        target_ids[:-self.stride] = -100
+        
+        return input_ids, target_ids
