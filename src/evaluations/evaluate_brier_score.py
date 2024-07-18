@@ -23,7 +23,9 @@ class BrierScore:
             return 0.0
         return self.total_brier_score / self.num_batches
 
-def evaluate_brier_score(model, dataloader, n_samples, device="cuda", to_device=False, verbose=False):
+def evaluate_brier_score(model, dataloader, n_samples=None, device="cuda", to_device=False, verbose=False):
+    if n_samples is None:
+        n_samples = len(dataloader)
     if to_device:
         model.to(device)
     if isinstance(model, torch.nn.Module):

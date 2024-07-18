@@ -4,7 +4,9 @@ import torchmetrics
 
 logger = logging.getLogger("quant_logger")
 
-def evaluate_perplexity(model, dataloader, n_samples, device="cuda", to_device=False, verbose=False):
+def evaluate_perplexity(model, dataloader, n_samples=None, device="cuda", to_device=False, verbose=False):
+    if n_samples is None:
+        n_samples = len(dataloader)
     if to_device:
         model.to(device)
     if isinstance(model, torch.nn.Module):
