@@ -4,6 +4,10 @@ from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer
 from datasets import load_dataset
 
+# Function to rename a feature key
+def rename_feature(dataset, old_key, new_key):
+    return dataset.map(lambda example: {new_key: example[old_key]}, remove_columns=[old_key])
+
 
 class TextDataset(Dataset):
     def __init__(self, dataset, tokenizer, text_key="sentence", sequence_length=2048, stride=512, seed=0):
@@ -54,6 +58,11 @@ class PTBDataModule(LightningDataModule):
         self.train_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=train_split, trust_remote_code=True)
         self.val_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=validation_split, trust_remote_code=True)
         self.test_dataset = load_dataset('ptb_text_only', 'penn_treebank', split=test_split, trust_remote_code=True)
+        
+        # Rename 'sentence' to 'text' for each dataset
+        self.train_dataset = rename_feature(self.train_dataset, 'sentence', 'text')
+        self.val_dataset = rename_feature(self.val_dataset, 'sentence', 'text')
+        self.test_dataset = rename_feature(self.test_dataset, 'sentence', 'text')
 
     def train_dataloader(self, batch_size=None, sequence_length=None, stride=None):
         if batch_size is None:
