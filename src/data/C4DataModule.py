@@ -34,7 +34,7 @@ class TextDataset(Dataset):
             raise IndexError("Index out of bounds")
         input_ids = self.data[start_index:end_index]
         target_ids = self.labels[start_index + 1: end_index + 1]
-        target_ids[:-1] = -100
+        target_ids[:self.stride] = -100
 
         return input_ids, target_ids
 
