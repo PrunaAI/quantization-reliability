@@ -226,6 +226,7 @@ def run_quantize(
                 model_name=model_full_name,
                 tokenizer=tokenizer,
                 calib_dataloader=calib_dataloader,
+                train_dataloader=calib_dataloader,
                 quantize_method=quantize_method,
                 save_model=save_quantized_model,
                 save_path=quantized_model_save_path,
