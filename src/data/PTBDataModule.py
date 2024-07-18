@@ -11,7 +11,7 @@ def rename_feature(dataset, old_key, new_key):
 
 
 class TextDataset(Dataset):
-    def __init__(self, dataset, tokenizer, text_key="sentence", sequence_length=2048, stride=512, seed=0):
+    def __init__(self, dataset, tokenizer, text_key="text", sequence_length=2048, stride=512, seed=0):
         self.tokenizer = tokenizer
         self.dataset = dataset
         self.texts = dataset[text_key]
