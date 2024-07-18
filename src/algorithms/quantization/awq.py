@@ -8,7 +8,9 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, sa
         raise ValueError(f"Invalid num_bits for AWQ: {quantize_config['num_bits']}")
         
     calib_text = []
-    for batch in calib_dataloader:
+    for i, batch in enumerate(calib_dataloader):
+        if i >= quantize_config["n_samples"]:
+            break
         input_ids, labels = batch
         decoded_text = tokenizer.decode(input_ids[0].tolist())
         calib_text.append(decoded_text)
@@ -17,7 +19,8 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, sa
         "zero_point": quantize_config["zero_point"],
         "q_group_size": quantize_config["q_group_size"],
         "w_bit": quantize_config["w_bit"],
-        "version": quantize_config["version"]
+        "version": quantize_config["version"],
+        "n_samples": quantize_config["n_samples"]
     }
 
     awq_model = AutoAWQForCausalLM.from_pretrained(

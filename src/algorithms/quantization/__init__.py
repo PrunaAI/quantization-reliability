@@ -42,7 +42,8 @@ AWQ_4 = {
     "zero_point": True,
     "q_group_size": 128,
     "w_bit": 4,
-    "version": "GEMM"
+    "version": "GEMM",
+    "n_samples": 128
 }
 
 ##### HQQ 8-bit uniform
@@ -102,7 +103,8 @@ lora_base_params = {
     'r': 32,
     'lora_alpha': 64,
     'dropout': 0.05,
-    'train_dtype': train_dtype
+    'train_dtype': train_dtype,
+    'n_samples': 128
 }
 
 lora_params = {

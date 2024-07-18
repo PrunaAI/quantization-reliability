@@ -39,7 +39,7 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
     model.quantize_model(quant_config=quant_config)
 
     # Save model name and path
-    hqq_model_name = f"{model_name.split('/')[1]}-{quantize_config['name']}"
+    hqq_model_name = f"{model_name.split('/')[1]}-{quantize_config['name']}.pt"
     hqq_model_path = os.path.join(MODEL_SAVE_PATH, hqq_model_name)
     model.NAME = hqq_model_name
     model.PATH = hqq_model_path
@@ -58,7 +58,7 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
         return chat
 
     random.seed(100)
-    idx = random.sample(range(len(calib_dataset)), min(fine_tuning_params['max_samples'], len(calib_dataset)))
+    idx = random.sample(range(len(calib_dataset)), min(fine_tuning_params['max_samples'], lora_params['n_samples']))
     calib_dataset = Dataset.from_dict({'text': [pre_process_chat(calib_dataset[i]['text']) for i in tqdm(idx)]})
     # dataset_val = Dataset.from_dict({'text': [pre_process_chat(dataset_val[i]['text']) for i in range(len(dataset_val))]})
 
