@@ -58,7 +58,7 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
         return chat
 
     random.seed(100)
-    idx = random.sample(range(len(calib_dataset)), min(fine_tuning_params['max_samples'], fine_tuning_params['n_samples']))
+    idx = random.sample(range(len(calib_dataset)), min(fine_tuning_params['max_samples'], fine_tuning_params['train_samples']))
     calib_dataset = Dataset.from_dict({'text': [pre_process_chat(calib_dataset[i]['text']) for i in tqdm(idx)]})
     # dataset_val = Dataset.from_dict({'text': [pre_process_chat(dataset_val[i]['text']) for i in range(len(dataset_val))]})
 

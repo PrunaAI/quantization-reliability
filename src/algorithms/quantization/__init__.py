@@ -103,8 +103,7 @@ lora_base_params = {
     'r': 32,
     'lora_alpha': 64,
     'dropout': 0.05,
-    'train_dtype': train_dtype,
-    'n_samples': 128
+    'train_dtype': train_dtype
 }
 
 lora_params = {
@@ -135,7 +134,8 @@ fine_tuning_params = {
     'random_seed': 100,
     'eval_dataset': None,
     'peft_config': None,
-    'packing': True
+    'packing': True,
+    'train_samples': 128
 }
 
 HQQ_LORA = {
