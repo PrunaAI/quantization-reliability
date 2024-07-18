@@ -147,6 +147,25 @@ HQQ_LORA = {
     "fine_tuning_params": fine_tuning_params
 }
 
+QUANTO = {
+    "weights": "qint8",
+    "activations": "qint8",
+}
+
+QUANTO_CALIB = {
+    "weights": "qint8",
+    "activations": "qint8",
+    "n_samples": 128,
+    "momentum": 0.9,
+}
+
+QUANTO_QAT = {
+    "weights": "qint8",
+    "activations": "qint8",
+    "train_samples": 128,
+    "lr": 1e-4,
+}
+
 QUANT_CONFIGS = {
     "NONE": NONE,
     "BNB-4": BNB_4,
@@ -154,5 +173,8 @@ QUANT_CONFIGS = {
     "AWQ-4": AWQ_4,
     "HQQ-8-uniform": HQQ_8_uniform,
     "HQQ-mixed": HQQ_mixed,
-    "HQQ-LORA": HQQ_LORA
+    "HQQ-LORA": HQQ_LORA,
+    "QUANTO": QUANTO,
+    "QUANTO-CALIB": QUANTO_CALIB,
+    "QUANTO-QAT": QUANTO_QAT
 }
