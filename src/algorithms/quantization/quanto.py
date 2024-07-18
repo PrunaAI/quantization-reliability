@@ -3,12 +3,17 @@ import time
 import torch
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from optimum.quanto import Calibration, quantize, freeze, qint8, safe_save, QTensor
+from optimum.quanto import Calibration, quantize, freeze, qint8, qint4, safe_save, QTensor
 from torch.optim import Adam
 from src import MODEL_SAVE_PATH
 
 import logging
 logger = logging.getLogger("quant_logger")
+
+keyword_to_itype = {
+    "qint8": qint8,
+    "qint4": qint4
+}
 
 def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_dataloader=None, save_model=False, save_path="", device="cuda"):
     if 'name' not in quantize_config:
@@ -20,15 +25,18 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
     model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map=device)
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
     tokenizer.pad_token_id = tokenizer.eos_token_id
+    
+    weights = keyword_to_itype[quantize_config.get("weights", "qint8")] 
+    activations = keyword_to_itype[quantize_config.get("activations", "qint8")]
 
     # Perform quantization based on the config
     if quantize_config['name'] == "QUANTO":
         logger.info("Performing quantization for QUANTO")
-        quantize(model, weights=qint8, activations=qint8)
+        quantize(model, weights=weights, activations=activations)
 
     elif quantize_config['name'] == "QUANTO-CALIB":
         logger.info("Performing calibration for QUANTO")
-        quantize(model, weights=qint8, activations=qint8)
+        quantize(model, weights=weights, activations=activations)
         cal_dataset = calib_dataloder.ORIGINAL_DATASET
         cal_samples = quantize_config.get("n_samples", 128)
         with Calibration(streamline=True, debug=False):
@@ -45,7 +53,7 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
 
     elif quantize_config['name'] == "QUANTO-QAT":
         logger.info("Performing Quantization Aware Training for QUANTO")
-        quantize(model, weights=qint8, activations=qint8)
+        quantize(model, weights=weights, activations=activations)
         train_samples = quantize_config.get("train_samples", 128)
         lr = quantize_config.get("lr", 1e-4)
         model.to(device)
