@@ -19,8 +19,7 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, sa
         "zero_point": quantize_config["zero_point"],
         "q_group_size": quantize_config["q_group_size"],
         "w_bit": quantize_config["w_bit"],
-        "version": quantize_config["version"],
-        "n_samples": quantize_config["n_samples"]
+        "version": quantize_config["version"]
     }
 
     awq_model = AutoAWQForCausalLM.from_pretrained(
