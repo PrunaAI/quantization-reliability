@@ -105,8 +105,7 @@ def run_quantize(
     calib_dataset_split="",
     eval_dataset_name="",
     eval_dataset_split="",
-    calib_sample_size=128,
-    eval_sample_size=None,
+    eval_n_samples=None,
     calib_seq_length=2048,
     eval_seq_length=2048,
     batch_size=1,
@@ -135,12 +134,11 @@ def run_quantize(
     logger.info(
         f"Calibration dataset: {calib_dataset_name}\n"
         f"Calibration split: {calib_dataset_split}\n"
-        f"Calibration sample size: {calib_sample_size}\n"
         f"Calibration sequence length: {calib_seq_length}\n"
         f"Evaluation dataset: {eval_dataset_name}\n"
         f"Evaluation split: {eval_dataset_split}\n"
-        f"Evaluation sample size: {eval_sample_size}\n"
         f"Evaluation sequence length: {eval_seq_length}\n"
+        f"Evaluation n_samples: {eval_n_samples}\n"
         f"Batch size: {batch_size}\n"
         f"Model: {model_name}\n"
         f"Quantize method: {quantize_method}\n"
@@ -180,7 +178,6 @@ def run_quantize(
             dataset_name=calib_dataset_name,
             directory_dataset=directory_dataset,
             batch_size=batch_size,
-            n_samples=calib_sample_size,
             sequence_length=calib_seq_length,
             tokenizer_name=model_full_name,
             seed=seed_dataset,
@@ -190,7 +187,6 @@ def run_quantize(
             dataset_name=eval_dataset_name,
             directory_dataset=directory_dataset,
             batch_size=batch_size,
-            n_samples=eval_sample_size,
             sequence_length=eval_seq_length,
             tokenizer_name=model_full_name,
             seed=seed_dataset,
@@ -245,6 +241,7 @@ def run_quantize(
             model=quantized_model,
             eval_dataloader=eval_dataloader,
             eval_metrics=eval_metrics,
+            n_samples=eval_n_samples,
             device=device,
             to_device=("AWQ" in quantize_method),
             prefix="",

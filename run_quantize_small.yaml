@@ -29,8 +29,7 @@ fixed:
   batch_size: 1
   calib_seq_length: 2048
   eval_seq_length: 2048
-  calib_sample_size: 128
-  eval_sample_size: None
+  eval_n_samples: None
 
 grid:
   calib_dataset_name:
