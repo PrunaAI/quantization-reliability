@@ -1,3 +1,4 @@
+import copy
 import os
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset
@@ -21,7 +22,7 @@ class TextDataset(Dataset):
         # Tokenize the entire dataset text
         tokenized_dataset = self.tokenizer("\n\n".join(self.texts), return_tensors="pt")
         self.data = tokenized_dataset.input_ids[0, :-1]
-        self.labels = tokenized_dataset.input_ids[0]
+        self.labels = copy.deepcopy(tokenized_dataset.input_ids[0])
 
     def __len__(self):
         return len(self.data) // self.stride
