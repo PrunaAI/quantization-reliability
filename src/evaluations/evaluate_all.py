@@ -8,7 +8,7 @@ from src.evaluations.evaluate_perplexity import evaluate_perplexity
 
 logger = logging.getLogger("quant_logger")
 
-def evaluate(model, eval_dataloader, eval_metrics, device="cuda", to_device=False, prefix="", gpu_memory_usage={}) -> Dict:
+def evaluate(model, eval_dataloader, eval_metrics, n_samples=None, device="cuda", to_device=False, prefix="", gpu_memory_usage={}) -> Dict:
     logger.info(f"Evaluating model with the following configuration:")
     logger.info(f"  Metrics: {eval_metrics}")
     logger.info(f"  Eval dataloader: {eval_dataloader.dataset.__class__.__name__}")
@@ -29,6 +29,7 @@ def evaluate(model, eval_dataloader, eval_metrics, device="cuda", to_device=Fals
         results[f"{prefix}perplexity"] = evaluate_perplexity(
             model=model,
             dataloader=eval_dataloader,
+            n_samples=n_samples,
             device=device,
             to_device=to_device
         )
@@ -38,6 +39,7 @@ def evaluate(model, eval_dataloader, eval_metrics, device="cuda", to_device=Fals
         results[f"{prefix}brier_score"] = evaluate_brier_score(
             model=model,
             dataloader=eval_dataloader,
+            n_samples=n_samples,
             device=device,
             to_device=to_device
         )
