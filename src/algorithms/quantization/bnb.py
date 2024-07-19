@@ -46,11 +46,6 @@ def quantize_bnb(model_name, quantize_config={}, save_model=False, save_path="",
     
     print(f'Model {model_name} is quantized to {bnb_model_name} and saved at "{bnb_model_path}"')
     
-    # Calculate model size and GPU utilization
-    # calculate_model_size(bnb_model_path)
-    # from src.models.utils_llm import print_gpu_utilization
-    # print_gpu_utilization()
-
     if save_model:
         save_dir = save_path if save_path else bnb_model_path
         bnb_model.save_pretrained(save_dir)
