@@ -51,13 +51,8 @@ def quantize_hqq(model_name, quantize_config={}, save_model=False, save_path="",
     
     print(f'Model {model_name} is quantized to {hqq_model_name}')
     
-    # Calculate model size and GPU utilization
-    # calculate_model_size(bnb_model_path)
-    # from src.models.utils_llm import print_gpu_utilization
-    # print_gpu_utilization()
-    
-    if save_model:
-        save_dir = save_path if save_path else hqq_model_path
-        AutoHQQHFModel.save_quantized(hqq_model, save_dir)
+    # if save_model:
+    #     save_dir = save_path if save_path else hqq_model_path
+    #     AutoHQQHFModel.save_quantized(hqq_model, save_dir)
 
     return hqq_model

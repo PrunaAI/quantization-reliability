@@ -126,9 +126,9 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
     print("Casting LoRA weights to model dtype")
     PeftUtils.cast_lora_weights(model, dtype=torch.float32)
     
-    if save_model:
-        save_dir = save_path if save_path else hqq_model_path
-        PeftUtils.save_lora_weights(model, save_dir)
-        PeftUtils.load_lora_weights(model, save_dir, base_class=LlamaHQQ)
+    # if save_model:
+    #     save_dir = save_path if save_path else hqq_model_path
+    #     PeftUtils.save_lora_weights(model, save_dir)
+    #     PeftUtils.load_lora_weights(model, save_dir, base_class=LlamaHQQ)
     
     return model
