@@ -35,18 +35,18 @@ grid:
   calib_dataset_name:
     type: choice
     options:
-      - 'WikiText'
+      # - 'WikiText'
       - 'OpenAssistant'
-      - 'C4'
-      - 'PTB'
+      # - 'C4'
+      # - 'PTB'
 
   eval_dataset_name:
     type: choice
     options:
-      - 'WikiText'
-      - 'OpenAssistant'
+      # - 'WikiText'
+      # - 'OpenAssistant'
       - 'C4'
-      - 'PTB'
+      # - 'PTB'
 
   calib_dataset_split:
     type: choice
@@ -57,7 +57,7 @@ grid:
   eval_dataset_split:
     type: choice
     options:
-      - 'validation'
+      # - 'validation'
       - 'test'
 
   eval_metrics:
@@ -69,7 +69,7 @@ grid:
     type: choice
     options:
       - 'Llama-3-8B'
-      # - 'TinyLlama'
+      - 'TinyLlama'
 
   quantize_method:
     type: choice
