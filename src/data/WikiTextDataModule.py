@@ -26,7 +26,7 @@ class TextDataset(Dataset):
 
     def __getitem__(self, index):        
         start_index = max(index * self.stride + self.stride - self.sequence_length, 0)
-        end_index = start_index + self.stride
+        end_index = start_index + self.sequence_length
         if end_index > len(self.data):
             raise IndexError("Index out of bounds")
         input_ids = self.data[start_index:end_index]
