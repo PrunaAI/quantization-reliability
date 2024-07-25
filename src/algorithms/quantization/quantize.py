@@ -1,4 +1,6 @@
 from src.algorithms.quantization import QUANT_CONFIGS
+from src.algorithms.quantization.aqlm_lora import quantize_aqlm_lora
+from src.algorithms.quantization.aqlm_prequantized import quantize_aqlm_prequantized
 from src.algorithms.quantization.awq import quantize_awq
 from src.algorithms.quantization.bnb import quantize_bnb
 from src.algorithms.quantization.hqq import quantize_hqq
@@ -71,6 +73,21 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             quantize_config=QUANT_CONFIGS[quantize_method],
             calib_dataloder=calib_dataloader,
             train_dataloader=train_dataloader,
+            save_model=save_model,
+            save_path=save_path,
+            device=device
+        )
+    elif quantize_method == "AQLM-PREQUANTIZED":
+        model = quantize_aqlm_prequantized(
+            quantize_config=QUANT_CONFIGS[quantize_method],
+            device=device
+        )
+    elif quantize_method == "AQLM-LORA":
+        model = quantize_aqlm_lora(
+            model_name=model_name,
+            tokenizer=tokenizer,
+            quantize_config=QUANT_CONFIGS[quantize_method],
+            calib_dataloder=calib_dataloader,
             save_model=save_model,
             save_path=save_path,
             device=device

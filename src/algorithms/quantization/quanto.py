@@ -34,7 +34,7 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
         logger.info("Performing quantization for QUANTO")
         quantize(model, weights=weights, activations=activations)
 
-    elif quantize_config['name'] == "QUANTO-CALIB":
+    elif quantize_config['name'] == "QUANTO-CALIB":  # Too memory-intensive for Llama-3-8B
         logger.info("Performing calibration for QUANTO")
         quantize(model, weights=weights, activations=activations)
         cal_dataset = calib_dataloder.ORIGINAL_DATASET
@@ -51,7 +51,7 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
                 if total >= cal_samples:
                     break
 
-    elif quantize_config['name'] == "QUANTO-QAT":
+    elif quantize_config['name'] == "QUANTO-QAT":  # Too memory-intensive for Llama-3-8B
         logger.info("Performing Quantization Aware Training for QUANTO")
         quantize(model, weights=weights, activations=activations)
         train_samples = quantize_config.get("train_samples", 128)
