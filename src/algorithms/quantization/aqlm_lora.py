@@ -5,10 +5,18 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import LoraConfig, get_peft_model
 import transformers
 from src import MODEL_SAVE_PATH
+from src.algorithms.quantization.config.aqlm_config import AQLM_MODEL_VARIANTS
 
-def quantize_aqlm_lora(model_name, tokenizer, calib_dataloader, quantize_config={}, save_model=False, save_path="", device="cuda"):
-    if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [4, 8]:
+def quantize_aqlm_lora(tokenizer, calib_dataloader, quantize_config={}, save_model=False, save_path="", device="cuda"):
+    if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [1, 2]:
         raise ValueError(f"Invalid num_bits for BNB: {quantize_config['num_bits']}")
+    
+    if 'model_variant' not in quantize_config:
+        raise ValueError("Missing required key 'model_variant' in quantize_config")
+    
+    # Validate the model_variant
+    if quantize_config['model_variant'] not in AQLM_MODEL_VARIANTS:
+        raise ValueError(f"Invalid model_variant: {quantize_config['model_variant']}")
     
     lora_params = quantize_config['lora_params']
     fine_tuning_params = quantize_config['fine_tuning_params']
@@ -19,6 +27,7 @@ def quantize_aqlm_lora(model_name, tokenizer, calib_dataloader, quantize_config=
             raise ValueError(f"Missing required LoRA config key: {key}")
 
     # Load the tokenizer and model
+    model_name = quantize_config['model_variant']
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device)
     model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map=device)
     model.NAME = model_name

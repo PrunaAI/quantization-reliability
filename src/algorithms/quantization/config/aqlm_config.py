@@ -1,4 +1,11 @@
 # LoRA configuration parameters
+
+AQLM_MODEL_VARIANTS = [
+    "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
+    "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
+    "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-1Bit-1x16"
+]
+
 lora_params = {
     'r': 8,
     'lora_alpha': 32,
@@ -34,18 +41,16 @@ fine_tuning_params = {
 AQLM_PREQUANTIZED = {
     "name": "AQLM-PREQUANTIZED",
     "quantize_method": "AQLM",
+    "num_bits": 2,
     "model_variant": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
-    "model_variants": [
-        "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
-        "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
-        "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-1Bit-1x16"
-    ]
 }
 
 # AQLM_LORA configuration
 AQLM_LORA = {
     "name": "AQLM-LORA",
     "quantize_method": "AQLM",
+    "num_bits": 2,
+    "model_variant": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
     "lora_params": lora_params,
     "fine_tuning_params": fine_tuning_params
 }
