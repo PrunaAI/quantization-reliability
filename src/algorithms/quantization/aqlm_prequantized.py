@@ -28,7 +28,7 @@ def quantize_aqlm_prequantized(quantize_config={}, device="cuda"):
     # Add additional attributes to the model
     model.NAME = quantize_config['model_variant']
     
-    print(f"Model {quantize_config['model_variant']} is loaded.")
+    logger.info(f"Model {quantize_config['model_variant']} is loaded.")
     
     return model
 

@@ -48,7 +48,7 @@ def quantize_bnb(model_name, quantize_config={}, save_model=False, save_path="",
     accelerator.save_model(bnb_model, bnb_model_path)
     bnb_model.NAME = bnb_model_name
     
-    print(f'Model {model_name} is quantized to {bnb_model_name} and saved at "{bnb_model_path}"')
+    logger.info(f'Model {model_name} is quantized to {bnb_model_name} and saved at "{bnb_model_path}"')
     
     if save_model:
         save_dir = save_path if save_path else bnb_model_path

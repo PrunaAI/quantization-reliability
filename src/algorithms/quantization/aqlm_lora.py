@@ -92,7 +92,7 @@ def quantize_aqlm_lora(tokenizer, calib_dataloader, quantize_config={}, save_mod
     model.PATH = model_path
     model.NAME = model_name_suffix
     
-    print(f'Model {model_name} is quantized and finetuned to {model_name_suffix}')
+    logger.info(f'Model {model_name} is quantized and finetuned to {model_name_suffix}')
 
     # Save model if specified
     if save_model:

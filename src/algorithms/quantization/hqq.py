@@ -53,7 +53,7 @@ def quantize_hqq(model_name, quantize_config={}, save_model=False, save_path="",
     hqq_model.PATH = hqq_model_path
     hqq_model.NAME = hqq_model_name
     
-    print(f'Model {model_name} is quantized to {hqq_model_name}')
+    logger.info(f'Model {model_name} is quantized to {hqq_model_name}')
     
     # if save_model:
     #     save_dir = save_path if save_path else hqq_model_path

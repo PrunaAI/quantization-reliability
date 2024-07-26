@@ -46,7 +46,7 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, sa
     awq_model.PATH = awq_model_path
     awq_model.NAME = awq_model_name
     
-    print(f'Model {model_name} is quantized into {awq_model_name} and saved at "{awq_model_path}"')
+    logger.info(f'Model {model_name} is quantized into {awq_model_name} and saved at "{awq_model_path}"')
 
     if save_model:
         save_dir = save_path if save_path else awq_model_path

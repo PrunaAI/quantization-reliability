@@ -32,7 +32,6 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
     fine_tuning_params = hqq_config['fine_tuning_params']    
     
     # Load model and tokenizer
-    print(f"Loading model {model_name}")
     model = HQQModelForCausalLM.from_pretrained(model_name, cache_dir=None, torch_dtype="auto", device_map=device)
     tokenizer = AutoTokenizer.from_pretrained(model_name, truncation=True, padding=True, cache_dir=None)
 
@@ -48,7 +47,7 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
     model.PATH = hqq_model_path
 
     # Add LoRA
-    print("Adding LoRA to model")
+    logger.info("Adding LoRA to model")
     PeftUtils.add_lora(model, lora_params)
 
     # Prepare dataset
@@ -114,20 +113,18 @@ def quantize_hqq_plus(model_name, tokenizer, calib_dataloader, quantize_config={
     trainer.is_model_parallel = False
     trainer.place_model_on_device = False
 
-    print("Training model")
     model.train()
     try:
         trainer.train()
     except TypeError as e:
-        print(f"Run into error while saving model: {e}")
+        logger.info(f"Run into error while saving model: {e}")
         
     end_time = time.time()
     model.QUANT_TIME = end_time - start_time
     logger.info(f"Quantization and finetuning took {model.QUANT_TIME:.2f} seconds")
 
-    print(f"Setting model to eval mode")
     model.eval()
-    print("Casting LoRA weights to model dtype")
+    logger.info("Casting LoRA weights to model dtype")
     PeftUtils.cast_lora_weights(model, dtype=torch.float32)
     
     # if save_model:
