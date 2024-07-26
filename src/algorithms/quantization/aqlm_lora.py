@@ -50,7 +50,8 @@ def quantize_aqlm_lora(tokenizer, calib_dataloader, quantize_config={}, save_mod
     model.enable_input_require_grads()  # Needed for gradient checkpointing
 
     # Load and preprocess dataset
-    calib_dataset = calib_dataloader.ORIGINAL_DATASET[:fine_tuning_params['train_samples']]
+    calib_dataset = calib_dataloader.ORIGINAL_DATASET
+    calib_dataset = calib_dataset.select(range(fine_tuning_params['train_samples']))
     calib_dataset = calib_dataset.map(lambda samples: tokenizer(samples["text"]), batched=True)
 
     tokenizer.pad_token = tokenizer.eos_token
