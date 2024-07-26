@@ -19,7 +19,7 @@ lora_params = {
 fine_tuning_params = {
     'grad_acc': 2,
     'logging_st': 1,
-    'max_steps': -1,
+    'max_steps': 1000,
     'lr': 1e-4,
     'batch_size': 1,
     'n_epochs': 1,
