@@ -57,7 +57,7 @@ grid:
   eval_dataset_split:
     type: choice
     options:
-      - 'validation'
+      # - 'validation'
       - 'test'
 
   eval_metrics:
