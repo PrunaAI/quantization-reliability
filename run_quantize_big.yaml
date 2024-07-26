@@ -82,8 +82,8 @@ grid:
       - "HQQ-mixed"
       - "HQQ-LORA"
       - "QUANTO"
-      # - "QUANTO-CALIB"
-      # - "QUANTO-QAT"
+      - "QUANTO-CALIB"
+      - "QUANTO-QAT"
       - "AQLM-PREQUANTIZED"
       - "AQLM_LORA"
 
