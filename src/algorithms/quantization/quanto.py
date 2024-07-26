@@ -62,7 +62,7 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
         n_epochs = 5  # Set to lower values for debugging
         for epoch in range(n_epochs):
             for batch_idx, (data, target) in tqdm(enumerate(train_dataloader)):
-                if batch_idx >= train_samples:
+                if batch_idx >= train_samples//n_epochs:
                     break
                 data, target = data.to(device), target.to(device)
                 optimizer.zero_grad()

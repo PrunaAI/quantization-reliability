@@ -72,9 +72,11 @@ def evaluate_quantize_runtime(model):
 
 def get_gpu_memory():
     result = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.free', '--format=csv,nounits,noheader'])
-    return float(result.decode('utf-8').strip()) / 1024  # Convert to GB
+    memory_values = result.decode('utf-8').strip().split('\n')
+    memory_values_gb = [float(mem) / 1024 for mem in memory_values]  # Convert to GB
+    return memory_values_gb
 
 def record_gpu_memory(gpu_memory_usage, context):
-    memory = get_gpu_memory()
-    gpu_memory_usage[context] = memory
-    print(f"Free GPU Memory (GB): {memory:.4f}. Context: {context}.")
+    memory_values = get_gpu_memory()
+    gpu_memory_usage[context] = memory_values
+    logger.info(f"Free GPU Memory (GB) per GPU: {memory_values}. Context: {context}.")
