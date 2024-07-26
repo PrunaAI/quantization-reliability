@@ -84,6 +84,7 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
 
     end_time = time.time()
     model.QUANT_TIME = end_time - start_time
+    logger.info(f"Quantization time: {model.QUANT_TIME:.2f} seconds")
 
     model_name_suffix = quantize_config['name']
     model_save_name = f"{model_name.split('/')[1]}-{model_name_suffix}"

@@ -3,6 +3,9 @@ import time
 from awq import AutoAWQForCausalLM
 from src import MODEL_SAVE_PATH
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, save_model=False, save_path="", device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for AWQ: {quantize_config['num_bits']}")
@@ -35,6 +38,7 @@ def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, sa
     )
     end_time = time.time()  # End time measurement
     awq_model.QUANT_TIME = end_time - start_time
+    logger.info(f"Quantization time: {awq_model.QUANT_TIME:.2f} seconds")
 
     awq_model_name = f"{model_name.split('/')[1]}-{quantize_config['name']}"
     awq_model_path = os.path.join(MODEL_SAVE_PATH, awq_model_name)

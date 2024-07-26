@@ -7,6 +7,9 @@ import transformers
 from src import MODEL_SAVE_PATH
 from src.algorithms.quantization.config.aqlm_config import AQLM_MODEL_VARIANTS
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 def quantize_aqlm_lora(tokenizer, calib_dataloader, quantize_config={}, save_model=False, save_path="", device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [1, 2]:
         raise ValueError(f"Invalid num_bits for BNB: {quantize_config['num_bits']}")
@@ -82,6 +85,7 @@ def quantize_aqlm_lora(tokenizer, calib_dataloader, quantize_config={}, save_mod
     trainer.train()
     end_time = time.time()  # End time measurement
     model.QUANT_TIME = end_time - start_time
+    logger.info(f"Quantization and finetuning took {model.QUANT_TIME:.2f} seconds")
 
     model_name_suffix = f"{model_name.split('/')[1]}-LoRA"
     model_path = os.path.join(MODEL_SAVE_PATH, model_name_suffix)

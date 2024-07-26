@@ -4,6 +4,9 @@ from transformers import AutoModelForCausalLM
 
 from src.algorithms.quantization.config.aqlm_config import AQLM_MODEL_VARIANTS
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 def quantize_aqlm_prequantized(quantize_config={}, device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [1, 2]:
         raise ValueError(f"Invalid num_bits for BNB: {quantize_config['num_bits']}")
@@ -20,6 +23,7 @@ def quantize_aqlm_prequantized(quantize_config={}, device="cuda"):
     model = AutoModelForCausalLM.from_pretrained(quantize_config['model_variant'], torch_dtype="auto", device_map=device)
     end_time = time.time()  # End time measurement
     model.QUANT_TIME = end_time - start_time
+    logger.info(f"Quantization time: {model.QUANT_TIME:.2f} seconds")
     
     # Add additional attributes to the model
     model.NAME = quantize_config['model_variant']

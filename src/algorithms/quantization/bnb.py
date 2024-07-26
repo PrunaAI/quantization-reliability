@@ -5,6 +5,9 @@ from transformers import AutoModelForCausalLM, BitsAndBytesConfig
 from accelerate import Accelerator
 from src import MODEL_SAVE_PATH
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 def quantize_bnb(model_name, quantize_config={}, save_model=False, save_path="", device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for BNB: {quantize_config['num_bits']}")
@@ -34,6 +37,7 @@ def quantize_bnb(model_name, quantize_config={}, save_model=False, save_path="",
     )
     end_time = time.time()  # End time measurement
     bnb_model.QUANT_TIME = end_time - start_time
+    logger.info(f"Quantization time: {bnb_model.QUANT_TIME:.2f} seconds")
 
     bnb_model_name = f"{model_name.split('/')[1]}-{quantize_config['name']}"
     bnb_model_path = os.path.join(MODEL_SAVE_PATH, bnb_model_name)
