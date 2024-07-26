@@ -84,7 +84,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
         )
     elif quantize_method == "AQLM-LORA":
         model = quantize_aqlm_lora(
-            model_name=model_name,
             tokenizer=tokenizer,
             quantize_config=QUANT_CONFIGS[quantize_method],
             calib_dataloader=calib_dataloader,
