@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
-  name: 'quantize_tinyllama_07-17'
+  name: 'quantize_tinyllama_07-26'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -63,7 +63,7 @@ grid:
   eval_metrics:
     type: choice
     options:
-      - ['perplexity', 'brier_score', 'quantize_runtime']
+      - ['perplexity', 'brier_score', 'disk_space_usage', 'quantize_runtime']
 
   model_name:
     type: choice

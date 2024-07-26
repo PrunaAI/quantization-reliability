@@ -3,7 +3,7 @@ import logging
 
 import torch
 from src.evaluations.evaluate_brier_score import evaluate_brier_score
-from src.evaluations.evaluate_memory import evaluate_model_size, evaluate_quantize_runtime, get_gpu_memory, record_gpu_memory
+from src.evaluations.evaluate_memory import evaluate_disk_space_usage, evaluate_quantize_runtime, get_gpu_memory, record_gpu_memory
 from src.evaluations.evaluate_perplexity import evaluate_perplexity
 
 logger = logging.getLogger("quant_logger")
@@ -44,12 +44,12 @@ def evaluate(model, eval_dataloader, eval_metrics, n_samples=None, device="cuda"
             to_device=to_device
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate brier score")
-    if "model_size" in eval_metrics:
-        logger.info("Evaluating Model Size")
-        results[f"{prefix}model_size"] = evaluate_model_size(
+    if "disk_space_usage" in eval_metrics:
+        logger.info("Evaluating Disk Space Usage")
+        results[f"{prefix}disk_space_usage"] = evaluate_disk_space_usage(
             model=model
         )
-        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model size")
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate disk space usage")
     if "quantize_runtime" in eval_metrics:
         logger.info("Evaluating Quantize Runtime")
         results[f"{prefix}quantize_runtime"] = evaluate_quantize_runtime(

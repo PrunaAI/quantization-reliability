@@ -120,8 +120,8 @@ def run_quantize(
     eval_metrics=[
         "perplexity",
         "brier_score",
-        # "model_size",
-        # "gpu_utilization"
+        "disk_space_usage",
+        "quantize_runtime"
     ],
     device="cuda",
     save_quantized_model=False,

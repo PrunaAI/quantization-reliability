@@ -21,39 +21,7 @@ def evaluate_gpu_utilization():
     # print(f"GPU memory occupied: {memory_used:.2f} {unit}.")
     return f"{memory_used} {unit}"
 
-def evaluate_model_size(model):
-    # Loop through files in the model directory
-    if not hasattr(model, 'PATH'):
-        return "nan"
-    
-    model_path = model.PATH
-    if not os.path.exists(model_path):
-        return "nan"
-    
-    total_size = 0
-    for filename in os.listdir(model_path):
-        file_path = os.path.join(model_path, filename)
-        # Check if it's a file (not a directory)
-        if os.path.isfile(file_path):
-            file_size = os.path.getsize(file_path)
-            total_size += file_size
-
-    # Convert to human-readable format
-    if total_size > 1024**3:
-        total_size = total_size / (1024**3)
-        unit = "GB"
-    elif total_size > 1024**2:
-        total_size = total_size / (1024**2)
-        unit = "MB"
-    elif total_size > 1024:
-        total_size = total_size / 1024
-        unit = "KB"
-    else:
-        unit = "B"
-
-    return f"{total_size} {unit}"
-
-def evaluate_model_size(model):
+def evaluate_disk_space_usage(model):
     try:
         # Check if the model has a PATH attribute
         if not hasattr(model, 'PATH'):

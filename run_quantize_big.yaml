@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_quantize.py'
-  name: 'quantize_tinyllama_07-18'
+  name: 'quantize_llama_07-26'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -35,18 +35,18 @@ grid:
   calib_dataset_name:
     type: choice
     options:
-      # - 'WikiText'
+      - 'WikiText'
       - 'OpenAssistant'
-      # - 'C4'
-      # - 'PTB'
+      - 'C4'
+      - 'PTB'
 
   eval_dataset_name:
     type: choice
     options:
-      # - 'WikiText'
-      # - 'OpenAssistant'
+      - 'WikiText'
+      - 'OpenAssistant'
       - 'C4'
-      # - 'PTB'
+      - 'PTB'
 
   calib_dataset_split:
     type: choice
@@ -57,19 +57,19 @@ grid:
   eval_dataset_split:
     type: choice
     options:
-      # - 'validation'
+      - 'validation'
       - 'test'
 
   eval_metrics:
     type: choice
     options:
-      - ['perplexity', 'brier_score', 'quantize_runtime']
+      - ['perplexity', 'brier_score', 'disk_space_usage', 'quantize_runtime']
 
   model_name:
     type: choice
     options:
       - 'Llama-3-8B'
-      - 'TinyLlama'
+      # - 'TinyLlama'
 
   quantize_method:
     type: choice
@@ -82,8 +82,10 @@ grid:
       - "HQQ-mixed"
       - "HQQ-LORA"
       - "QUANTO"
-      - "QUANTO-CALIB"
-      - "QUANTO-QAT"
+      # - "QUANTO-CALIB"
+      # - "QUANTO-QAT"
+      - "AQLM-PREQUANTIZED"
+      - "AQLM_LORA"
 
 # random:
 #   samples: 2
