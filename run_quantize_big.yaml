@@ -85,7 +85,7 @@ grid:
       - "QUANTO-CALIB"
       - "QUANTO-QAT"
       - "AQLM-PREQUANTIZED"
-      - "AQLM_LORA"
+      - "AQLM-LORA"
 
 # random:
 #   samples: 2
