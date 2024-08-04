@@ -3,7 +3,7 @@ import time
 import torch
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from optimum.quanto import Calibration, quantize, freeze, qint8, qint4, safe_save, QTensor
+from optimum.quanto import Calibration, quantize, freeze, qint8, qint4, qfloat8, safe_save, QTensor
 from torch.optim import Adam
 from src import MODEL_SAVE_PATH
 
@@ -12,7 +12,8 @@ logger = logging.getLogger("quant_logger")
 
 keyword_to_itype = {
     "qint8": qint8,
-    "qint4": qint4
+    "qint4": qint4,
+    "qfloat8": qfloat8,
 }
 
 def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_dataloader=None, save_model=False, save_path="", device="cuda"):
