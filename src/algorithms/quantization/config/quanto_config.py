@@ -3,7 +3,14 @@ QUANTO = {
     "quantize_method": "QUANTO",
     "num_bits": 8,
     "weights": "qint8",
-    "activations": "qfloat8",
+}
+
+QUANTO_ACTIV_QUANT = {
+    "name": "QUANTO",
+    "quantize_method": "QUANTO",
+    "num_bits": 8,
+    "weights": "qint8",
+    "activations": "qint8",
 }
 
 QUANTO_CALIB = {
