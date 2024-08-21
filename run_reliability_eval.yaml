@@ -19,5 +19,6 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
+  device: 'cuda'
 
 grid:

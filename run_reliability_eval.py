@@ -91,7 +91,7 @@ def collect_stats(_run):
 
 
 @ex.automain
-def run_reliability_eval():
+def run_reliability_eval(device="cuda"):
     import torch
     from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
     import pandas as pd
