@@ -97,6 +97,7 @@ def run_reliability_eval(device="cuda"):
     import pandas as pd
     import numpy as np
     from sklearn.metrics import roc_auc_score, average_precision_score
+    device_map = device
 
     def get_prompt(query, strategy):
         if strategy == "Fact Statement":
@@ -431,4 +432,8 @@ def run_reliability_eval(device="cuda"):
     df_results.to_excel("beam_multinomial_llama_08_21-table.xlsx", index=False)
     df_scores.to_excel("beam_multinomial_llama_08_21-scores.xlsx", index=False)
     
-    return df_results
+    fail_trace = {
+        "fail_trace": seml.evaluation.get_results,
+    }
+
+    return {"results": df_results, **fail_trace}
