@@ -1,0 +1,20 @@
+# Experiment configuration file.
+
+seml:
+  conda_environment: 'env-quant-rel-310'
+  executable: 'run_reliability_eval.py'
+  name: 'reliability-llama-eval-08-21'
+  output_dir: '/nfs/homedirs/daro/slurm_output/'
+  project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
+
+slurm:
+  experiments_per_job: 1
+  sbatch_options:
+    gres: 'gpu:1'       # num GPUs
+    mem: '128G'          # memory
+    cpus-per-task: 2  # num cores
+    time: '1-00:00'     # max time, D-HH:MM
+    partition: 'gpu_a100' # partition
+#    partition: 'gpu_gtx1080' # partition
+
+###### BEGIN PARAMETER CONFIGURATION ######
