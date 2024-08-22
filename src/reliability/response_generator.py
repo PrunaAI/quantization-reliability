@@ -2,13 +2,12 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 import pandas as pd
 import numpy as np
 import torch
-from sklearn.metrics import roc_auc_score, average_precision_score
 
 
 class ResponseGenerator:
     def __init__(self, model_name):
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="cuda")
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map="cuda")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="cuda", cache_dir="~/nfs/students/daro/.cache/huggingface")
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map="cuda", cache_dir="~/nfs/students/daro/.cache/huggingface")
         
         # Set pad_token_id to eos_token_id to avoid the warning
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
