@@ -6,8 +6,8 @@ import torch
 
 class ResponseGenerator:
     def __init__(self, model_name):
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="cuda", cache_dir="~/nfs/students/daro/.cache/huggingface")
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map="cuda", cache_dir="~/nfs/students/daro/.cache/huggingface")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="cuda", cache_dir="/nfs/students/daro/.cache/huggingface")
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map="cuda", cache_dir="/nfs/students/daro/.cache/huggingface")
         
         # Set pad_token_id to eos_token_id to avoid the warning
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
