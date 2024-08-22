@@ -57,7 +57,7 @@ class ResponseGenerator:
             )
             trans_scores = np.exp(transition_scores.cpu().numpy())
 
-            for i in range(n_beams):  # Process each beam
+            for i in range(len(outputs.sequences)):
                 output_text = self.tokenizer.decode(outputs.sequences[i], skip_special_tokens=True)
                 output_text = clean_response(output_text, strategy)
 
