@@ -3,20 +3,104 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'reliability-llama-eval-08-21'
+  name: 'run_reliability_eval_08-22'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
 slurm:
   experiments_per_job: 1
   sbatch_options:
-    gres: 'gpu:1'       # num GPUs
+    gres: 'gpu:1'        # num GPUs
     mem: '128G'          # memory
-    cpus-per-task: 2  # num cores
-    time: '1-00:00'     # max time, D-HH:MM
+    cpus-per-task: 2     # num cores
+    time: '1-00:00'      # max time, D-HH:MM
     partition: 'gpu_a100' # partition
-#    partition: 'gpu_gtx1080' # partition
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
   device: 'cuda'
+  seed: 42
+  n_repeats: 10
+  n_beams: 5
+  cache_path: "/nfs/students/daro/.cache/huggingface"
+
+grid:
+  model_name:
+    type: choice
+    options:
+      - 'meta-llama/Meta-Llama-3-8B'
+      - 'bigscience/bloomz-1b1'
+      - 'openai-community/gpt2-large'
+      - 'TinyLlama/TinyLlama_v1.1'
+      - 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
+      # - 'Llama-3-8B-AWQ-4bit'
+
+  max_new_tokens:
+    type: choice
+    options:
+      - 10
+      - 15
+      - 20
+      - 30
+      - 40
+    
+  temperature:
+    type: choice
+    options:
+      - 0.1
+
+  use_beam_search:
+    type: choice
+    options:
+      - True
+      - False
+
+  strategy:
+    type: choice
+    options:
+      - "Fact Statement"
+      - "Completion"
+      - "Definitive Statement"
+      - "Fill-in-the-Blank"
+      - "Structured Answer Prompt"
+      - "Direct Instruction"
+      - "Contextual Prompts"
+      - "Question-Answer Pairs"
+      - "Direct Answer"
+      - "Q&A Format"
+      - "Instructional"
+      - "Summary"
+      - "True Completion"
+      - "Direct Completion"
+      - "Answer Completion"
+      - "Direct Query"
+      - "Yes/No Confirmation"
+      - "Follow-Up Inquiry"
+      - "Factual Retrieval"
+      - "First Thought"
+      - "Deductive Reasoning"
+
+  dataset_name: 
+    type: choice
+    options: 
+      - 'toy_qa_dataset'
+      - 'P101'
+      - 'P103'
+      - 'P108'
+      - 'P127'
+      - 'P1376'
+      - 'P1412'
+      - 'P159'
+      - 'P17'
+      - 'P176'
+      - 'P178'
+      - 'P19'
+      - 'P20'
+      - 'P264'
+      - 'P27'
+      - 'P276'
+      - 'P30'
+      - 'P364'
+      - 'P37'
+      - 'P495'
+      - 'P740'
