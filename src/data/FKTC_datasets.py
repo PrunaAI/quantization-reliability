@@ -106,10 +106,10 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
     
     return question_answer_pairs
 
-def load_dataset_from_name(dataset_name):
+def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None):
   if dataset_name == "toy_qa_dataset":
     return toy_qa_dataset
   elif dataset_name in DATA_FILES:
-    return load_question_answer_pairs(DATA_DIR, dataset_name)
+    return load_question_answer_pairs(DATA_DIR, dataset_name, max_relations=max_relations, max_entries=max_entries)
   else:
     raise ValueError(f"Invalid dataset name: {dataset_name}")

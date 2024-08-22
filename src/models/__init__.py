@@ -8,8 +8,11 @@ logger = logging.getLogger("quant_logger")
 
 # Define the base datasets dictionary
 base_models = {
-    "TinyLlama": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "TinyLlama-Chat": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     "Llama-3-8B": "meta-llama/Meta-Llama-3-8B",
+    "Bloomz": "bigscience/bloomz-1b1",
+    "GPT2-Large": "openai-community/gpt2-large",
+    "TinyLlama": "TinyLlama/TinyLlama_v1.1",
 }
 
 def get_model(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):
