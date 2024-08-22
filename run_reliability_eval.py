@@ -8,6 +8,7 @@ import logging
 
 from src.data.FKTC_datasets import load_dataset_from_name
 from src.reliability.response_generator import ResponseGenerator
+from src.models import base_models
 
 logger = logging.getLogger("quant_logger")
 
@@ -97,7 +98,6 @@ def collect_stats(_run):
     seml.collect_exp_stats(_run)
 
 
-
 @ex.automain
 def run_reliability_eval(
     model_name,
@@ -113,18 +113,18 @@ def run_reliability_eval(
     cache_path=CACHE_PATH
     ):
     # LOAD DATASET
-    qa_dataset = load_dataset_from_name(dataset_name)
+    qa_dataset = load_dataset_from_name(dataset_name, max_entries=100)
 
     # INITIALIZE RESULTS LIST
     results = []
 
     n_steps = 0
     total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
-    generator = ResponseGenerator(model_name)
+    generator = ResponseGenerator(base_models[model_name])
     for query_idx, (query, true_answer) in enumerate(qa_dataset):
         run_results = generator.generate_response(query, strategy, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
         for result_dict in run_results:
-            print(f"TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
+            print(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
             # Store the results in the list
             results.append({
                 "Query": query,
@@ -136,19 +136,17 @@ def run_reliability_eval(
                 "Is Correct": result_dict['is_correct'],
                 "Token Probabilities": result_dict['token_probs']
             })
-            print(f"IS_CORRECT: {result_dict['is_correct']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
+            print(f"    IS_CORRECT: {result_dict['is_correct']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
             n_steps += 1
-            if n_steps >= 100:
-                # pass
-                raise KeyboardInterrupt
     
     # Generate custom file name based on parameters
     beam_search_str = "beam" if use_beam_search else "sample"
     strategy_str = strategy.replace(" ", "_").lower()  # Replace spaces with underscores for file names
-    file_base = f"{model_name}_{beam_search_str}_{max_new_tokens}_tokens_{temperature}_temp_{strategy_str}"
+    file_base = f"{model_name}_{dataset_name}_{beam_search_str}_{max_new_tokens}_tokens_{temperature}_temp_{strategy_str}"
 
     # Optional: Create a directory for saving the results if not already existing
-    save_dir = os.path.join("results", "reliability_eval")
+    results_path = "/nfs/homedirs/daro/git/quantization-reliability/results"
+    save_dir = os.path.join(results_path, "reliability_eval")
     os.makedirs(save_dir, exist_ok=True)
 
     # Generate file paths
@@ -158,7 +156,7 @@ def run_reliability_eval(
     df_results = pd.DataFrame(results)
     
     # Calculate P_sem as the proportion of True values in 'Is Correct' per group
-    df_results['P_sem'] = df_results.groupby(['Query', 'Model', 'Max New Tokens', 'Temperature', 'Strategy', 'Beam Search'])['Is Correct'].transform('mean')
+    df_results['P_sem'] = df_results.groupby(['Query'])['Is Correct'].transform('mean')
 
     # Define custom AUC calculation
     def custom_auc_roc(corrects, scores):
@@ -193,9 +191,11 @@ def run_reliability_eval(
         
         return pd.Series(scores_dict)
 
-    # Group by the relevant columns and calculate AUROC, AUCPR, and accuracy for each group
-    df_scores = df_results.groupby(['Model', 'Max New Tokens', 'Temperature', 'Strategy', 'Beam Search']).apply(calculate_scores).reset_index()
-    df_results = df_results.merge(df_scores, on=['Model', 'Max New Tokens', 'Temperature', 'Strategy', 'Beam Search'])
+    # Apply the calculate_scores function to the entire DataFrame
+    df_scores = calculate_scores(df_results)
+
+    # Convert df_scores to a DataFrame with a single row for consistent saving format
+    df_scores = df_scores.to_frame().T
 
     # Save the original detailed results to an Excel file
     df_results.to_excel(raw_table_path, index=False)
@@ -205,4 +205,4 @@ def run_reliability_eval(
         "fail_trace": seml.evaluation.get_results,
     }
 
-    return {"results": df_results, **fail_trace}
+    return {"results": df_results, "scores": df_scores, **fail_trace}

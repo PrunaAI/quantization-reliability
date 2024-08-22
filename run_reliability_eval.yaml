@@ -28,12 +28,13 @@ grid:
   model_name:
     type: choice
     options:
-      - 'meta-llama/Meta-Llama-3-8B'
-      - 'bigscience/bloomz-1b1'
-      - 'openai-community/gpt2-large'
-      - 'TinyLlama/TinyLlama_v1.1'
-      - 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'
+      - 'Llama-3-8B'
+      - 'Bloomz'
+      - 'GPT2-Large'
+      - 'TinyLlama'
+      - 'TinyLlama-Chat'
       # - 'Llama-3-8B-AWQ-4bit'
+
 
   max_new_tokens:
     type: choice
@@ -83,7 +84,7 @@ grid:
   dataset_name: 
     type: choice
     options: 
-      - 'toy_qa_dataset'
+      - 'toy-qa-dataset'
       - 'P101'
       - 'P103'
       - 'P108'

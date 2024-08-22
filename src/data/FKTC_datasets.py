@@ -107,7 +107,7 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
     return question_answer_pairs
 
 def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None):
-  if dataset_name == "toy_qa_dataset":
+  if dataset_name == "toy-qa-dataset":
     return toy_qa_dataset
   elif dataset_name in DATA_FILES:
     return load_question_answer_pairs(DATA_DIR, dataset_name, max_relations=max_relations, max_entries=max_entries)
