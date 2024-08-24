@@ -29,21 +29,21 @@ grid:
     type: choice
     options:
       - 'Llama-3-8B'
-      - 'Bloomz'
+      # - 'Bloomz'
       # - 'GPT2-Large'
-      - 'TinyLlama'
-      - 'TinyLlama-Chat'
+      # - 'TinyLlama'
+      # - 'TinyLlama-Chat'
       # - 'Llama-3-8B-AWQ-4bit'
 
 
   max_new_tokens:
     type: choice
     options:
-      - 10
+      # - 10
       - 15
       - 20
       - 30
-      - 40
+      # - 40
     
   temperature:
     type: choice
@@ -53,7 +53,7 @@ grid:
   use_beam_search:
     type: choice
     options:
-      - True
+      # - True
       - False
 
   strategy:
@@ -92,16 +92,16 @@ grid:
       - 'P1376'
       - 'P1412'
       - 'P159'
-      - 'P17'
-      - 'P176'
-      - 'P178'
-      - 'P19'
-      - 'P20'
-      - 'P264'
-      - 'P27'
-      - 'P276'
-      - 'P30'
-      - 'P364'
-      - 'P37'
-      - 'P495'
-      - 'P740'
+      # - 'P17'
+      # - 'P176'
+      # - 'P178'
+      # - 'P19'
+      # - 'P20'
+      # - 'P264'
+      # - 'P27'
+      # - 'P276'
+      # - 'P30'
+      # - 'P364'
+      # - 'P37'
+      # - 'P495'
+      # - 'P740'
