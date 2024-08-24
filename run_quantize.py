@@ -168,7 +168,7 @@ def run_quantize(
             directory_model=directory_model,
             device=device,
         )
-        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
+        # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
         
         ###############
         ## Load data ##
@@ -204,7 +204,7 @@ def run_quantize(
             split=eval_dataset_split,
             sequence_length=512 if quantize_method in ["AWQ-4"] else eval_seq_length,
         )
-        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
+        # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
         ##############
         ## Quantize ##
@@ -219,7 +219,7 @@ def run_quantize(
                 directory_model=directory_model,
                 device=device,
             )
-            record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
+            # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
         else:
             logger.info(f"Quantizing model using {quantize_method}")
             quantized_model = quantize(
@@ -232,7 +232,7 @@ def run_quantize(
                 save_path=quantized_model_save_path,
                 device=device
             )
-            record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
+            # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
 
         ##############
         ## Evaluate ##
@@ -248,7 +248,7 @@ def run_quantize(
             prefix="",
             gpu_memory_usage=gpu_memory_usage
         )
-        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
+        # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate model")
         
         # ####################
         # ## Cleaning cache ##
