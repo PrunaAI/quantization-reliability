@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'run_reliability_eval_08-24'
+  name: 'run_reliability_eval_08-24-4'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -41,7 +41,7 @@ grid:
     options:
       # - 10
       - 15
-      - 20
+      # - 20
       - 30
       # - 40
     
@@ -92,8 +92,8 @@ grid:
       - 'P1376'
       - 'P1412'
       - 'P159'
-      # - 'P17'
-      # - 'P176'
+      - 'P17'
+      - 'P176'
       # - 'P178'
       # - 'P19'
       # - 'P20'

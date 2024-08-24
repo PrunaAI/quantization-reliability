@@ -127,6 +127,7 @@ def run_reliability_eval(
             print(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
             # Store the results in the list
             results.append({
+                "Query ID": query_idx,
                 "Query": query,
                 "Run": result_dict['run'],
                 "Generated Response": result_dict['output_text'],
@@ -150,13 +151,14 @@ def run_reliability_eval(
     os.makedirs(save_dir, exist_ok=True)
 
     # Generate file paths
-    raw_table_path = os.path.join(save_dir, f"{file_base}_raw_table.xlsx")
-    scores_table_path = os.path.join(save_dir, f"{file_base}_scores.xlsx")
+    exp_id = "08-24-4"
+    raw_table_path = os.path.join(save_dir, f"{file_base}_raw_table_{exp_id}.xlsx")
+    scores_table_path = os.path.join(save_dir, f"{file_base}_scores_{exp_id}.xlsx")
     
     df_results = pd.DataFrame(results)
     
     # Calculate P_sem as the proportion of True values in 'Is Correct' per group
-    df_results['P_sem'] = df_results.groupby(['Query'])['Is Correct'].transform('mean')
+    df_results['P_sem'] = df_results.groupby(['Query ID'])['Is Correct'].transform('mean')
 
     # Define custom AUC calculation
     def custom_auc_roc(corrects, scores):
