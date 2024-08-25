@@ -132,7 +132,7 @@ def get_prompt(query, strategy):
     elif strategy == "Definitive Statement":
         return f"The answer to the question '{query}' is:"
     elif strategy == "Fill-in-the-Blank":
-        return f"{query} is located in _____.\nAnswer:"
+        return f"{query} The answer is: _____.\nAnswer:"
     elif strategy == "Structured Answer Prompt":
         return f"Question: {query}\nAnswer (one word):"
     elif strategy == "Direct Instruction":
@@ -157,6 +157,16 @@ def get_prompt(query, strategy):
         return f"{query} Answer:"
     elif strategy == "Answer Completion":
         return f"{query} The correct answer is:"
+    
+    # New Strategies
+    elif strategy == "Direct Query":
+        return f"{query}?"
+    elif strategy == "Factual Retrieval":
+        return f"Based on known facts, what is the answer to the following: {query}?"
+    elif strategy == "First Thought":
+        return f"What is the first thing that comes to your mind when asked: {query}?"
+    elif strategy == "Deductive Reasoning":
+        return f"Given these facts: 1) Paris is the capital of France. 2) The Eiffel Tower is located in Paris. 3) French is the official language of France. Deduce the answer to the following: {query}."
     else:
         return query
 
@@ -193,6 +203,16 @@ def clean_response(output_text, strategy):
         return output_text.split("Answer:")[-1].strip()
     elif strategy == "Answer Completion":
         return output_text.split("The correct answer is:")[-1].strip()
+    
+    # New Strategies
+    elif strategy == "Direct Query":
+        return output_text.strip()
+    elif strategy == "Factual Retrieval":
+        return output_text.split("what is the answer to the following:")[-1].strip()
+    elif strategy == "First Thought":
+        return output_text.split("when asked:")[-1].strip()
+    elif strategy == "Deductive Reasoning":
+        return output_text.split("deduce the answer to the following:")[-1].strip()
     else:
         return output_text.strip()
 
