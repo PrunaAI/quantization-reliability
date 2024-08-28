@@ -71,6 +71,7 @@ grid:
       - "Q&A Format"
       - "Instructional"
       - "Summary"
+      - "Echo"
       - "True Completion"
       - "Direct Completion"
       - "Answer Completion"
