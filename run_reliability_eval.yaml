@@ -59,21 +59,21 @@ grid:
   strategy:
     type: choice
     options:
-      # - "Fact Statement"
-      # - "Completion"
-      # - "Definitive Statement"
-      # - "Fill-in-the-Blank"
-      # - "Structured Answer Prompt"
-      # - "Direct Instruction"
-      # - "Contextual Prompts"
-      # - "Question-Answer Pairs"
-      # - "Direct Answer"
-      # - "Q&A Format"
-      # - "Instructional"
-      # - "Summary"
-      # - "True Completion"
-      # - "Direct Completion"
-      # - "Answer Completion"
+      - "Fact Statement"
+      - "Completion"
+      - "Definitive Statement"
+      - "Fill-in-the-Blank"
+      - "Structured Answer Prompt"
+      - "Direct Instruction"
+      - "Contextual Prompts"
+      - "Question-Answer Pairs"
+      - "Direct Answer"
+      - "Q&A Format"
+      - "Instructional"
+      - "Summary"
+      - "True Completion"
+      - "Direct Completion"
+      - "Answer Completion"
       - "Direct Query"
       - "Factual Retrieval"
       - "First Thought"
@@ -82,24 +82,24 @@ grid:
   dataset_name: 
     type: choice
     options: 
-      - 'toy-qa-dataset'
-      - 'P101'
-      - 'P103'
-      - 'P108'
-      - 'P127'
-      - 'P1376'
-      - 'P1412'
-      - 'P159'
-      - 'P17'
-      - 'P176'
-      # - 'P178'
-      # - 'P19'
-      # - 'P20'
-      # - 'P264'
-      # - 'P27'
-      # - 'P276'
-      # - 'P30'
-      # - 'P364'
-      # - 'P37'
-      # - 'P495'
-      # - 'P740'
+      # - 'toy-qa-dataset'
+      # - 'P101'
+      # - 'P103'
+      # - 'P108'
+      # - 'P127'
+      # - 'P1376'
+      # - 'P1412'
+      # - 'P159'
+      # - 'P17'
+      # - 'P176'
+      - 'P178'
+      - 'P19'
+      - 'P20'
+      - 'P264'
+      - 'P27'
+      - 'P276'
+      - 'P30'
+      - 'P364'
+      - 'P37'
+      - 'P495'
+      - 'P740'
