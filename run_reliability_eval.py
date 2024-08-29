@@ -152,7 +152,7 @@ def run_reliability_eval(
 
     # Generate file paths
     exp_id = "08-28-1"
-    exp_path = os.path.join(save_dir, f"reliability_eval_{exp_id}.seml")
+    exp_path = os.path.join(save_dir, f"reliability_eval_{exp_id}")
     os.makedirs(save_dir, exist_ok=True)
     
     raw_table_path = os.path.join(exp_path, f"{file_base}_raw_table_{exp_id}.xlsx")
