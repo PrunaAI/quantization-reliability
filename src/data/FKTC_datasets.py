@@ -1,4 +1,4 @@
-from ToyQADataset import toy_qa_dataset, format_toy_qa_dataset
+from src.data.ToyQADataset import toy_qa_dataset, format_toy_qa_dataset
 
 DATA_DIR = "/nfs/students/daro/data/MONITOR/FKTC"
 DATA_FILES = [
