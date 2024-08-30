@@ -170,52 +170,12 @@ def get_prompt(query, strategy):
     else:
         return query
 
-def clean_response(output_text, strategy):
-    if strategy == "Fact Statement":
-        return output_text.split("Fact:")[-1].strip()
-    elif strategy == "Completion":
-        return output_text.split("The answer is:")[-1].strip()
-    elif strategy == "Definitive Statement":
-        return output_text.split("is:")[-1].strip()
-    elif strategy == "Fill-in-the-Blank":
-        return output_text.split("Answer:")[-1].strip()
-    elif strategy == "Structured Answer Prompt":
-        return output_text.split("Answer (one word):")[-1].strip()
-    elif strategy == "Direct Instruction":
-        return output_text.split("Answer:")[-1].strip()
-    elif strategy == "Contextual Prompts":
-        return output_text.split("Please answer in one word")[-1].strip()
-    elif strategy == "Question-Answer Pairs":
-        return output_text.split("ANSR:")[-1].strip()
-    elif strategy == "Direct Answer":
-        return output_text.split("Answer:")[-1].strip()
-    elif strategy == "Q&A Format":
-        return output_text.split("A:")[-1].strip()
-    elif strategy == "Instructional":
-        return output_text.split("Answer the following question")[-1].strip()
-    elif strategy == "Summary":
-        return output_text.split("Summarize the answer to the following question")[-1].strip()
-    elif strategy == "Echo":
-        return output_text
-    elif strategy == "True Completion":
-        return output_text.split("The true answer is:")[-1].strip()
-    elif strategy == "Direct Completion":
-        return output_text.split("Answer:")[-1].strip()
-    elif strategy == "Answer Completion":
-        return output_text.split("The correct answer is:")[-1].strip()
-    
-    # New Strategies
-    elif strategy == "Direct Query":
-        return output_text.strip()
-    elif strategy == "Factual Retrieval":
-        return output_text.split("what is the answer to the following:")[-1].strip()
-    elif strategy == "First Thought":
-        return output_text.split("when asked:")[-1].strip()
-    elif strategy == "Deductive Reasoning":
-        return output_text.split("deduce the answer to the following:")[-1].strip()
-    else:
-        return output_text.strip()
+def clean_response(query, output_text, strategy):
+    formatted_query = get_prompt(query, strategy)
+    if output_text.startswith(formatted_query):
+        output_text = output_text[len(formatted_query):]
+        
+    return output_text.strip()
 
 def calculate_entropy(probs):
     return -np.sum(probs * np.log(probs))
-  

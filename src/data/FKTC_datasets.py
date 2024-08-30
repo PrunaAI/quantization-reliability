@@ -25,7 +25,7 @@ DATA_FILES = [
 ]
 
 DATA_FILES_JSON = [f"{file_name}-subclass.json" for file_name in DATA_FILES]
-  
+
 import os
 import json
 
