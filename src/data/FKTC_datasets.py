@@ -1,39 +1,4 @@
-toy_qa_dataset = [
-    # Place / Region Names (3)
-    ("What is the location of the Great Wall of China?", "China"),
-    ("Where is the Eiffel Tower located?", "Paris"),
-    ("What is the capital city of Japan?", "Tokyo"),
-    
-    # Adjectives (3)
-    ("How would you describe the taste of a lemon?", "Sour"),
-    ("What is the best way to describe the weather on a clear day?", "Sunny"),
-    ("How would you describe the feeling of touching velvet?", "Soft"),
-    
-    # Person Names (3)
-    ("Who was the first president of the United States?", "George Washington"),
-    ("Who is the author of 'Pride and Prejudice'?", "Jane Austen"),
-    ("Who painted the Mona Lisa?", "Leonardo da Vinci"),
-    
-    # Abstract Answers (3)
-    ("What is your favorite color?", "I don't know"),
-    ("What do you think of the meaning of life?", "It's complicated"),
-    ("What comes after the end?", "Nothing"),
-    
-    # Numerical Answers (3)
-    ("How many continents are there on Earth?", "Seven"),
-    ("What is the boiling point of water in Celsius?", "100"),
-    ("How many hours are there in a day?", "24"),
-    
-    # Languages (3)
-    ("What language is primarily spoken in Brazil?", "Portuguese"),
-    ("Which language is spoken in Germany?", "German"),
-    ("What is the official language of China?", "Mandarin"),
-    
-    # Company Names (3)
-    ("Which company developed the iPhone?", "Apple"),
-    ("What is the name of the online retailer founded by Jeff Bezos?", "Amazon"),
-    ("Which company is known for its search engine?", "Google")
-]
+from ToyQADataset import toy_qa_dataset, format_toy_qa_dataset
 
 DATA_DIR = "/nfs/students/daro/data/MONITOR/FKTC"
 DATA_FILES = [
@@ -125,7 +90,7 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
 
 def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None, taxonomy_type="0"):
     if dataset_name == "toy-qa-dataset":
-        return toy_qa_dataset
+        return format_toy_qa_dataset(toy_qa_dataset, taxonomy_type=taxonomy_type)
     elif dataset_name in DATA_FILES:
         return load_question_answer_pairs(
             data_dir=DATA_DIR,
