@@ -58,7 +58,7 @@ class ResponseGenerator:
 
             for i in range(len(outputs.sequences)):
                 output_text = self.tokenizer.decode(outputs.sequences[i], skip_special_tokens=True)
-                output_text = clean_response(query, output_text, strategy)
+                output_text, cleaned = clean_response(query, output_text, strategy)
 
                 token_probs = [(self.tokenizer.decode([outputs.sequences[i][j]]), round(trans_scores[i, j], 4))
                             for j in range(len(trans_scores[i]))]
@@ -71,6 +71,7 @@ class ResponseGenerator:
 
                 results.append({
                     "output_text": output_text,
+                    "cleaned": cleaned,
                     "beam_prob": beam_prob,
                     "beam_prob_adj": beam_prob_adj,
                     "entropy": entropy,
@@ -90,7 +91,7 @@ class ResponseGenerator:
                     )
 
                 output_text = self.tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-                output_text = clean_response(query, output_text, strategy)
+                output_text, cleaned = clean_response(query, output_text, strategy)
 
                 response_tokens = outputs.sequences[0].tolist()
                 probs = []
@@ -114,6 +115,7 @@ class ResponseGenerator:
 
                 results.append({
                     "output_text": output_text,
+                    "cleaned": cleaned,
                     "beam_prob": beam_prob,
                     "beam_prob_adj": beam_prob_adj,
                     "entropy": entropy,
@@ -172,10 +174,12 @@ def get_prompt(query, strategy):
 
 def clean_response(query, output_text, strategy):
     formatted_query = get_prompt(query, strategy)
+    cleaned = False
     if output_text.startswith(formatted_query):
+        cleaned = True
         output_text = output_text[len(formatted_query):]
         
-    return output_text.strip()
+    return output_text.strip(), cleaned
 
 def calculate_entropy(probs):
     return -np.sum(probs * np.log(probs))
