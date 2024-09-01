@@ -129,15 +129,17 @@ def run_reliability_eval(
             results.append({
                 "Query ID": query_idx,
                 "Query": query,
+                "Answer": true_answer,
                 "Run": result_dict['run'],
                 "Generated Response": result_dict['output_text'],
+                "Cleaned": result_dict['cleaned'],
                 "P": result_dict['beam_prob'],
                 "P_adj": result_dict['beam_prob_adj'],
                 "Entropy": result_dict['entropy'],
                 "Is Correct": result_dict['is_correct'],
                 "Token Probabilities": result_dict['token_probs']
             })
-            print(f"    IS_CORRECT: {result_dict['is_correct']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
+            print(f"    IS_CORRECT: {result_dict['is_correct']}, CLEANED: {result_dict['cleaned']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
             n_steps += 1
     
     # Generate custom file name based on parameters
