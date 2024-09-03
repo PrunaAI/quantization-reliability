@@ -114,7 +114,7 @@ def run_reliability_eval(
     cache_path=CACHE_PATH
     ):
     # LOAD DATASET
-    qa_dataset = load_dataset_from_name(dataset_name, max_entries=None)
+    qa_dataset = load_dataset_from_name(dataset_name, max_entries=None, taxonomy_type=taxonomy_type)
 
     # INITIALIZE RESULTS LIST
     results = []
