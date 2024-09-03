@@ -43,6 +43,7 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
     Returns:
         list: A list of tuples where each tuple contains a question string and an answer string.
     """
+    taxonomy_type = str(taxonomy_type)
     question_answer_pairs = []
     
     for dataset_name in dataset_names.split(','):
