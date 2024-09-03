@@ -106,6 +106,7 @@ def run_reliability_eval(
     use_beam_search,
     strategy,
     dataset_name,
+    taxonomy_type,
     device='cuda',
     seed=123,
     n_repeats=5,
@@ -113,10 +114,12 @@ def run_reliability_eval(
     cache_path=CACHE_PATH
     ):
     # LOAD DATASET
-    qa_dataset = load_dataset_from_name(dataset_name, max_entries=100)
+    qa_dataset = load_dataset_from_name(dataset_name, max_entries=None)
 
     # INITIALIZE RESULTS LIST
     results = []
+    
+    exp_id = "09-03-1"
 
     n_steps = 0
     total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
@@ -145,7 +148,7 @@ def run_reliability_eval(
     # Generate custom file name based on parameters
     beam_search_str = "beam" if use_beam_search else "sample"
     strategy_str = strategy.replace(" ", "_").lower()  # Replace spaces with underscores for file names
-    file_base = f"{model_name}_{dataset_name}_{beam_search_str}_{max_new_tokens}_tokens_{temperature}_temp_{strategy_str}"
+    file_base = f"{model_name}_{dataset_name}_{taxonomy_type}_{beam_search_str}_{max_new_tokens}_tokens_{temperature}_temp_{strategy_str}"
 
     # Optional: Create a directory for saving the results if not already existing
     results_path = "/nfs/homedirs/daro/git/quantization-reliability/results"
@@ -153,7 +156,6 @@ def run_reliability_eval(
     os.makedirs(save_dir, exist_ok=True)
 
     # Generate file paths
-    exp_id = "08-28-1"
     exp_path = os.path.join(save_dir, f"reliability_eval_{exp_id}")
     os.makedirs(save_dir, exist_ok=True)
     

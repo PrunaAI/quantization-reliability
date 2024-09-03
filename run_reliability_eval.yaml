@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'run_reliability_eval_08-28-1'
+  name: 'run_reliability_eval_09-03-1'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -38,13 +38,13 @@ grid:
   max_new_tokens:
     type: choice
     options:
-      - 10
+      # - 10
       - 15
-      - 20
+      # - 20
       - 25
-      - 30
-      - 40
-      - 50
+      # - 30
+      # - 40
+      # - 50
 
   temperature:
     type: choice
@@ -65,21 +65,21 @@ grid:
       - "Definitive Statement"
       - "Completion"
       - "Answer Completion"
-      # - "Fact Statement"
-      # - "Fill-in-the-Blank"
-      # - "Structured Answer Prompt"
-      # - "Direct Instruction"
-      # - "Contextual Prompts"
-      # - "Question-Answer Pairs"
-      # - "Q&A Format"
-      # - "Instructional"
-      # - "Summary"
-      # - "Echo"
-      # - "True Completion"
-      # - "Direct Completion"
-      # - "Direct Query"
-      # - "First Thought"
-      # - "Deductive Reasoning"
+      - "Fact Statement"
+      - "Fill-in-the-Blank"
+      - "Structured Answer Prompt"
+      - "Direct Instruction"
+      - "Contextual Prompts"
+      - "Question-Answer Pairs"
+      - "Q&A Format"
+      - "Instructional"
+      - "Summary"
+      - "Echo"
+      - "True Completion"
+      - "Direct Completion"
+      - "Direct Query"
+      - "First Thought"
+      - "Deductive Reasoning"
 
   dataset_name: 
     type: choice
@@ -105,3 +105,14 @@ grid:
       - 'P37'
       - 'P495'
       - 'P740'
+
+taxonomy_type:
+  type: choice
+    options:
+      - "0"
+      - "pos"
+      - "neg1"
+      # - "neg2"
+      # - "neg3"
+      # - "neg4"
+      # - "neg5"
