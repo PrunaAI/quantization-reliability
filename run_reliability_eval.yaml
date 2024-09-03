@@ -108,11 +108,11 @@ grid:
 
 taxonomy_type:
   type: choice
-    options:
-      - "0"
-      - "pos"
-      - "neg1"
-      # - "neg2"
-      # - "neg3"
-      # - "neg4"
-      # - "neg5"
+  options:
+    - "0"
+    - "pos"
+    - "neg1"
+    # - "neg2"
+    # - "neg3"
+    # - "neg4"
+    # - "neg5"
