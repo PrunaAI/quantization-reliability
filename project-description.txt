@@ -1,0 +1,100 @@
+Master's Thesis: Reliability of Extreme Quantization Methods for Large Language Models
+Author: Sándor Daróczi
+Supervisor: Bertrand Charpentier
+Institution: Technical University of Munich in collaboration with Pruna AI
+
+Problem Description:
+This project aims to evaluate the reliability of large language models (LLMs) when subjected to various quantization methods. The primary focus is on assessing the reliability of the Llama-3-8B model using a range of quantization techniques. The ultimate goal is to identify potential scaling laws for the reliability of quantized models, similar to those established for sparse foundation models.
+
+Project Goals:
+1. Evaluate the reliability of quantized LLMs, particularly Llama-3-8B.
+2. Measure model confidence and performance on zero-shot tasks.
+3. Investigate potential scaling laws for quantized LLM reliability.
+4. Assess model performance on both in-distribution (ID) and out-of-distribution (OOD) datasets.
+5. Analyze model robustness to various input perturbations.
+
+Quantization Methods Under Investigation:
+- BnB (Bitsandbytes)
+- AWQ (Activation-aware Weight Quantization)
+- HQQ (Hierarchical Quantization)
+- HQQ+
+- Quanto
+- Quanto+
+- QuaRoT (Quantized Approximation of Rotational Transformations)
+- QoQ (Quattuor-Octo-Quattuor)
+- SpQR (Sparse-Quantized Representation)
+- AQLM (Additive Quantization of Language Models)
+- GPTQ (Generalized Quantization)
+
+PEFT Methods:
+- LoftQ (LoRA-Fine-Tuning-aware Quantization)
+- QLoRA (Quantization-aware LoRA)
+- LoRA (Low-Rank Adaptation)
+
+Evaluation Metrics:
+- Perplexity
+- Brier Score
+- AUCPR (Area Under the Precision-Recall Curve)
+- Accuracy
+- MONITOR (MOdel kNowledge relIabiliTy scORe)
+
+Datasets:
+- WikiText
+- C4
+- PTB (Penn Treebank)
+- OpenAssistant
+- FKTC (Factual Knowledge and Taxonomic Classification)
+- CommonSense QA (HellaSwag, WinoGrande)
+
+Current Focus and Progress:
+1. Implementing and evaluating prompting strategies for reliability assessment.
+2. Analyzing the impact of different `max_new_tokens` values on model performance.
+3. Evaluating model performance under various taxonomies and typo-based perturbations.
+4. Assessing the reliability of quantized models using perplexity and Brier score metrics.
+5. Implementing FKTC evaluation into the pipeline.
+6. Experimenting with different prompt engineering strategies.
+7. Implementing typo modifications based on recent literature.
+
+Implementation Details:
+- Using Python with libraries such as PyTorch, Transformers, and custom quantization libraries.
+- Employing SEML for experiment scheduling and management.
+- Utilizing Weight & Biases for experiment tracking.
+- Developing custom data loading and processing pipelines for various datasets.
+- Implementing custom evaluation metrics and perturbation techniques.
+
+Reliability Assessment Approaches:
+1. Prompt Variations: Testing model robustness to different phrasings of the same question.
+2. In-context Interference: Evaluating model performance with potentially misleading contextual information.
+3. Typo Robustness: Assessing model performance on inputs with deliberate spelling mistakes or character-level perturbations.
+4. Order-Invariance: Testing model sensitivity to the order of input tokens.
+5. Out-of-Distribution Generalization: Evaluating model performance on datasets from different domains.
+
+Research Directions and Ideas:
+1. Investigate the trade-off between model size, quantization level, and reliability.
+2. Explore the impact of different calibration datasets on quantization performance.
+3. Analyze the relationship between model perplexity and other reliability metrics.
+4. Develop new visualization methods for comparing quantization methods across different datasets and metrics.
+5. Investigate the potential of combining quantization with PEFT methods for improved reliability.
+6. Study the impact of context length on quantized model performance.
+
+Challenges and Open Questions:
+1. Balancing computational efficiency with reliability in extreme quantization scenarios.
+2. Developing robust evaluation metrics that capture various aspects of model reliability.
+3. Understanding the relationship between quantization methods and model robustness to input perturbations.
+4. Identifying potential scaling laws for quantized model reliability across different model sizes and architectures.
+
+Next Steps:
+1. Complete the evaluation pipeline for all quantization methods.
+2. Implement and evaluate PEFT methods in combination with quantization.
+3. Conduct a comprehensive analysis of model robustness to various input perturbations.
+4. Develop and test new reliability metrics specifically tailored for quantized models.
+5. Investigate potential scaling laws by comparing results across different model sizes and quantization levels.
+6. Prepare visualizations and analyses for inclusion in the final thesis document.
+
+Long-term Goals:
+1. Establish a comprehensive framework for evaluating the reliability of quantized LLMs.
+2. Identify optimal quantization strategies that balance efficiency and reliability.
+3. Contribute to the understanding of how quantization affects various aspects of LLM performance and reliability.
+4. Provide insights and recommendations for deploying quantized LLMs in real-world applications where reliability is crucial.
+
+This project aims to bridge the gap between the increasing demand for efficient, deployable LLMs and the need for reliable, trustworthy AI systems. By thoroughly investigating the impact of extreme quantization on model reliability, we hope to contribute valuable insights to the field of AI and guide future developments in LLM optimization and deployment.
