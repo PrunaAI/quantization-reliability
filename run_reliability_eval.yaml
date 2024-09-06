@@ -2,7 +2,7 @@
 
 seml:
   conda_environment: 'env-quant-rel-310'
-  executable: 'scripts/run_reliability_eval.py'
+  executable: 'run_reliability_eval.py'
   name: 'run_reliability_eval_09-03-1'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
