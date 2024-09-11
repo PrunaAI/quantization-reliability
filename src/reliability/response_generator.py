@@ -126,7 +126,7 @@ class ResponseGenerator:
 
         return results
     
-def get_prompt(query, strategy):
+def get_prompt(query, strategy, expert_type="", expert_institution=""):
     if strategy == "Fact Statement":
         return f"{query} Fact:"
     elif strategy == "Completion":
@@ -169,6 +169,8 @@ def get_prompt(query, strategy):
         return f"What is the first thing that comes to your mind when asked: {query}?"
     elif strategy == "Deductive Reasoning":
         return f"Given these facts: 1) Paris is the capital of France. 2) The Eiffel Tower is located in Paris. 3) French is the official language of France. Deduce the answer to the following: {query}."
+    elif strategy == "Expert Persona":
+        return f"You are a professor of {expert_type} at {expert_institution}. One of your students asks you: {query}\nAs an expert in this field, your answer is:"
     else:
         return query
 
