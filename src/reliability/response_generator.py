@@ -127,6 +127,8 @@ class ResponseGenerator:
         return results
     
 def get_prompt(query, strategy, expert_type="", expert_institution=""):
+    if strategy == "Original":
+        return query
     if strategy == "Fact Statement":
         return f"{query} Fact:"
     elif strategy == "Completion":
