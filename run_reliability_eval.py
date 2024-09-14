@@ -175,12 +175,11 @@ def run_reliability_eval(
     def calculate_scores(group):
         y_true = group['Is Correct'].values
 
-        # Calculate various AUCROC and AUCPR scores
+        # Calculate various scores
         scores_dict = {}
         metrics_to_calculate = {
             'sample': 'P',
             'adj': 'P_adj',
-            'entr': 'Entropy',
             'sem': 'P_sem'
         }
 
@@ -192,9 +191,15 @@ def run_reliability_eval(
                 aucroc = np.nan
             aucpr = metrics.average_precision_score(y_true, y_scores)
             accuracy = np.mean(y_true)
+            brier_score = metrics.brier_score_loss(y_true, y_scores)
+            log_loss = metrics.log_loss(y_true, y_scores)
+            entropy = -np.sum(y_scores * np.log2(y_scores + 1e-10))  # Added small constant to avoid log(0)
 
             scores_dict[f'AUCROC_{key}'] = aucroc
             scores_dict[f'AUCPR_{key}'] = aucpr
+            scores_dict[f'Brier_{key}'] = brier_score
+            scores_dict[f'LogLoss_{key}'] = log_loss
+            scores_dict[f'Entropy_{key}'] = entropy
             
         scores_dict[f'Accuracy'] = accuracy
         
