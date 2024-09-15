@@ -60,7 +60,7 @@ grid:
   strategy:
     type: choice
     options:
-      - "Original"
+      # - "Original"
       # - "Direct Answer"
       # - "Factual Retrieval"
       # - "Definitive Statement"
@@ -81,7 +81,7 @@ grid:
       # - "Direct Query"
       # - "First Thought"
       # - "Deductive Reasoning"
-      # - "Expert Persona"
+      - "Expert Persona"
 
   dataset_name: 
     type: choice

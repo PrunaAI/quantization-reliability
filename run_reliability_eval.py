@@ -125,7 +125,7 @@ def run_reliability_eval(
     total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
     generator = ResponseGenerator(base_models[model_name])
     for query_idx, (query, true_answer) in enumerate(qa_dataset):
-        run_results = generator.generate_response(query, strategy, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
+        run_results = generator.generate_response(query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
         for result_dict in run_results:
             print(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
             # Store the results in the list

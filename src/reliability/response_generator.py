@@ -13,8 +13,8 @@ class ResponseGenerator:
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
         self.model.eval()
 
-    def generate_response(self, query, strategy, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=5, n_beams=5):
-        prompt = get_prompt(query, strategy)
+    def generate_response(self, query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=5, n_beams=5):
+        prompt = get_prompt(query, strategy, dataset_name)
         inputs = self.tokenizer(prompt, return_tensors='pt').to("cuda")
         
         # Generation configuration
@@ -126,7 +126,7 @@ class ResponseGenerator:
 
         return results
     
-def get_prompt(query, strategy, expert_type="", expert_institution=""):
+def get_prompt(query, strategy, dataset_name):
     if strategy == "Original":
         return query
     if strategy == "Fact Statement":
@@ -161,8 +161,6 @@ def get_prompt(query, strategy, expert_type="", expert_institution=""):
         return f"{query} Answer:"
     elif strategy == "Answer Completion":
         return f"{query} The correct answer is:"
-    
-    # New Strategies
     elif strategy == "Direct Query":
         return f"{query}?"
     elif strategy == "Factual Retrieval":
@@ -172,9 +170,37 @@ def get_prompt(query, strategy, expert_type="", expert_institution=""):
     elif strategy == "Deductive Reasoning":
         return f"Given these facts: 1) Paris is the capital of France. 2) The Eiffel Tower is located in Paris. 3) French is the official language of France. Deduce the answer to the following: {query}."
     elif strategy == "Expert Persona":
-        return f"You are a professor of {expert_type} at {expert_institution}. One of your students asks you: {query}\nAs an expert in this field, your answer is:"
+        if dataset_name in dataset_expert_mapping:
+            expert_type, expert_institution = dataset_expert_mapping[dataset_name].split(', ')
+            return f"You are a professor of {expert_type} at {expert_institution}. One of your students asks you: {query}\nAs an expert in this field, your answer is:"
+        else:
+            return f"As an expert in this field, please answer the following question: {query}"
     else:
         return query
+    
+dataset_expert_mapping = {
+    'P101': 'Sociology, Stanford University',
+    'P103': 'Linguistics, University of Cambridge',
+    'P108': 'Business Administration, Wharton School',
+    'P127': 'Business Law, NYU',
+    'P1376': 'Political Geography, Sciences Po',
+    'P1412': 'Historical Linguistics, University of Edinburgh',
+    'P159': 'Business Geography, London School of Economics',
+    'P17': 'Geography, Oxford University',
+    'P176': 'Industrial Engineering, ETH Zurich',
+    'P178': 'Innovation Management, INSEAD',
+    'P19': 'History, Harvard University',
+    'P20': 'History, Yale University',
+    'P264': 'Music Industry, Berklee College of Music',
+    'P27': 'Political Science, Columbia University',
+    'P276': 'Geography, University of Chicago',
+    'P30': 'Geography, University of California, Berkeley',
+    'P364': 'Media Studies, USC',
+    'P37': 'Linguistics, MIT',
+    'P495': 'Cultural Studies, Sorbonne University',
+    'P740': 'Organizational History, University of Tokyo'
+}
+    
 
 def clean_response(query, output_text, strategy):
     formatted_query = get_prompt(query, strategy)
