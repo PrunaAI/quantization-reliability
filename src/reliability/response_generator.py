@@ -175,6 +175,33 @@ def get_prompt(query, strategy, dataset_name):
             return f"You are a professor of {expert_type} at {expert_institution}. One of your students asks you: {query}\nAs an expert in this field, your answer is:"
         else:
             return f"As an expert in this field, please answer the following question: {query}"
+    elif strategy == "Reflective Reasoning":
+        return f"""You are an AI assistant that uses a Chain of Thought (CoT) approach with reflection to answer queries.
+Follow these steps:
+
+1. Think through the problem step by step within the <thinking> tags.
+2. Reflect on your thinking to check for any errors or improvements within the <reflection> tags.
+3. Make any necessary adjustments based on your reflection.
+4. Provide your final, concise answer within the <output> tags.
+
+Important: The <thinking> and <reflection> sections are for your internal reasoning process only.
+Do not include any part of the final answer in these sections.
+The actual response to the query must be entirely contained within the <output> tags.
+
+Use the following format for your response:
+<thinking>
+[Your step-by-step reasoning goes here. This is your internal thought process, not the final answer.]
+</thinking>
+<reflection>
+[Your reflection on your reasoning, checking for errors or improvements]
+</reflection>
+[Any adjustments to your thinking based on your reflection]
+<output>
+[Your final, concise answer to the query. This is the only part that will be shown to the user.]
+</output>
+
+Now, please answer the following question:
+{query}"""
     else:
         return query
     
@@ -200,10 +227,9 @@ dataset_expert_mapping = {
     'P495': 'Cultural Studies, Sorbonne University',
     'P740': 'Organizational History, University of Tokyo'
 }
-    
 
-def clean_response(query, output_text, strategy):
-    formatted_query = get_prompt(query, strategy)
+def clean_response(query, output_text, strategy, dataset_name):
+    formatted_query = get_prompt(query, strategy, dataset_name)
     cleaned = False
     if output_text.startswith(formatted_query):
         cleaned = True
