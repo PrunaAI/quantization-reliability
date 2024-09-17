@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'max_new_tokens_eval_09-03-1'
+  name: 'max_new_tokens_eval_09-17-1'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -38,15 +38,15 @@ grid:
   max_new_tokens:
     type: choice
     options:
-      # - 10
+      - 10
       - 15
-      # - 20
+      - 20
       - 25
-      # - 30
-      # - 35
-      # - 40
-      # - 45
-      # - 50
+      - 30
+      - 35
+      - 40
+      - 45
+      - 50
 
   temperature:
     type: choice
@@ -79,12 +79,12 @@ grid:
       # - "Summary"
       # - "Echo"
       # - "True Completion"
-      # - "Direct Completion"
+      - "Direct Completion"  ###########################
       # - "Direct Query"
       # - "First Thought"
       # - "Deductive Reasoning"
-      - "Expert Persona"
-      # - "TODO: Chain-of-Thought-Reasoning"
+      # - "Expert Persona"  ######################
+      # - "TODO: Chain-of-Thought-Reasoning"  ###################
 
   dataset_name: 
     type: choice
