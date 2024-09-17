@@ -119,7 +119,7 @@ def run_reliability_eval(
     # INITIALIZE RESULTS LIST
     results = []
     
-    exp_id = "09-17-1"
+    exp_id = "09-17-2"
 
     n_steps = 0
     total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
@@ -187,12 +187,20 @@ def run_reliability_eval(
             y_scores = group[score_column].values
             if len(set(y_true)) > 1:  # Ensure at least two classes are present
                 aucroc = custom_auc_roc(y_true, y_scores)
+                aucpr = metrics.average_precision_score(y_true, y_scores)
+                brier_score = metrics.brier_score_loss(y_true, y_scores)
+                # Add check for log_loss
+                if len(set(y_scores)) > 1:
+                    log_loss = metrics.log_loss(y_true, y_scores)
+                else:
+                    log_loss = np.nan
             else:
                 aucroc = np.nan
-            aucpr = metrics.average_precision_score(y_true, y_scores)
+                aucpr = np.nan
+                brier_score = np.nan
+                log_loss = np.nan
+
             accuracy = np.mean(y_true)
-            brier_score = metrics.brier_score_loss(y_true, y_scores)
-            log_loss = metrics.log_loss(y_true, y_scores)
             entropy = -np.sum(y_scores * np.log2(y_scores + 1e-10))  # Added small constant to avoid log(0)
 
             scores_dict[f'AUCROC_{key}'] = aucroc
