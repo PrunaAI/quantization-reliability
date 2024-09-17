@@ -58,7 +58,7 @@ class ResponseGenerator:
 
             for i in range(len(outputs.sequences)):
                 output_text = self.tokenizer.decode(outputs.sequences[i], skip_special_tokens=True)
-                output_text, cleaned = clean_response(query, output_text, strategy)
+                output_text, cleaned = clean_response(query, output_text, strategy, dataset_name)
 
                 token_probs = [(self.tokenizer.decode([outputs.sequences[i][j]]), round(trans_scores[i, j], 4))
                             for j in range(len(trans_scores[i]))]
@@ -91,7 +91,7 @@ class ResponseGenerator:
                     )
 
                 output_text = self.tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-                output_text, cleaned = clean_response(query, output_text, strategy)
+                output_text, cleaned = clean_response(query, output_text, strategy, dataset_name)
 
                 response_tokens = outputs.sequences[0].tolist()
                 probs = []
