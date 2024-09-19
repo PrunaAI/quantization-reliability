@@ -1,3 +1,4 @@
+import numpy as np
 from src.reliability.constants import dataset_expert_mapping, dataset_example_questions
 
 def get_prompt(query, strategy, dataset_name):
@@ -75,7 +76,7 @@ Use the following format for your response:
 </output>
 
 Now, please answer the following question:
-{query}"""
+{query}. Answer:"""
     elif strategy == "Zero-Shot":
         return f"Q: {query}\nA:"
     elif strategy == "One-Shot":
