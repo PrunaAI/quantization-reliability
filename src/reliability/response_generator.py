@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import torch
 
-from src.reliability.utils import calculate_entropy, clean_response, get_prompt
+from src.reliability.utils import calculate_entropy, get_prompt
 
 class ResponseGenerator:
     def __init__(self, model_name):
@@ -14,7 +14,11 @@ class ResponseGenerator:
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
         self.model.eval()
         
-    def clean_response(self, output_text, true_answer):
+    def clean_response(self, query, output_text, true_answer):
+        # Strip the query from the beginning of the output if present
+        if output_text.lower().startswith(query.lower()):
+            output_text = output_text[len(query):].lstrip()
+        
         output_lower = output_text.lower()
         true_answer_lower = true_answer.lower()
         
@@ -29,26 +33,43 @@ class ResponseGenerator:
         cleaned_text = output_text[:anchor_index].strip()
         return cleaned_text, True
 
-    def calculate_probabilities(self, token_probs, true_answer):
+    def calculate_probabilities(self, query, token_probs, true_answer):
         probs = []
         cleaned_token_probs = []
-        true_answer_tokens = self.tokenizer.encode(true_answer.lower(), add_special_tokens=False)
+        true_answer_lower = true_answer.lower()
         true_answer_found = False
+        query_tokens = self.tokenizer.encode(query.lower(), add_special_tokens=False)
+        query_end_index = 0
+        current_text = ""
         
-        for token, prob in token_probs:
-            cleaned_token_probs.append((token, prob))
-            probs.append(prob)
-            
-            if not true_answer_found and all(t in [self.tokenizer.decode([tid]).lower() for tid in true_answer_tokens] for t in cleaned_token_probs[-len(true_answer_tokens):]):
-                true_answer_found = True
-            
-            if true_answer_found and '.' in token or '!' in token or '?' in token or '\n' in token:
+        # Find the end of the query in the token list
+        bof_adjustment_idx = 0
+        for i, (token, _) in enumerate(token_probs):
+            if i == 0 and token == '<|begin_of_text|>':
+                query_end_index = i + 1
+                bof_adjustment_idx = 1
+            elif i < len(query_tokens) + bof_adjustment_idx and self.tokenizer.decode([query_tokens[i - bof_adjustment_idx]]).lower() in token.lower():
+                query_end_index = i + 1
+            else:
                 break
         
+        # Process tokens after the query
+        for token, prob in token_probs[query_end_index:]:
+            current_text += token
+            
+            if not true_answer_found and true_answer_lower in current_text.lower():
+                true_answer_found = True
+
+            if true_answer_found and any(char in token for char in '.,!?;:()[]{}"\'\n'):
+                break
+
+            cleaned_token_probs.append((token, prob))
+            probs.append(prob)
+        
         probs = torch.tensor(probs)
-        beam_prob = torch.exp(torch.sum(torch.log(probs))).item()
-        beam_prob_adj = torch.exp((len(probs) ** -1) * torch.sum(torch.log(probs))).item()
-        entropy = self.calculate_entropy(probs.numpy())
+        beam_prob = torch.exp(torch.sum(torch.log(probs))).item() if len(probs) > 0 else 0
+        beam_prob_adj = torch.exp((len(probs) ** -1) * torch.sum(torch.log(probs))).item() if len(probs) > 0 else 0
+        entropy = calculate_entropy(probs.numpy()) if len(probs) > 0 else 0
         
         return beam_prob, beam_prob_adj, entropy, cleaned_token_probs
     
@@ -83,7 +104,7 @@ class ResponseGenerator:
             with torch.no_grad():
                 outputs = self.model.generate(
                     inputs['input_ids'],
-                    attention_mask=inputs['attention_mask'],  # Provide attention_mask to avoid the warning
+                    attention_mask=inputs['attention_mask'],
                     generation_config=GenerationConfig(**generation_config),
                     max_new_tokens=max_new_tokens
                 )
@@ -97,25 +118,21 @@ class ResponseGenerator:
 
             for i in range(len(outputs.sequences)):
                 output_text = self.tokenizer.decode(outputs.sequences[i], skip_special_tokens=True)
-                output_text, cleaned = clean_response(query, output_text, strategy, dataset_name)
+                cleaned_text, is_correct = self.clean_response(query, output_text, true_answer)
 
-                token_probs = [(self.tokenizer.decode([outputs.sequences[i][j]]), round(trans_scores[i, j], 4))
-                            for j in range(len(trans_scores[i]))]
-
-                beam_prob = torch.exp(torch.sum(torch.log(torch.from_numpy(trans_scores[i])))).cpu().item()
-                beam_prob_adj = torch.exp((len(trans_scores[0]) ** -1) * torch.sum(torch.log(torch.from_numpy(trans_scores[i])))).cpu().item()
-
-                entropy = calculate_entropy(np.array(trans_scores[i]))
-                is_correct = true_answer.lower() in output_text.lower()
+                token_probs = [(self.tokenizer.decode([outputs.sequences[i][j + len(inputs['input_ids'][0])]]), round(trans_scores[i, j], 4))
+                               for j in range(len(trans_scores[i]))]
+                
+                beam_prob, beam_prob_adj, entropy, cleaned_token_probs = self.calculate_probabilities(query, token_probs, true_answer)
 
                 results.append({
                     "output_text": output_text,
-                    "cleaned": cleaned,
+                    "cleaned": cleaned_text,
                     "beam_prob": beam_prob,
                     "beam_prob_adj": beam_prob_adj,
                     "entropy": entropy,
                     "is_correct": is_correct,
-                    "token_probs": token_probs,
+                    "token_probs": cleaned_token_probs,
                     "run": i + 1  # 1-indexed
                 })
 
@@ -130,7 +147,7 @@ class ResponseGenerator:
                     )
                     
                     output_text = self.tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-                    cleaned_text, is_correct = self.clean_response(output_text, true_answer)
+                    cleaned_text, is_correct = self.clean_response(query, output_text, true_answer)
                     
                     token_probs = []
                     for pos_idx, beam_scores in enumerate(outputs.scores):
@@ -139,7 +156,7 @@ class ResponseGenerator:
                         token_prob = softmax_scores[0][token_id].item()
                         token_probs.append((self.tokenizer.decode([token_id]), round(token_prob, 4)))
                     
-                    beam_prob, beam_prob_adj, entropy, cleaned_token_probs = self.calculate_probabilities(token_probs, true_answer)
+                    beam_prob, beam_prob_adj, entropy, cleaned_token_probs = self.calculate_probabilities(query, token_probs, true_answer)
                     
                     results.append({
                         "output_text": output_text,

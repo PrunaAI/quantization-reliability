@@ -96,16 +96,6 @@ Now, please answer the following question:
         return f"Q: {examples[0][0]}\nA: {examples[0][1]}\n\nQ: {examples[1][0]}\nA: {examples[1][1]}\n\nQ: {examples[2][0]}\nA: {examples[2][1]}\n\nQ: {examples[3][0]}\nA: {examples[3][1]}\n\nQ: {examples[4][0]}\nA: {examples[4][1]}\n\nQ: {query}\nA:"
     else:
         return query
-    
-
-def clean_response(query, output_text, strategy, dataset_name):
-    formatted_query = get_prompt(query, strategy, dataset_name)
-    cleaned = False
-    if output_text.startswith(formatted_query):
-        cleaned = True
-        output_text = output_text[len(formatted_query):]
-        
-    return output_text.strip(), cleaned
 
 def calculate_entropy(probs):
     return -np.sum(probs * np.log(probs))
