@@ -40,9 +40,9 @@ fine_tuning_params = {
     'train_samples': 128
 }
 
-# AQLM_PREQUANTIZED configuration
-AQLM_PREQUANTIZED = {
-    "name": "AQLM-PREQUANTIZED",
+# AQLM configuration
+AQLM = {
+    "name": "AQLM",
     "quantize_method": "AQLM",
     "num_bits": 2,
     "model_variant": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",

@@ -4,12 +4,13 @@ import torch
 from transformers import AutoModelForCausalLM
 from hqq.models.hf.base import AutoHQQHFModel
 from hqq.core.quantize import BaseQuantizeConfig as HQQBaseQuantizeConfig
+from hqq.engine.hf import HQQModelForCausalLM
 from src import MODEL_SAVE_PATH
 
 import logging
 logger = logging.getLogger("quant_logger")
 
-def quantize_hqq(model_name, quantize_config={}, save_model=False, save_path="", device="cuda"):
+def quantize_hqq(model_name, quantize_config={}, save_model=False, device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for HQQ: {quantize_config['num_bits']}")
 
@@ -55,8 +56,9 @@ def quantize_hqq(model_name, quantize_config={}, save_model=False, save_path="",
     
     logger.info(f'Model {model_name} is quantized to {hqq_model_name}')
     
-    # if save_model:
-    #     save_dir = save_path if save_path else hqq_model_path
-    #     AutoHQQHFModel.save_quantized(hqq_model, save_dir)
+    if isinstance(hqq_model, HQQModelForCausalLM):  # Try to use pipeline for HF specific HQQ quantization
+        hqq_model.save_quantized(hqq_model_path)
+    else:  # Default to generic HQQ pipeline if it fails
+        AutoHQQHFModel.save_quantized(hqq_model, hqq_model_path)
 
     return hqq_model

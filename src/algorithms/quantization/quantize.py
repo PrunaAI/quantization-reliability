@@ -1,6 +1,5 @@
 from src.algorithms.quantization import QUANT_CONFIGS
 from src.algorithms.quantization.aqlm_lora import quantize_aqlm_lora
-from src.algorithms.quantization.aqlm_prequantized import quantize_aqlm_prequantized
 from src.algorithms.quantization.awq import quantize_awq
 from src.algorithms.quantization.bnb import quantize_bnb
 from src.algorithms.quantization.hqq import quantize_hqq
@@ -12,7 +11,7 @@ from src.algorithms.quantization.quanto import quantize_quanto
 logger = logging.getLogger("quant_logger")
 
 # Wrapper class for quantization
-def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, train_dataloader=None, save_model=False, save_path="", device="cuda"):
+def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, train_dataloader=None, save_model=False, device="cuda"):
     logger.info(f"Quantizing model {model_name} with method {quantize_method} and calibration data {calib_dataloader.dataset.__class__.__name__}")
     model = None
     if quantize_method == "BNB-4":
@@ -20,7 +19,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             model_name=model_name,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     elif quantize_method == "BNB-8":
@@ -28,7 +26,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             model_name=model_name,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     elif quantize_method == "AWQ-4":
@@ -38,7 +35,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             calib_dataloader=calib_dataloader,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     elif quantize_method == "HQQ-8-uniform":
@@ -46,7 +42,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             model_name=model_name,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     elif quantize_method == "HQQ-mixed":
@@ -54,7 +49,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             model_name=model_name,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     elif quantize_method == "HQQ-LORA":
@@ -64,7 +58,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             calib_dataloader=calib_dataloader,
             quantize_config=QUANT_CONFIGS[quantize_method],
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     elif quantize_method == "QUANTO" or quantize_method == "QUANTO-CALIB" or quantize_method == "QUANTO-QAT":
@@ -74,12 +67,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             calib_dataloder=calib_dataloader,
             train_dataloader=train_dataloader,
             save_model=save_model,
-            save_path=save_path,
-            device=device
-        )
-    elif quantize_method == "AQLM-PREQUANTIZED":
-        model = quantize_aqlm_prequantized(
-            quantize_config=QUANT_CONFIGS[quantize_method],
             device=device
         )
     elif quantize_method == "AQLM-LORA":
@@ -88,7 +75,6 @@ def quantize(model_name, tokenizer, quantize_method, calib_dataloader=None, trai
             quantize_config=QUANT_CONFIGS[quantize_method],
             calib_dataloader=calib_dataloader,
             save_model=save_model,
-            save_path=save_path,
             device=device
         )
     else:

@@ -6,7 +6,7 @@ from src import MODEL_SAVE_PATH
 import logging
 logger = logging.getLogger("quant_logger")
 
-def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, save_model=False, save_path="", device="cuda"):
+def quantize_awq(model_name, tokenizer, calib_dataloader, quantize_config={}, save_model=False, device="cuda"):
     if quantize_config['num_bits'] is None or quantize_config['num_bits'] not in [4, 8]:
         raise ValueError(f"Invalid num_bits for AWQ: {quantize_config['num_bits']}")
         

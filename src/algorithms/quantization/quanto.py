@@ -16,7 +16,7 @@ keyword_to_itype = {
     "qfloat8": qfloat8,
 }
 
-def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_dataloader=None, save_model=False, save_path="", device="cuda"):
+def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_dataloader=None, save_model=False, device="cuda"):
     if 'name' not in quantize_config:
         raise ValueError("Invalid quantize_config: 'name' key is missing")
 
@@ -95,7 +95,6 @@ def quantize_quanto(model_name, quantize_config={}, calib_dataloder=None, train_
     logger.info(f'Model {model_name} is quantized to {model_save_name}')
 
     if save_model:
-        save_dir = save_path if save_path else model_save_path
-        safe_save(model.state_dict(), f"{save_dir}.safetensors")
+        safe_save(model.state_dict(), f"{model_save_path}.safetensors")
 
     return model
