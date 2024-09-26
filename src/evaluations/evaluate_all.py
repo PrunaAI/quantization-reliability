@@ -24,6 +24,7 @@ def evaluate(model, eval_dataloader, eval_metrics, n_samples=None, device="cuda"
         results[f"{prefix}current_gpu_free_memory"] = get_gpu_memory()
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate GPU type")
         
+    
     if "perplexity" in eval_metrics:
         logger.info("Evaluating Perplexity")
         results[f"{prefix}perplexity"] = evaluate_perplexity(
@@ -34,6 +35,7 @@ def evaluate(model, eval_dataloader, eval_metrics, n_samples=None, device="cuda"
             to_device=to_device
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate perplexity")
+    
     if "brier_score" in eval_metrics:
         logger.info("Evaluating Brier Score")
         results[f"{prefix}brier_score"] = evaluate_brier_score(
@@ -44,12 +46,14 @@ def evaluate(model, eval_dataloader, eval_metrics, n_samples=None, device="cuda"
             to_device=to_device
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate brier score")
+
     if "disk_space_usage" in eval_metrics:
         logger.info("Evaluating Disk Space Usage")
         results[f"{prefix}disk_space_usage"] = evaluate_disk_space_usage(
             model=model
         )
         record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Evaluate disk space usage")
+    
     if "quantize_runtime" in eval_metrics:
         logger.info("Evaluating Quantize Runtime")
         results[f"{prefix}quantize_runtime"] = evaluate_quantize_runtime(
