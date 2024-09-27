@@ -20,12 +20,12 @@ slurm:
 fixed:
   exp_id: "taxonomy-test-09-27"
   save_excel: True
-  num_excel_rows: 200
+  num_excel_rows: 20
   device: 'cuda'
   seed: 42
   n_repeats: 10
   n_beams: 5
-  max_entries: None
+  max_entries: 20
 
 grid:
   model_name:
