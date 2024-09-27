@@ -143,7 +143,7 @@ def evaluate_reliability(
 
     # Save the original detailed results to an Excel file
     if save_excel:
-        df_results.iloc[:num_excel_rows].to_excel(raw_table_path, index=False)
+        df_results.iloc[:min(num_excel_rows, len(df_results))].to_excel(raw_table_path, index=False)
         df_scores.to_excel(scores_table_path, index=False)
         logger.info(f"Saved raw results to {raw_table_path}")
         logger.info(f"Saved scores to {scores_table_path}")
