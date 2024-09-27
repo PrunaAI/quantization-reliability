@@ -18,6 +18,8 @@ import re
 
 import os
 
+from src.reliability.constants import keyboard_adjacency, char_map, internet_slang, stop_words
+
 # Set the custom download directory
 nltk_data_dir = '/nfs/students/daro/data/nltk_data'
 
@@ -397,6 +399,7 @@ def word_remove_punctuation(words, num_modifications):
     return words
 
 def word_fill_word_deletion(words, num_modifications):
+    query = ' '.join(words)
     stop_word_indices = [i for i, word in enumerate(words) if word.lower() in stop_words]
     
     if not stop_word_indices:
