@@ -12,7 +12,7 @@ from hqq.models.hf.base import AutoHQQHFModel
 from awq import AutoAWQForCausalLM
 
 from src import MODEL_SAVE_PATH
-from src.models import local_quantized_models
+from src.models import META_LLAMA_3_8B
 logger = logging.getLogger("quant_logger")
 
 

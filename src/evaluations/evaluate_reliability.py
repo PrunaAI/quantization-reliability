@@ -1,13 +1,10 @@
 from src.data.FKTC_datasets import load_dataset_from_name
 from src.reliability.response_generator import ResponseGenerator
-from src.models import base_models
 
 import os
 import pandas as pd
 import numpy as np
 from sklearn import metrics
-
-from src import MODEL_SAVE_PATH
 
 def evaluate_reliability(
     exp_id: str,

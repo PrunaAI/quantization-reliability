@@ -4,7 +4,6 @@ from typing import Tuple, Optional
 
 import os
 import torch
-from typing import Tuple, Optional
 import logging
 
 

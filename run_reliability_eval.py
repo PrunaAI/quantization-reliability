@@ -77,12 +77,6 @@ login(token=huggingface_token, add_to_git_credential=True)
 from seml.experiment import Experiment
 import seml
 
-from src.models import get_model, get_model_name, get_tokenizer
-from src.data import data_loader_from_split, get_dataset
-from src.algorithms.quantization.quantize import quantize
-from src.evaluations.evaluate_all import evaluate
-from src.evaluations.evaluate_memory import record_gpu_memory
-
 logging.info("Setting up GPU memory usage list...")
 # Global list to store GPU memory usage
 gpu_memory_usage = {}
