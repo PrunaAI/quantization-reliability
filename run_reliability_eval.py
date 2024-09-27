@@ -118,6 +118,7 @@ def run_evaluate(
     model_name="",
     model_path="",
     device="cuda",
+    cache_path=CACHE_PATH
 ):
     ##################
     ## Print config ##
@@ -140,7 +141,7 @@ def run_evaluate(
 
     results = evaluate_reliability(
         exp_id=exp_id,
-        model=model_name,
+        model_name=model_name,
         dataset_name=dataset_name,
         taxonomy_type=taxonomy_type,
         typo_type=typo_type,
@@ -154,6 +155,7 @@ def run_evaluate(
         max_entries=max_entries,
         save_excel=save_excel,
         num_excel_rows=num_excel_rows,
+        cache_dir=cache_path
     )
 
     fail_trace = {

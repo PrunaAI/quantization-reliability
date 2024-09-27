@@ -7,9 +7,9 @@ from src.reliability.utils import calculate_entropy, get_prompt
 from src.models.load_model_and_tokenizer import load_model_and_tokenizer
 
 class ResponseGenerator:
-    def __init__(self, model_name_or_path, cache_dir):
+    def __init__(self, model_name, cache_dir):
         self.model, self.tokenizer = load_model_and_tokenizer(
-            model_name_or_path=model_name_or_path,
+            model_name=model_name,
             device="cuda",
             max_memory=None,
             cache_dir=cache_dir
