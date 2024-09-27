@@ -47,75 +47,38 @@ hf_quantized_models = {
 
 local_quantized_models = {
     # AWQ models
-    "Llama-3-8B-AWQ": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AWQ"),
+    "Llama-3-8B-AWQ-4bit-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AWQ-4"),
     
     # BNB models
-    "Llama-3-8B-BNB-8bit": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-8bit"),
-    "Llama-3-8B-BNB-4bit": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-4bit"),
+    "Llama-3-8B-BNB-8bit-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-8"),
+    "Llama-3-8B-BNB-4bit-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-4"),
     
     # HQQ models
-    "Llama-3-8B-HQQ-8-uniform": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-8-uniform"),
-    "Llama-3-8B-HQQ-mixed": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-mixed"),
+    "Llama-3-8B-HQQ-8-uniform-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-8-uniform"),
+    "Llama-3-8B-HQQ-mixed-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-mixed"),
     
     # QUANTO models
-    "Llama-3-8B-QUANTO": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO"),
-    "Llama-3-8B-QUANTO-CALIB": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-CALIB"),
-    "Llama-3-8B-QUANTO-QAT": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-QAT"),
+    "Llama-3-8B-QUANTO-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO"),
+    "Llama-3-8B-QUANTO-CALIB-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-CALIB"),
+    "Llama-3-8B-QUANTO-QAT-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-QAT"),
     
     # HQQ-LORA models
-    "Llama-3-8B-HQQ-LORA": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-LORA"),
+    "Llama-3-8B-HQQ-LORA-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-LORA"),
     
     # AQLM-LORA models
-    "Llama-3-8B-AQLM-LORA": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AQLM-LORA"),
+    "Llama-3-8B-AQLM-LORA-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AQLM-LORA"),
 }
 
-def get_model(model_name=None, directory_model=None, seed=123, device="cuda"):
-    logger.info(f"Loading model {model_name}")
-    torch.manual_seed(seed)
-    if model_name is not None:
-        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map=device)
-        model.NAME = model_name
-    elif model_name is None and directory_model is not None:
-        # Load model from local directory
-        try:
-            model = AutoModelForCausalLM.from_pretrained(directory_model)
-            model.NAME = model_name
-        except (OSError, HTTPError) as e:
-            print(f"Error loading model from directory: {directory_model}")
-            print(f"Error message: {e}")
-    else:
-        # No model name or directory provided, raise an error
-        raise ValueError("Please specify either model_name or directory_model")
-    
-    return model
-
-
-def get_tokenizer(model_name=None, directory_model=None, cache_dir=None, seed=123, device="cuda"):
-    logger.info(f"Loading tokenizer {model_name}")
-    torch.manual_seed(seed)
-    if model_name is not None:
-        tokenizer = AutoTokenizer.from_pretrained(model_name, device_map=device, trust_remote_code=True)
-    elif model_name is None and directory_model is not None:
-        # Load tokenizer from local directory
-        try:
-            tokenizer = AutoTokenizer.from_pretrained(directory_model, trust_remote_code=True)
-        except (OSError, HTTPError) as e:
-            print(f"Error loading tokenizer from directory: {directory_model}")
-            print(f"Error message: {e}")
-    else:
-        # No model name or directory provided, raise an error
-        raise ValueError("Please specify either model_name or directory_model")
-    
-    return tokenizer
-
-
-def get_model_path(model_name):
-    if model_name in base_models:
-        return base_models[model_name]
-    elif model_name in hf_quantized_models:
-        return hf_quantized_models[model_name]
-    elif model_name in local_quantized_models:
-        return local_quantized_models[model_name]
-    else:
-        raise NotImplementedError(f"Model {model_name} is not spelled correctly or not yet supported")
-    
+META_LLAMA_3_8B = "meta-llama/Meta-Llama-3-8B"
+local_tokenizers = {
+    "Llama-3-8B-AWQ-4bit-local": META_LLAMA_3_8B,
+    "Llama-3-8B-BNB-8bit-local": META_LLAMA_3_8B,
+    "Llama-3-8B-BNB-4bit-local": META_LLAMA_3_8B,
+    "Llama-3-8B-HQQ-8-uniform-local": META_LLAMA_3_8B,
+    "Llama-3-8B-HQQ-mixed-local": META_LLAMA_3_8B,
+    "Llama-3-8B-QUANTO-local": META_LLAMA_3_8B,
+    "Llama-3-8B-QUANTO-CALIB-local": META_LLAMA_3_8B,
+    "Llama-3-8B-QUANTO-QAT-local": META_LLAMA_3_8B,
+    "Llama-3-8B-HQQ-LORA-local": META_LLAMA_3_8B,
+    "Llama-3-8B-AQLM-LORA-local": META_LLAMA_3_8B,
+}
