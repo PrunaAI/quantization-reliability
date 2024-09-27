@@ -103,29 +103,18 @@ def run_quantize(
     directory_dataset="",
     calib_dataset_name="",
     calib_dataset_split="",
-    eval_dataset_name="",
-    eval_dataset_split="",
-    eval_n_samples=None,
     calib_seq_length=2048,
-    eval_seq_length=2048,
     batch_size=1,
+    
     # Model parameters
     seed_model=123,
     directory_model="",
-    clean_cache=True,
-    model_name="",
+    model_name="Llama-3-8B",
+    device="cuda",
+    save_quantized_model=True,
+    
     # Quantization parameters
     quantize_method="NONE",
-    # Evaluation metrics
-    eval_metrics=[
-        "perplexity",
-        "brier_score",
-        "disk_space_usage",
-        "quantize_runtime"
-    ],
-    device="cuda",
-    save_quantized_model=False,
-    quantized_model_save_path="",
 ):
     ##################
     ## Print config ##
@@ -135,17 +124,11 @@ def run_quantize(
         f"Calibration dataset: {calib_dataset_name}\n"
         f"Calibration split: {calib_dataset_split}\n"
         f"Calibration sequence length: {calib_seq_length}\n"
-        f"Evaluation dataset: {eval_dataset_name}\n"
-        f"Evaluation split: {eval_dataset_split}\n"
-        f"Evaluation sequence length: {eval_seq_length}\n"
-        f"Evaluation n_samples: {eval_n_samples}\n"
         f"Batch size: {batch_size}\n"
         f"Model: {model_name}\n"
         f"Quantize method: {quantize_method}\n"
-        f"Evaluation metrics: {eval_metrics}\n"
         f"Device: {device}\n"
         f"Quantized model save: {save_quantized_model}\n"
-        f"Quantized model save path: {quantized_model_save_path}\n"
     )
     
     with tempfile.TemporaryDirectory(prefix=CACHE_PATH) as temp_cache_dir:
@@ -168,7 +151,7 @@ def run_quantize(
             directory_model=directory_model,
             device=device,
         )
-        # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load tokenizer")
         
         ###############
         ## Load data ##
@@ -182,15 +165,6 @@ def run_quantize(
             tokenizer_name=model_full_name,
             seed=seed_dataset,
         )
-        logger.info("Load evaluation data module")
-        eval_data_module = get_dataset(
-            dataset_name=eval_dataset_name,
-            directory_dataset=directory_dataset,
-            batch_size=batch_size,
-            sequence_length=eval_seq_length,
-            tokenizer_name=model_full_name,
-            seed=seed_dataset,
-        )
         
         logger.info("Load calibration dataloader")
         calib_dataloader = data_loader_from_split(
@@ -198,13 +172,7 @@ def run_quantize(
             split=calib_dataset_split,
             sequence_length=512 if quantize_method in ["AWQ-4"] else calib_seq_length,
         )
-        logger.info("Load evaluation dataloader")
-        eval_dataloader = data_loader_from_split(
-            data_module=eval_data_module,
-            split=eval_dataset_split,
-            sequence_length=512 if quantize_method in ["AWQ-4"] else eval_seq_length,
-        )
-        # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
+        record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load data")
 
         ##############
         ## Quantize ##
@@ -219,7 +187,7 @@ def run_quantize(
                 directory_model=directory_model,
                 device=device,
             )
-            # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
+            record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Load base model")
         else:
             logger.info(f"Quantizing model using {quantize_method}")
             quantized_model = quantize(
@@ -229,10 +197,9 @@ def run_quantize(
                 train_dataloader=calib_dataloader,
                 quantize_method=quantize_method,
                 save_model=save_quantized_model,
-                save_path=quantized_model_save_path,
                 device=device
             )
-            # record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
+            record_gpu_memory(gpu_memory_usage=gpu_memory_usage, context="Quantize model")
 
         ##############
         ## Evaluate ##
