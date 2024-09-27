@@ -19,6 +19,24 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 
+    # Dataset parameters
+    seed_dataset=123,
+    directory_dataset="",
+    calib_dataset_name="",
+    calib_dataset_split="",
+    calib_seq_length=2048,
+    batch_size=1,
+    
+    # Model parameters
+    seed_model=123,
+    directory_model="",
+    model_name="Llama-3-8B",
+    device="cuda",
+    save_quantized_model=True,
+    
+    # Quantization parameters
+    quantize_method="NONE",
+
 fixed:
   device: 'cuda'
   clean_cache: True

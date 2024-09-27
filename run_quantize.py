@@ -100,7 +100,6 @@ def collect_stats(_run):
 def run_quantize(
     # Dataset parameters
     seed_dataset=123,
-    directory_dataset="",
     calib_dataset_name="",
     calib_dataset_split="",
     calib_seq_length=2048,
@@ -159,7 +158,6 @@ def run_quantize(
         logger.info("Load calibration data module")
         calib_data_module = get_dataset(
             dataset_name=calib_dataset_name,
-            directory_dataset=directory_dataset,
             batch_size=batch_size,
             sequence_length=calib_seq_length,
             tokenizer_name=model_full_name,
