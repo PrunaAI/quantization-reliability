@@ -96,9 +96,9 @@ def construct_question(relation, subject, answer, taxonomy, taxonomy_type):
         index = int(taxonomy_type[3:]) - 1
         if index < len(taxonomy):
             fake_taxonomy = taxonomy[index]
-            return f"{fake_taxonomy}. {relation.replace('[X]', subject)}"
         else:
-            return relation.replace("[X]", subject)
+            fake_taxonomy = taxonomy[-1]
+        return f"{fake_taxonomy}. {relation.replace('[X]', subject)}"
 
 def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None, taxonomy_type="0", typo_type="none", typo_intensity=0):
     if dataset_name == "toy-qa-dataset":
