@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 from sklearn import metrics
 
+import logging
+logger = logging.getLogger("quant_logger")
+
 def evaluate_reliability(
     exp_id: str,
     model_name: str,
@@ -142,6 +145,8 @@ def evaluate_reliability(
     if save_excel:
         df_results.iloc[:num_excel_rows].to_excel(raw_table_path, index=False)
         df_scores.to_excel(scores_table_path, index=False)
+        logger.info(f"Saved raw results to {raw_table_path}")
+        logger.info(f"Saved scores to {scores_table_path}")
     
     # Convert df_scores to a dictionary
     scores_dict = df_scores.iloc[0].to_dict()
