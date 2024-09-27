@@ -97,7 +97,7 @@ def run_evaluate(
     # Exp ID
     exp_id: str,
     save_excel: bool = True,
-    num_excel_files: int = 20,
+    num_excel_rows: int = 20,
     
     # Reliability dataset parameters
     seed=123,
@@ -153,7 +153,7 @@ def run_evaluate(
         n_beams=n_beams,
         max_entries=max_entries,
         save_excel=save_excel,
-        num_excel_files=num_excel_files,
+        num_excel_rows=num_excel_rows,
     )
 
     fail_trace = {
