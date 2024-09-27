@@ -13,25 +13,14 @@ logger = logging.getLogger("quant_logger")
 
 # Define the base datasets dictionary
 base_datasets = {
-    "Polyglot": lambda directory_dataset, batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: PolyglotDataModule(
-        directory_dataset=directory_dataset,
+    "Polyglot": lambda batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: PolyglotDataModule(
         batch_size=batch_size,
         sequence_length=sequence_length,
         stride=stride,
         tokenizer_name=tokenizer_name,
         seed=seed,
     ),
-    "WikiText": lambda directory_dataset, batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: WikiTextDataModule(
-        directory_dataset=directory_dataset,
-        batch_size=batch_size,
-        sequence_length=sequence_length,
-        stride=stride,
-        tokenizer_name=tokenizer_name,
-        seed=seed,
-        **kwargs,
-    ),
-    "OpenAssistant": lambda directory_dataset, batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: OpenAssistantDataModule(
-        directory_dataset=directory_dataset,
+    "WikiText": lambda batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: WikiTextDataModule(
         batch_size=batch_size,
         sequence_length=sequence_length,
         stride=stride,
@@ -39,8 +28,7 @@ base_datasets = {
         seed=seed,
         **kwargs,
     ),
-    "C4": lambda directory_dataset, batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: C4DataModule(
-        directory_dataset=directory_dataset,
+    "OpenAssistant": lambda batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: OpenAssistantDataModule(
         batch_size=batch_size,
         sequence_length=sequence_length,
         stride=stride,
@@ -48,8 +36,15 @@ base_datasets = {
         seed=seed,
         **kwargs,
     ),
-    "PTB": lambda directory_dataset, batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: PTBDataModule(
-        directory_dataset=directory_dataset,
+    "C4": lambda batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: C4DataModule(
+        batch_size=batch_size,
+        sequence_length=sequence_length,
+        stride=stride,
+        tokenizer_name=tokenizer_name,
+        seed=seed,
+        **kwargs,
+    ),
+    "PTB": lambda batch_size, sequence_length, stride, tokenizer_name, seed, **kwargs: PTBDataModule(
         batch_size=batch_size,
         sequence_length=sequence_length,
         stride=stride,
@@ -69,18 +64,16 @@ def data_loader_from_split(data_module, split, batch_size=None, sequence_length=
     else:
         raise MisconfigurationException(f"Split {split} is not valid. Must be one of ['train', 'validation', 'test']")
 
-def get_dataset(dataset_name, directory_dataset, batch_size=1, sequence_length=2048, stride=512, seed=123, tokenizer_name=None, **kwargs):
+def get_dataset(dataset_name, batch_size=1, sequence_length=2048, stride=512, seed=123, tokenizer_name=None, **kwargs):
     # Get dataset
     if dataset_name in base_datasets:
         logger.info(f"Loading dataset {dataset_name} with the following configuration:")
-        logger.info(f"  directory_dataset: {directory_dataset}")
         logger.info(f"  batch_size: {batch_size}")
         logger.info(f"  sequence_length: {sequence_length}")
         logger.info(f"  stride: {stride}")
         logger.info(f"  seed: {seed}")
         logger.info(f"  tokenizer_name: {tokenizer_name}")
         return base_datasets[dataset_name](
-            directory_dataset=directory_dataset,
             batch_size=batch_size,
             sequence_length=sequence_length,
             stride=stride,
