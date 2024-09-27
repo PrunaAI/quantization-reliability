@@ -88,6 +88,8 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
     return question_answer_pairs
 
 def construct_question(relation, subject, answer, taxonomy, taxonomy_type):
+    if isinstance(taxonomy_type, int):
+        taxonomy_type = str(taxonomy_type)
     if taxonomy_type == "0":
         return relation.replace("[X]", subject)
     elif taxonomy_type == "pos":
