@@ -70,7 +70,13 @@ def evaluate_reliability(
     # Generate custom file name based on parameters
     beam_search_str = "beam" if use_beam_search else "sample"
     strategy_str = strategy.replace(" ", "_").lower()  # Replace spaces with underscores for file names
-    file_base = f"{model_name}_{dataset_name}_{taxonomy_type}_{beam_search_str}_{max_new_tokens}_tokens_{temperature}_temp_{strategy_str}"
+    file_base = (
+        f"{model_name}_{dataset_name}_{taxonomy_type}_"
+        f"{typo_type}_typo{typo_intensity}_"
+        f"{beam_search_str}_tok{max_new_tokens}_temp{temperature}_"
+        f"{strategy_str}_rep{n_repeats}_beams{n_beams}_"
+        f"maxent{max_entries or 'all'}_rows{num_excel_rows}"
+    )
 
     # Optional: Create a directory for saving the results if not already existing
     results_path = "/nfs/homedirs/daro/git/quantization-reliability/results"
