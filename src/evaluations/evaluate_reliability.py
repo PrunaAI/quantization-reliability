@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 from sklearn import metrics
 
+from src import MODEL_SAVE_PATH
+
 def evaluate_reliability(
     exp_id: str,
     model_name: str,
@@ -20,16 +22,18 @@ def evaluate_reliability(
     use_beam_search: bool,
     n_repeats: int,
     n_beams: int,
-    max_entries: int = None
-  ):
-  # LOAD DATASET
+    max_entries: int = None,
+    save_excel: bool = True,
+    num_excel_rows: int = 200
+):
+    # LOAD DATASET
     qa_dataset = load_dataset_from_name(
-      dataset_name,
-      max_relations=1,
-      max_entries=max_entries,
-      taxonomy_type=taxonomy_type,
-      typo_type=typo_type,
-      typo_intensity=typo_intensity
+        dataset_name,
+        max_relations=1,
+        max_entries=max_entries,
+        taxonomy_type=taxonomy_type,
+        typo_type=typo_type,
+        typo_intensity=typo_intensity
     )
 
     # INITIALIZE RESULTS LIST
@@ -37,7 +41,9 @@ def evaluate_reliability(
 
     n_steps = 0
     total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
-    generator = ResponseGenerator(model_name)
+    generator = ResponseGenerator(
+        model_name=model_name
+    )
     for query_idx, (query, true_answer) in enumerate(qa_dataset):
         run_results = generator.generate_response(query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
         for result_dict in run_results:
@@ -134,7 +140,11 @@ def evaluate_reliability(
     df_scores = df_scores.to_frame().T
 
     # Save the original detailed results to an Excel file
-    df_results.to_excel(raw_table_path, index=False)
-    df_scores.to_excel(scores_table_path, index=False)
+    if save_excel:
+        df_results.iloc[:num_excel_rows].to_excel(raw_table_path, index=False)
+        df_scores.to_excel(scores_table_path, index=False)
     
-    return df_results, df_scores
+    # Convert df_scores to a dictionary
+    scores_dict = df_scores.iloc[0].to_dict()
+    
+    return scores_dict

@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'few-shot_eval_09-17-2'
+  name: 'taxonomy-test-09-27'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,10 +18,14 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
+  exp_id: "taxonomy-test-09-27"
+  save_excel: True
+  num_excel_rows: 200
   device: 'cuda'
   seed: 42
   n_repeats: 10
   n_beams: 5
+  max_entries: None
   cache_path: "/nfs/students/daro/.cache/huggingface"
 
 grid:
@@ -33,15 +37,25 @@ grid:
       # - 'GPT2-Large'
       # - 'TinyLlama'
       # - 'TinyLlama-Chat'
-      # - 'Llama-3-8B-AWQ-4bit'
+      # - 'Llama-3-8B-AWQ-8bit'
+      # - 'Llama-3-8B-BNB-4bit'
+      # - 'Llama-3-8B-BNB-8bit'
+      # - 'Llama-3-8B-HQQ-8-uniform'
+      # - 'Llama-3-8B-HQQ-mixed'
+      # - 'Llama-3-8B-HQQ-LORA'
+      # - 'Llama-3-8B-QUANTO'
+      # - 'Llama-3-8B-QUANTO-CALIB'
+      # - 'Llama-3-8B-QUANTO-QAT'
+      # - 'Llama-3-8B-AQLM'
+      # - 'Llama-3-8B-AQLM-LORA'
 
   max_new_tokens:
     type: choice
     options:
       # - 10
-      - 15
+      # - 15
       # - 20
-      # - 25
+      - 25
       # - 30
       # - 35
       # - 40
@@ -62,7 +76,7 @@ grid:
   strategy:
     type: choice
     options:
-      - "Original"
+      # - "Original"
       # - "Direct Answer"
       # - "Factual Retrieval"
       # - "Definitive Statement"
@@ -79,51 +93,82 @@ grid:
       # - "Summary"
       # - "Echo"
       # - "True Completion"
-      # - "Direct Completion"  ###########################
+      - "Direct Completion"  ###########################
       # - "Direct Query"
       # - "First Thought"
       # - "Deductive Reasoning"
       # - "Expert Persona"  ######################
       # - "Reflective Reasoning"  ###################
-      - "Zero-Shot"
-      - "One-Shot"
-      - "Two-Shot"
-      - "Three-Shot"
-      - "Four-Shot"
-      - "Five-Shot"
+      # - "Zero-Shot"
+      # - "One-Shot"
+      # - "Two-Shot"
+      # - "Three-Shot"
+      # - "Four-Shot"
+      # - "Five-Shot"
 
   dataset_name: 
     type: choice
     options: 
       # - 'toy-qa-dataset'
-      - 'P101'
-      - 'P103'
-      - 'P108'
-      - 'P127'
-      - 'P1376'
-      - 'P1412'
-      - 'P159'
+      # - 'P101'
+      # - 'P103'
+      # - 'P108'
+      # - 'P127'
+      # - 'P1376'
+      # - 'P1412'
+      # - 'P159'
       - 'P17'
-      - 'P176'
-      - 'P178'
-      - 'P19'
-      - 'P20'
-      - 'P264'
-      - 'P27'
-      - 'P276'
-      - 'P30'
-      - 'P364'
-      - 'P37'
-      - 'P495'
-      - 'P740'
+      # - 'P176'
+      # - 'P178'
+      # - 'P19'
+      # - 'P20'
+      # - 'P264'
+      # - 'P27'
+      # - 'P276'
+      # - 'P30'
+      # - 'P364'
+      # - 'P37'
+      # - 'P495'
+      # - 'P740'
 
   taxonomy_type:
     type: choice
     options:
       - "0"
-      # - "pos"
-      # - "neg1"
+      - "pos"
+      - "neg1"
       # - "neg2"
       # - "neg3"
       # - "neg4"
       # - "neg5"
+
+  typo_type:
+    type: choice
+    options:
+      - "none"
+      # - "char_insertion"
+      # - "char_deletion"
+      # - "char_replacement"
+      # - "char_repetition"
+      # - "char_swapping"
+      # - "word_CMW"
+      # - "char_LCC"
+      # - "word_synonym"
+      # - "char_insert_noise"
+      # - "word_repeat"
+      # - "char_substitution"
+      # - "word_emoji"
+      # - "word_internet_slang"
+      # - "word_phrase_translation"
+      # - "word_context_aware_insertion"
+      # - "word_remove_punctuation"
+      # - "word_keyword_only"
+      # - "random"
+
+  typo_intensity:
+    type: choice
+    options:
+      - 0
+      # - 1
+      # - 2
+      # - 3

@@ -6,9 +6,7 @@ import tempfile
 
 import logging
 
-from src.data.FKTC_datasets import load_dataset_from_name
-from src.reliability.response_generator import ResponseGenerator
-from src.models import base_models
+from src.evaluations.evaluate_reliability import evaluate_reliability
 
 logger = logging.getLogger("quant_logger")
 
@@ -35,10 +33,6 @@ os.environ["TRANSFORMERS_CACHE"] = CACHE_PATH
 import time
 import random
 import torch
-
-import pandas as pd
-import numpy as np
-from sklearn import metrics
 
 torch.hub.set_dir(CACHE_PATH)
 
@@ -83,6 +77,12 @@ login(token=huggingface_token, add_to_git_credential=True)
 from seml.experiment import Experiment
 import seml
 
+from src.models import get_model, get_model_name, get_tokenizer
+from src.data import data_loader_from_split, get_dataset
+from src.algorithms.quantization.quantize import quantize
+from src.evaluations.evaluate_all import evaluate
+from src.evaluations.evaluate_memory import record_gpu_memory
+
 logging.info("Setting up GPU memory usage list...")
 # Global list to store GPU memory usage
 gpu_memory_usage = {}
@@ -99,132 +99,71 @@ def collect_stats(_run):
 
 
 @ex.automain
-def run_reliability_eval(
-    model_name,
-    max_new_tokens,
-    temperature,
-    use_beam_search,
-    strategy,
-    dataset_name,
-    taxonomy_type,
-    device='cuda',
+def run_evaluate(
+    # Exp ID
+    exp_id: str,
+    save_excel: bool = True,
+    num_excel_files: int = 20,
+    
+    # Reliability dataset parameters
     seed=123,
-    n_repeats=5,
+    max_new_tokens=25,
+    temperature=0.1,
+    use_beam_search=False,
+    strategy="Direct Completion",
+    dataset_name="",
+    taxonomy_type="0",
+    typo_type="none",
+    typo_intensity=0,
+    n_repeats=10,
     n_beams=5,
-    cache_path=CACHE_PATH
-    ):
-    # LOAD DATASET
-    qa_dataset = load_dataset_from_name(dataset_name, max_entries=None, taxonomy_type=taxonomy_type)
-
-    # INITIALIZE RESULTS LIST
-    results = []
+    max_entries=None,
     
-    exp_id = "09-17-2"
+    # Model parameters
+    seed_model=123,
+    model_name="",
+    model_path="",
+    device="cuda",
+):
+    ##################
+    ## Print config ##
+    ##################
+    logger.info("Received the following configuration:")
+    logger.info(f"  Seed: {seed}")
+    logger.info(f"  Max new tokens: {max_new_tokens}")
+    logger.info(f"  Temperature: {temperature}")
+    logger.info(f"  Use beam search: {use_beam_search}")
+    logger.info(f"  Strategy: {strategy}")
+    logger.info(f"  Dataset name: {dataset_name}")
+    logger.info(f"  Taxonomy type: {taxonomy_type}")
+    logger.info(f"  Number of repeats: {n_repeats}")
+    logger.info(f"  Number of beams: {n_beams}")
+    logger.info(f"  Max entries: {max_entries}")
+    logger.info(f"  Seed model: {seed_model}")
+    logger.info(f"  Model name: {model_name}")
+    logger.info(f"  Model path: {model_path}")
+    logger.info(f"  Device: {device}")
 
-    n_steps = 0
-    total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
-    generator = ResponseGenerator(base_models[model_name])
-    for query_idx, (query, true_answer) in enumerate(qa_dataset):
-        run_results = generator.generate_response(query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
-        for result_dict in run_results:
-            print(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
-            # Store the results in the list
-            results.append({
-                "Query ID": query_idx,
-                "Query": query,
-                "Answer": true_answer,
-                "Run": result_dict['run'],
-                "Generated Response": result_dict['output_text'],
-                "Cleaned": result_dict['cleaned'],
-                "P": result_dict['beam_prob'],
-                "P_adj": result_dict['beam_prob_adj'],
-                "Entropy": result_dict['entropy'],
-                "Is Correct": result_dict['is_correct'],
-                "Token Probabilities": result_dict['token_probs']
-            })
-            print(f"    IS_CORRECT: {result_dict['is_correct']}, CLEANED: {result_dict['cleaned']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
-            n_steps += 1
-    
-    # Generate custom file name based on parameters
-    beam_search_str = "beam" if use_beam_search else "sample"
-    strategy_str = strategy.replace(" ", "_").lower()  # Replace spaces with underscores for file names
-    file_base = f"{model_name}_{dataset_name}_{taxonomy_type}_{beam_search_str}_{max_new_tokens}_tokens_{temperature}_temp_{strategy_str}"
+    results = evaluate_reliability(
+        exp_id=exp_id,
+        model=model_name,
+        dataset_name=dataset_name,
+        taxonomy_type=taxonomy_type,
+        typo_type=typo_type,
+        typo_intensity=typo_intensity,
+        strategy=strategy,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        use_beam_search=use_beam_search,
+        n_repeats=n_repeats,
+        n_beams=n_beams,
+        max_entries=max_entries,
+        save_excel=save_excel,
+        num_excel_files=num_excel_files,
+    )
 
-    # Optional: Create a directory for saving the results if not already existing
-    results_path = "/nfs/homedirs/daro/git/quantization-reliability/results"
-    save_dir = os.path.join(results_path, "reliability_eval")
-    os.makedirs(save_dir, exist_ok=True)
-
-    # Generate file paths
-    exp_path = os.path.join(save_dir, f"reliability_eval_{exp_id}")
-    os.makedirs(exp_path, exist_ok=True)
-    
-    raw_table_path = os.path.join(exp_path, f"{file_base}_raw_table_{exp_id}.xlsx")
-    scores_table_path = os.path.join(exp_path, f"{file_base}_scores_{exp_id}.xlsx")
-    
-    df_results = pd.DataFrame(results)
-    
-    # Calculate P_sem as the proportion of True values in 'Is Correct' per group
-    df_results['P_sem'] = df_results.groupby(['Query ID'])['Is Correct'].transform('mean')
-
-    # Define custom AUC calculation
-    def custom_auc_roc(corrects, scores):
-        fpr, tpr, thresholds = metrics.roc_curve(corrects, scores)
-        return metrics.auc(fpr, tpr)
-    
-    def calculate_scores(group):
-        y_true = group['Is Correct'].values
-
-        # Calculate various scores
-        scores_dict = {}
-        metrics_to_calculate = {
-            'sample': 'P',
-            'adj': 'P_adj',
-            'sem': 'P_sem'
-        }
-
-        for key, score_column in metrics_to_calculate.items():
-            y_scores = group[score_column].values
-            if len(set(y_true)) > 1:  # Ensure at least two classes are present
-                aucroc = custom_auc_roc(y_true, y_scores)
-                aucpr = metrics.average_precision_score(y_true, y_scores)
-                brier_score = metrics.brier_score_loss(y_true, y_scores)
-                # Add check for log_loss
-                if len(set(y_scores)) > 1:
-                    log_loss = metrics.log_loss(y_true, y_scores)
-                else:
-                    log_loss = np.nan
-            else:
-                aucroc = np.nan
-                aucpr = np.nan
-                brier_score = np.nan
-                log_loss = np.nan
-
-            accuracy = np.mean(y_true)
-            entropy = -np.sum(y_scores * np.log2(y_scores + 1e-10))  # Added small constant to avoid log(0)
-
-            scores_dict[f'AUCROC_{key}'] = aucroc
-            scores_dict[f'AUCPR_{key}'] = aucpr
-            scores_dict[f'Brier_{key}'] = brier_score
-            scores_dict[f'LogLoss_{key}'] = log_loss
-            scores_dict[f'Entropy_{key}'] = entropy
-            
-        scores_dict[f'Accuracy'] = accuracy
-        
-        return pd.Series(scores_dict)
-
-    # Apply the calculate_scores function to the entire DataFrame
-    df_scores = calculate_scores(df_results)
-
-    # Convert df_scores to a DataFrame with a single row for consistent saving format
-    df_scores = df_scores.to_frame().T
-
-    # Save the original detailed results to an Excel file
-    df_results.to_excel(raw_table_path, index=False)
-    df_scores.to_excel(scores_table_path, index=False)
-    
     fail_trace = {
         "fail_trace": seml.evaluation.get_results,
     }
 
-    return {"results": df_results, "scores": df_scores, **fail_trace}
+    return {**results, **fail_trace}
