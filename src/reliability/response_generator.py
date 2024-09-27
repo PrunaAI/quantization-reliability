@@ -1,19 +1,18 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
+from transformers import GenerationConfig
 import pandas as pd
 import numpy as np
 import torch
 
 from src.reliability.utils import calculate_entropy, get_prompt
+from src.models.load_model_and_tokenizer import load_model_and_tokenizer
 
 class ResponseGenerator:
-    def __init__(self, model, tokenizer=None):
-        
-        if isinstance(model, str):
-            self.model = AutoModelForCausalLM.from_pretrained(model, torch_dtype="auto", device_map="cuda")
-            self.tokenizer = AutoTokenizer.from_pretrained(model, device_map="cuda")
-        else:
-            self.model = model
-            self.tokenizer = tokenizer
+    def __init__(self, model_name_or_path):
+        self.model, self.tokenizer = load_model_and_tokenizer(
+            model_name_or_path=model_name_or_path,
+            device="cuda",
+            max_memory=None
+        )
         
         # Set pad_token_id to eos_token_id to avoid the warning
         self.tokenizer.pad_token_id = self.tokenizer.eos_token_id

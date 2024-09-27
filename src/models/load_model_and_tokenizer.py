@@ -12,12 +12,14 @@ from hqq.models.hf.base import AutoHQQHFModel
 from awq import AutoAWQForCausalLM
 
 from src import MODEL_SAVE_PATH
+from src.models import local_quantized_models
 logger = logging.getLogger("quant_logger")
 
 
+from src import MODEL_SAVE_PATH
+
 def load_model_and_tokenizer(
-    model_name: str,
-    quantization_method: Optional[str] = None,
+    model_name_or_path: str,
     device: str = "cuda",
     max_memory: Optional[dict] = None
 ) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
@@ -25,8 +27,7 @@ def load_model_and_tokenizer(
     Load a model and tokenizer from Hugging Face or a locally quantized model.
 
     Args:
-        model_name (str): Name of the model to load.
-        quantization_method (str, optional): Quantization method used for local models.
+        model_name_or_path (str): Name of the model to load from Hugging Face or path to local model.
         device (str): Device to load the model on. Defaults to "cuda".
         max_memory (dict, optional): Maximum memory to use for model loading.
 
@@ -34,47 +35,44 @@ def load_model_and_tokenizer(
         Tuple[AutoModelForCausalLM, AutoTokenizer]: Loaded model and tokenizer.
 
     Raises:
-        ValueError: If the model name is not found or the quantization method is invalid.
+        ValueError: If the model name is not found or the local model is invalid.
         OSError: If there's an error loading the model or tokenizer.
     """
     try:
-        logger.info(f"Attempting to load model: {model_name}")
+        logger.info(f"Attempting to load model: {model_name_or_path}")
         
         # Check if it's a locally quantized model
-        if quantization_method:
-            if model_name not in local_quantized_models:
-                raise ValueError(f"No local path found for model: {model_name}")
+        is_local_model = model_name_or_path.startswith(MODEL_SAVE_PATH)
+        
+        if is_local_model:
+            logger.info(f"Loading locally quantized model from: {model_name_or_path}")
             
-            model_path = local_quantized_models[model_name]
-            logger.info(f"Loading locally quantized model from: {model_path}")
-            
-            if not os.path.exists(model_path):
-                raise OSError(f"Local model path does not exist: {model_path}")
+            if not os.path.exists(model_name_or_path):
+                raise OSError(f"Local model path does not exist: {model_name_or_path}")
 
         # Special handling for HQQ models
-        if "HQQ" in model_name:
+        if "HQQ" in model_name_or_path:
             try:
-                model = HQQModelForCausalLM.from_quantized(model_name, device_map='auto')
+                model = HQQModelForCausalLM.from_quantized(model_name_or_path, device_map='auto')
             except:
-                model = AutoHQQHFModel.from_quantized(model_name)
-            tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
+                model = AutoHQQHFModel.from_quantized(model_name_or_path)
+            tokenizer = AutoTokenizer.from_pretrained(META_LLAMA_3_8B)
 
         # Special handling for AWQ model from PrunaAI
-        elif "AWQ" in model_name and "PrunaAI" in model_name:
-            model = AutoAWQForCausalLM.from_quantized(model_name, trust_remote_code=True, device_map='auto')
-            tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
-
+        elif "AWQ" in model_name_or_path:
+            model = AutoAWQForCausalLM.from_pretrained(model_name_or_path, trust_remote_code=True, torch_dtype=torch.float16, device_map='auto')
+            tokenizer = AutoTokenizer.from_pretrained(META_LLAMA_3_8B)
         else:
             # Load from Hugging Face or local path
             model = AutoModelForCausalLM.from_pretrained(
-                model_name if not quantization_method else model_path,
+                model_name_or_path,
                 torch_dtype="auto",
                 device_map=device,
                 max_memory=max_memory
             )
-            tokenizer = AutoTokenizer.from_pretrained(model_name if not quantization_method else model_path)
+            tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
         
-        model.NAME = model_name
+        model.NAME = model_name_or_path
         tokenizer.pad_token_id = tokenizer.eos_token_id
         tokenizer.padding_side = "left"
         
@@ -82,7 +80,7 @@ def load_model_and_tokenizer(
             logger.warning(f"Tokenizer model max length reduced from {tokenizer.model_max_length} to 2048 to fit in memory")
             tokenizer.model_max_length = 2048
         
-        logger.info(f"Successfully loaded model: {model_name}")
+        logger.info(f"Successfully loaded model: {model_name_or_path}")
         logger.info(f"Model configuration:")
         logger.info(f"- Model max length: {tokenizer.model_max_length}")
         logger.info(f"- Model dtype: {model.dtype}")
