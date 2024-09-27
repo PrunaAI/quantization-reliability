@@ -20,7 +20,8 @@ from src import MODEL_SAVE_PATH
 def load_model_and_tokenizer(
     model_name: str,
     device: str = "cuda",
-    max_memory: Optional[dict] = None
+    max_memory: Optional[dict] = None,
+    cache_dir: Optional[str] = None
 ) -> Tuple[AutoModelForCausalLM, AutoTokenizer]:
     """
     Load a model and tokenizer from Hugging Face or a locally quantized model.
@@ -61,15 +62,15 @@ def load_model_and_tokenizer(
         # Special handling for HQQ models
         if "HQQ" in model_name:
             try:
-                model = HQQModelForCausalLM.from_quantized(model_path, device_map='auto')
+                model = HQQModelForCausalLM.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
             except:
-                model = AutoHQQHFModel.from_quantized(model_path, device_map='auto')
-            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto')
+                model = AutoHQQHFModel.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
+            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto', cache_dir=cache_dir)
 
         # Special handling for AWQ model from PrunaAI
         elif "AWQ" in model_name:
-            model = AutoAWQForCausalLM.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.float16, device_map='auto')
-            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto')
+            model = AutoAWQForCausalLM.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.float16, device_map='auto', cache_dir=cache_dir)
+            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto', cache_dir=cache_dir)
             model.dtype = torch.float16
         else:
             # Load from Hugging Face or local path
@@ -77,9 +78,10 @@ def load_model_and_tokenizer(
                 model_path,
                 torch_dtype="auto",
                 device_map=device,
-                max_memory=max_memory
+                max_memory=max_memory,
+                cache_dir=cache_dir
             )
-            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto')
+            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto', cache_dir=cache_dir)
         
         model.NAME = model_name
         tokenizer.pad_token_id = tokenizer.eos_token_id
@@ -91,6 +93,7 @@ def load_model_and_tokenizer(
         
         logger.info(f"Successfully loaded model: {model_name}")
         logger.info(f"Model configuration:")
+        logger.info(f"Model cache directory: {model.config.cache_dir}")
         logger.info(f"- Model max length: {tokenizer.model_max_length}")
         logger.info(f"- Model dtype: {getattr(model, 'dtype', 'Not available')}")
         logger.info(f"- Model device: {getattr(model, 'device', 'Not available')}")

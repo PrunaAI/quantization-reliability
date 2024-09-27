@@ -21,7 +21,8 @@ def evaluate_reliability(
     n_beams: int,
     max_entries: int = None,
     save_excel: bool = True,
-    num_excel_rows: int = 200
+    num_excel_rows: int = 200,
+    cache_dir: str = None
 ):
     # LOAD DATASET
     qa_dataset = load_dataset_from_name(
@@ -39,7 +40,8 @@ def evaluate_reliability(
     n_steps = 0
     total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
     generator = ResponseGenerator(
-        model_name=model_name
+        model_name=model_name,
+        cache_dir=cache_dir
     )
     for query_idx, (query, true_answer) in enumerate(qa_dataset):
         run_results = generator.generate_response(query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
