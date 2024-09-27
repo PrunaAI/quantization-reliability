@@ -26,7 +26,6 @@ fixed:
   n_repeats: 10
   n_beams: 5
   max_entries: None
-  cache_path: "/nfs/students/daro/.cache/huggingface"
 
 grid:
   model_name:
