@@ -106,7 +106,6 @@ def run_evaluate(
     use_beam_search=False,
     strategy="Direct Completion",
     dataset_name="",
-    taxonomy_type="0",
     typo_type="none",
     typo_intensity=0,
     n_repeats=10,
@@ -130,7 +129,6 @@ def run_evaluate(
     logger.info(f"  Use beam search: {use_beam_search}")
     logger.info(f"  Strategy: {strategy}")
     logger.info(f"  Dataset name: {dataset_name}")
-    logger.info(f"  Taxonomy type: {taxonomy_type}")
     logger.info(f"  Number of repeats: {n_repeats}")
     logger.info(f"  Number of beams: {n_beams}")
     logger.info(f"  Max entries: {max_entries}")
@@ -143,7 +141,6 @@ def run_evaluate(
         exp_id=exp_id,
         model_name=model_name,
         dataset_name=dataset_name,
-        taxonomy_type=taxonomy_type,
         typo_type=typo_type,
         typo_intensity=typo_intensity,
         strategy=strategy,

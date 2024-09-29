@@ -39,7 +39,7 @@ def create_typo_dict(typo_type, intensity):
         "word_repeat": 0, "char_substitution": 0, "word_emoji": 0,
         "word_internet_slang": 0, "word_phrase_translation": 0,
         "word_context_aware_insertion": 0, "word_remove_punctuation": 0,
-        "word_keyword_only": 0
+        "word_keyword_only": 0, "word_taxonomy_pos": 0, "word_taxonomy_neg": 0
     }
     
     if typo_type in base_dict:
@@ -75,11 +75,11 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
                     taxonomy = entry.get('taxonomy', [])
                     
                     for relation in relations:
-                        question = construct_question(relation, subject, answer, taxonomy, taxonomy_type)
+                        question = relation.replace("[X]", subject)
                         
                         if typo_type != "none":
                             typo_dict = create_typo_dict(typo_type, typo_intensity)
-                            question = apply_typo_modifications(question, typo_dict)
+                            question = apply_typo_modifications(question, typo_dict, taxonomy + [answer])
                         
                         question_answer_pairs.append((question, answer))
         else:
@@ -87,27 +87,12 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
     
     return question_answer_pairs
 
-def construct_question(relation, subject, answer, taxonomy, taxonomy_type):
-    if isinstance(taxonomy_type, int):
-        taxonomy_type = str(taxonomy_type)
-    if taxonomy_type == "0":
-        return relation.replace("[X]", subject)
-    elif taxonomy_type == "pos":
-        return f"{answer}. {relation.replace('[X]', subject)}"
-    else:
-        index = int(taxonomy_type[3:]) - 1
-        if index < len(taxonomy):
-            fake_taxonomy = taxonomy[index]
-        else:
-            fake_taxonomy = taxonomy[-1]
-        return f"{fake_taxonomy}. {relation.replace('[X]', subject)}"
-
-def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None, taxonomy_type="0", typo_type="none", typo_intensity=0):
+def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None, typo_type="none", typo_intensity=0):
     if dataset_name == "toy-qa-dataset":
-        dataset = format_toy_qa_dataset(toy_qa_dataset, taxonomy_type=taxonomy_type)
+        dataset = toy_qa_dataset
         if typo_type != "none":
             typo_dict = create_typo_dict(typo_type, typo_intensity)
-            dataset = [(apply_typo_modifications(q, typo_dict), a) for q, a in dataset]
+            dataset = [(apply_typo_modifications(q, typo_dict, [a]), a) for q, a in dataset]
         return dataset
     elif dataset_name in DATA_FILES:
         return load_question_answer_pairs(
@@ -115,7 +100,6 @@ def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None, taxo
             dataset_names=dataset_name,
             max_relations=max_relations,
             max_entries=max_entries,
-            taxonomy_type=taxonomy_type,
             typo_type=typo_type,
             typo_intensity=typo_intensity
         )

@@ -417,7 +417,21 @@ def word_fill_word_deletion(words, num_modifications):
     words = [word for word in words if word]
     return words
 
-def apply_typo_modifications(query, typo_dict, taxonomy=[]):
+def word_taxonomy_pos(words, num_modifications, taxonomy_list):
+    answer = taxonomy_list[-1]  # The correct answer is the last item in the list
+    query = ' '.join(words)
+    for _ in range(num_modifications):
+        query = f"{answer}. {query}"
+    return query.split()
+
+def word_taxonomy_neg(words, num_modifications, taxonomy_list):
+    taxonomies = taxonomy_list[:-1]  # Exclude the correct answer
+    query = ' '.join(words)
+    for i in range(min(num_modifications, len(taxonomies))):
+        query = f"{taxonomies[i]}. {query}"
+    return query.split()
+
+def apply_typo_modifications(query, typo_dict, taxonomy_list):
     query = copy.deepcopy(query)
     cmw_file_path = 'data/cmw_v2.txt'
     cmw_dict = load_file_to_dict(cmw_file_path)
@@ -462,6 +476,10 @@ def apply_typo_modifications(query, typo_dict, taxonomy=[]):
                 words = word_remove_punctuation(words, num_modifications)
             elif mod_type == 'word_keyword_only':
                 words = word_fill_word_deletion(words, num_modifications)
+            elif mod_type == 'word_taxonomy_pos':
+                words = word_taxonomy_pos(words, num_modifications, taxonomy_list)
+            elif mod_type == 'word_taxonomy_neg':
+                words = word_taxonomy_neg(words, num_modifications, taxonomy_list)
             else:
                 print(f"Invalid modification type: {mod_type}")
     

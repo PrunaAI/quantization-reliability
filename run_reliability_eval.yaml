@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'typo-test-09-27'
+  name: 'typo-test-09-29'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,7 +18,7 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
-  exp_id: "typo-test-09-27"
+  exp_id: "typo-test-09-29"
   save_excel: True
   num_excel_rows: 20
   device: 'cuda'
@@ -92,18 +92,18 @@ grid:
       # - "Summary"
       # - "Echo"
       # - "True Completion"
-      - "Direct Completion"  ###########################
       # - "Direct Query"
       # - "First Thought"
       # - "Deductive Reasoning"
-      # - "Expert Persona"  ######################
-      # - "Reflective Reasoning"  ###################
+      # - "Expert Persona"
+      # - "Reflective Reasoning"
       # - "Zero-Shot"
       # - "One-Shot"
       # - "Two-Shot"
       # - "Three-Shot"
       # - "Four-Shot"
       # - "Five-Shot"
+      - "Direct Completion"
 
   dataset_name: 
     type: choice
@@ -130,17 +130,6 @@ grid:
       # - 'P495'
       # - 'P740'
 
-  taxonomy_type:
-    type: choice
-    options:
-      - "0"
-      # - "pos"
-      # - "neg1"
-      # - "neg2"
-      # - "neg3"
-      # - "neg4"
-      # - "neg5"
-
   typo_type:
     type: choice
     options:
@@ -162,12 +151,13 @@ grid:
       - "word_context_aware_insertion"
       - "word_remove_punctuation"
       - "word_keyword_only"
+      - "word_taxonomy"
       # - "random"
 
   typo_intensity:
     type: choice
     options:
       # - 0
-      - 1
-      - 2
+      # - 1
+      # - 2
       - 3

@@ -13,7 +13,6 @@ def evaluate_reliability(
     exp_id: str,
     model_name: str,
     dataset_name: str,
-    taxonomy_type: str,
     typo_type: str,
     typo_intensity: int,
     strategy: str,
@@ -32,7 +31,6 @@ def evaluate_reliability(
         dataset_name,
         max_relations=1,
         max_entries=max_entries,
-        taxonomy_type=taxonomy_type,
         typo_type=typo_type,
         typo_intensity=typo_intensity
     )
@@ -71,7 +69,7 @@ def evaluate_reliability(
     beam_search_str = "beam" if use_beam_search else "sample"
     strategy_str = strategy.replace(" ", "_").lower()  # Replace spaces with underscores for file names
     file_base = (
-        f"{model_name}_{dataset_name}_{taxonomy_type}_"
+        f"{model_name}_{dataset_name}_"
         f"{typo_type}_typo{typo_intensity}_"
         f"{beam_search_str}_tok{max_new_tokens}_temp{temperature}_"
         f"{strategy_str}_rep{n_repeats}_beams{n_beams}_"

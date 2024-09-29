@@ -118,39 +118,3 @@ toy_qa_dataset = [
         "taxonomy": ["Yahoo", "Bing", "DuckDuckGo", "Baidu", "Ask"]
     }
 ]
-
-def format_toy_qa_dataset(toy_qa_dataset, taxonomy_type='0'):
-    formatted_dataset = []
-
-    # Mapping taxonomy types to their indices
-    taxonomy_map = {
-        '0': None,        # No taxonomy
-        'pos': 'answer',  # Use the real answer
-        'neg1': 0,        # Use first taxonomy distractor
-        'neg2': 1,        # Use second taxonomy distractor
-        'neg3': 2,        # Use third taxonomy distractor
-        'neg4': 3,        # Use fourth taxonomy distractor
-        'neg5': 4         # Use fifth taxonomy distractor
-    }
-
-    for entry in toy_qa_dataset:
-        query = entry['query']
-        answer = entry['answer']
-        taxonomy = entry['taxonomy']
-
-        # Determine which taxonomy to use
-        if taxonomy_type == '0':
-            # No taxonomy applied
-            formatted_query = query
-        elif taxonomy_type == 'pos':
-            # Use the real answer as the taxonomy
-            formatted_query = f"{answer}. {query}"
-        else:
-            # Use the corresponding taxonomy distractor
-            taxonomy_index = taxonomy_map[taxonomy_type]
-            selected_taxonomy = taxonomy[taxonomy_index]
-            formatted_query = f"{selected_taxonomy}. {query}"
-
-        formatted_dataset.append((formatted_query, answer))
-
-    return formatted_dataset
