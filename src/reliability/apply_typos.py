@@ -46,63 +46,107 @@ def load_file_to_dict(file_path):
 def word_random_phrase_translation(word_list, num_translations):
     """Translate random words or phrases to a random foreign language."""
     languages = ['es', 'fr', 'de', 'it', 'ru', 'zh-cn', 'ja']
-    for _ in range(num_translations):
-        if len(word_list) < 2:
-            return word_list
-        
-        is_phrase = random.choice([True, False]) if len(word_list) > 2 else False
-        
+    translator = Translator()
+    available_indices = list(range(len(word_list)))
+    total_translations = 0
+
+    while total_translations < num_translations and len(available_indices) > 0:
+        is_phrase = random.choice([True, False]) if len(available_indices) > 1 else False
+
         try:
-            if is_phrase:
-                start_index = random.randint(0, len(word_list) - 2)
-                phrase = ' '.join(word_list[start_index:start_index+2])
-                lang = random.choice(languages)
-                translated_phrase = translator.translate(phrase, dest=lang).text
-                word_list[start_index:start_index+2] = translated_phrase.split()
+            if is_phrase and len(available_indices) > 1:
+                start_index = random.choice(available_indices[:-1])
+                if start_index + 1 in available_indices:
+                    phrase = ' '.join(word_list[start_index:start_index+2])
+                    lang = random.choice(languages)
+                    translated_phrase = translator.translate(phrase, dest=lang).text
+                    word_list[start_index:start_index+2] = translated_phrase.split()
+                    available_indices.remove(start_index)
+                    available_indices.remove(start_index + 1)
+                    total_translations += 1
+                else:
+                    continue
             else:
-                word_idx = random.randint(0, len(word_list) - 1)
+                word_idx = random.choice(available_indices)
                 lang = random.choice(languages)
                 translated_word = translator.translate(word_list[word_idx], dest=lang).text
                 word_list[word_idx] = translated_word
+                available_indices.remove(word_idx)
+                total_translations += 1
         except Exception as e:
             print(f"Translation error: {e}")
-    
+
     return word_list
 
 def char_random_insertion(word, num_insertions):
     for _ in range(num_insertions):
         pos = random.randint(0, len(word))
         char_to_insert = random.choice(string.ascii_letters)
-        word = word[:pos] + char_to_insert + word[pos:]
+        if pos == 0:
+            word = char_to_insert + word
+        elif pos == len(word):
+            word = word + char_to_insert
+        else:
+            word = word[:pos] + char_to_insert + word[pos:]
     return word
 
 def char_random_deletion(word, num_deletions):
     for _ in range(num_deletions):
         if len(word) > 1:
             pos = random.randint(0, len(word) - 1)
-            word = word[:pos] + word[pos+1:]
+            if pos == 0:
+                word = word[1:]
+            elif pos == len(word) - 1:
+                word = word[:-1]
+            else:
+                word = word[:pos] + word[pos+1:]
     return word
 
 def char_random_replacement(word, num_replacements):
-    for _ in range(num_replacements):
-        if len(word) > 0:
-            pos = random.randint(0, len(word) - 1)
-            if word[pos].lower() in keyboard_adjacency:
-                replacement_char = random.choice(keyboard_adjacency[word[pos].lower()])
-                word = word[:pos] + replacement_char + word[pos+1:]
+    total_replacements = 0
+    replaceable_chars = [i for i, char in enumerate(word) if char.lower() in keyboard_adjacency]
+    
+    while total_replacements < num_replacements and replaceable_chars:
+        pos = random.choice(replaceable_chars)
+        replacement_char = random.choice(keyboard_adjacency[word[pos].lower()])
+        if pos == 0:
+            word = replacement_char + word[1:]
+        elif pos == len(word) - 1:
+            word = word[:-1] + replacement_char
+        else:
+            word = word[:pos] + replacement_char + word[pos+1:]
+        total_replacements += 1
+        replaceable_chars.remove(pos)
+    
     return word
 
 def char_random_repetition(word, num_repetitions):
     for _ in range(num_repetitions):
-        pos = random.randint(0, len(word))
-        word = word[:pos] + word[pos-1:pos] + word[pos:]
+        pos = random.randint(0, len(word)-1)
+        if pos == 0:
+            word = word[pos] + word
+        elif pos == len(word)-1:
+            word = word + word[pos]
+        else:
+            word = word[:pos] + word[pos] + word[pos:]
     return word
 
 def char_random_swapping(word, num_swaps):
-    for _ in range(num_swaps):
-        if len(word) > 1:
-            pos = random.randint(0, len(word) - 2)
+    total_swaps = 0
+    available_positions = list(range(len(word) - 1))
+    
+    while total_swaps < num_swaps and len(available_positions) > 0:
+        pos = random.choice(available_positions)
+        if pos == 0:
+            word = word[1] + word[0] + word[2:]
+        elif pos == len(word) - 2:
+            word = word[:-2] + word[-1] + word[-2]
+        else:
             word = word[:pos] + word[pos+1] + word[pos] + word[pos+2:]
+        
+        total_swaps += 1
+        available_positions.remove(pos)
+    
     return word
 
 def word_apply_cmw(word_list, num_replacements, cmw_dict):
@@ -128,25 +172,33 @@ def word_apply_cmw(word_list, num_replacements, cmw_dict):
         if clean_word.lower() in cmw_dict:
             misspellable_words.append((i, word, clean_word, start_punct, end_punct))
 
-    num_replacements = min(num_replacements, len(misspellable_words))
-    replaced_indices = set()
-
-    for _ in range(num_replacements):
-        if misspellable_words:
-            index, original_word, clean_word, start_punct, end_punct = random.choice(misspellable_words)
-            if index not in replaced_indices:
-                misspelled_word = cmw_dict[clean_word.lower()]
-                word_list[index] = restore_punctuation(misspelled_word, start_punct, end_punct)
-                replaced_indices.add(index)
-                misspellable_words = [w for w in misspellable_words if w[0] not in replaced_indices]
+    total_replacements = 0
+    while total_replacements < num_replacements and misspellable_words:
+        index, original_word, clean_word, start_punct, end_punct = random.choice(misspellable_words)
+        misspelled_word = cmw_dict[clean_word.lower()]
+        word_list[index] = restore_punctuation(misspelled_word, start_punct, end_punct)
+        total_replacements += 1
+        misspellable_words = [w for w in misspellable_words if w[0] != index]
 
     return word_list
 
 def char_random_letter_case(word, num_case_changes):
-    for _ in range(num_case_changes):
-        if len(word) > 0:
-            pos = random.randint(0, len(word) - 1)
+    total_changes = 0
+    available_positions = list(range(len(word)))
+    
+    while total_changes < num_case_changes and available_positions:
+        pos = random.choice(available_positions)
+        
+        if pos == 0:
+            word = word[0].swapcase() + word[1:]
+        elif pos == len(word) - 1:
+            word = word[:-1] + word[-1].swapcase()
+        else:
             word = word[:pos] + word[pos].swapcase() + word[pos+1:]
+        
+        total_changes += 1
+        available_positions.remove(pos)
+    
     return word
 
 def word_synonym_replacement(word_list, num_replacements):
@@ -209,24 +261,21 @@ def word_synonym_replacement(word_list, num_replacements):
             return matcher.ratio() > 0.8  # Adjust this threshold as needed
         return False
 
-    replacements_made = 0
-    replaced_indices = set()
-
+    words_with_synonyms = []
     for i, word in enumerate(word_list):
-        if replacements_made >= num_replacements:
-            break
-        if i in replaced_indices:
-            continue
-
         clean_word, start_punct, end_punct = process_word(word)
         synonyms = get_synonyms(clean_word)
+        if synonyms and get_valid_synonym(clean_word, synonyms):
+            words_with_synonyms.append((i, word, clean_word, start_punct, end_punct, synonyms))
 
-        if synonyms:
-            valid_synonym = get_valid_synonym(clean_word, synonyms)
-            if valid_synonym:
-                word_list[i] = restore_punctuation(valid_synonym.replace('_', ' '), start_punct, end_punct)
-                replaced_indices.add(i)
-                replacements_made += 1
+    replacements_made = 0
+    while replacements_made < num_replacements and words_with_synonyms:
+        index, original_word, clean_word, start_punct, end_punct, synonyms = random.choice(words_with_synonyms)
+        valid_synonym = get_valid_synonym(clean_word, synonyms)
+        if valid_synonym:
+            word_list[index] = restore_punctuation(valid_synonym.replace('_', ' '), start_punct, end_punct)
+            replacements_made += 1
+        words_with_synonyms = [w for w in words_with_synonyms if w[0] != index]
 
     return word_list
 
@@ -261,7 +310,11 @@ def word_context_aware_insertion(word_list, num_insertions):
         insert_position = random.randint(1, len(clean_word_list) - 1)
 
         # Create a masked sentence for prediction
-        masked_sentence = clean_word_list[:insert_position] + [tokenizer.mask_token] + clean_word_list[insert_position:]
+        masked_sentence = []
+        if insert_position == len(clean_word_list) - 1:
+            masked_sentence = clean_word_list + [tokenizer.mask_token]
+        else:
+            masked_sentence = clean_word_list[:insert_position] + [tokenizer.mask_token] + clean_word_list[insert_position:]
         masked_sentence = " ".join(masked_sentence)
 
         # Tokenize and get model predictions
@@ -289,22 +342,64 @@ def char_add_noise_characters(word, num_noises):
     for _ in range(num_noises):
         pos = random.randint(0, len(word))
         noise_char = random.choice(string.punctuation + string.digits)
-        word = word[:pos] + noise_char + word[pos:]
+        if pos == 0:
+            word = noise_char + word
+        elif pos == len(word):
+            word = word + noise_char
+        else:
+            word = word[:pos] + noise_char + word[pos:]
     return word
 
 def word_repeat_key_words(word_list, num_repetitions):
+    def process_word(word):
+        # Extract punctuation
+        start_punct = re.match(r'^[^\w\s]+', word)
+        end_punct = re.search(r'[^\w\s]+$', word)
+        # Remove punctuation
+        clean_word = re.sub(r'^[^\w\s]+|[^\w\s]+$', '', word)
+        return clean_word, start_punct, end_punct
+
+    def restore_punctuation(word, start_punct, end_punct):
+        result = word
+        if start_punct:
+            result = start_punct.group() + result
+        if end_punct:
+            result = result + end_punct.group()
+        return result
+
+    # Process all words to handle punctuation
+    processed_words = [process_word(word) for word in word_list]
+    clean_word_list = [word[0] for word in processed_words]
+
     for _ in range(num_repetitions):
-        if word_list:
-            word_idx = random.randint(0, len(word_list) - 1)
-            word_list.insert(word_idx, word_list[word_idx])
-    return word_list
+        if clean_word_list:
+            word_idx = random.randint(0, len(clean_word_list) - 1)
+            clean_word_list.insert(word_idx, clean_word_list[word_idx])
+            processed_words.insert(word_idx, processed_words[word_idx])
+
+    # Restore punctuation
+    result_word_list = [restore_punctuation(word, start_punct, end_punct)
+                        for word, start_punct, end_punct in processed_words]
+
+    return result_word_list
 
 def char_random_char_substitution(word, num_substitutions):
-    for _ in range(num_substitutions):
-        if len(word) > 0:
-            pos = random.randint(0, len(word) - 1)
-            if word[pos].upper() in char_map:
+    total_substitutions = 0
+    available_positions = list(range(len(word)))
+    
+    while total_substitutions < num_substitutions and available_positions:
+        pos = random.choice(available_positions)
+        if word[pos].upper() in char_map:
+            if pos == 0:
+                word = char_map[word[pos].upper()] + word[1:]
+            elif pos == len(word) - 1:
+                word = word[:-1] + char_map[word[pos].upper()]
+            else:
                 word = word[:pos] + char_map[word[pos].upper()] + word[pos+1:]
+            total_substitutions += 1
+        
+        available_positions.remove(pos)
+    
     return word
 
 def word_internet_slang_insertion(word_list, num_insertions):
@@ -385,15 +480,14 @@ def word_remove_punctuation(words, num_modifications):
         return query.split()  # No punctuation to remove
     
     query_chars = list(query)
+    modifications_made = 0
     
-    for _ in range(min(num_modifications, len(punctuation_positions))):
-        if not punctuation_positions:
-            break
-        
+    while modifications_made < num_modifications and punctuation_positions:
         remove_index = random.choice(punctuation_positions)
         print(f"Removed punctuation: {query[remove_index]}")
         query_chars[remove_index] = ''
-        punctuation_positions = [pos for pos in punctuation_positions if pos != remove_index]
+        punctuation_positions.remove(remove_index)
+        modifications_made += 1
     
     words = ''.join(query_chars).split()
     return words
