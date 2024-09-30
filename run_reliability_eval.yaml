@@ -151,7 +151,8 @@ grid:
       - "word_context_aware_insertion"
       - "word_remove_punctuation"
       - "word_keyword_only"
-      - "word_taxonomy"
+      - "word_taxonomy_pos"
+      - "word_taxonomy_neg"
       # - "random"
 
   typo_intensity:
