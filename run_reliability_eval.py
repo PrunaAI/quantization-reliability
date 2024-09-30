@@ -6,8 +6,6 @@ import tempfile
 
 import logging
 
-from src.evaluations.evaluate_reliability import evaluate_reliability
-
 logger = logging.getLogger("quant_logger")
 
 logger.info("Setting up cache paths...")
@@ -76,6 +74,8 @@ login(token=huggingface_token, add_to_git_credential=True)
 
 from seml.experiment import Experiment
 import seml
+
+from src.evaluations.evaluate_reliability import evaluate_reliability
 
 logging.info("Setting up GPU memory usage list...")
 # Global list to store GPU memory usage
