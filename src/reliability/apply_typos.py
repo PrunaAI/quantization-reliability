@@ -49,16 +49,26 @@ def word_random_phrase_translation(word_list, num_translations):
     translator = Translator()
     available_indices = list(range(len(word_list)))
     total_translations = 0
-
+    
+    # Choose at most two languages
+    chosen_languages = []
+    
     while total_translations < num_translations and len(available_indices) > 0:
         is_phrase = random.choice([True, False]) if len(available_indices) > 1 else False
-
+        
         try:
+            # Choose language
+            if len(chosen_languages) < 2:
+                lang = random.choice(languages)
+                if lang not in chosen_languages:
+                    chosen_languages.append(lang)
+            else:
+                lang = random.choice(chosen_languages)
+            
             if is_phrase and len(available_indices) > 1:
                 start_index = random.choice(available_indices[:-1])
                 if start_index + 1 in available_indices:
                     phrase = ' '.join(word_list[start_index:start_index+2])
-                    lang = random.choice(languages)
                     translated_phrase = translator.translate(phrase, dest=lang).text
                     word_list[start_index:start_index+2] = translated_phrase.split()
                     available_indices.remove(start_index)
@@ -68,14 +78,13 @@ def word_random_phrase_translation(word_list, num_translations):
                     continue
             else:
                 word_idx = random.choice(available_indices)
-                lang = random.choice(languages)
                 translated_word = translator.translate(word_list[word_idx], dest=lang).text
                 word_list[word_idx] = translated_word
                 available_indices.remove(word_idx)
                 total_translations += 1
         except Exception as e:
             print(f"Translation error: {e}")
-
+    
     return word_list
 
 def char_random_insertion(word, num_insertions):
