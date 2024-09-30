@@ -152,7 +152,8 @@ def run_evaluate(
         max_entries=max_entries,
         save_excel=save_excel,
         num_excel_rows=num_excel_rows,
-        cache_dir=cache_path
+        cache_dir=cache_path,
+        verbose=False
     )
 
     fail_trace = {

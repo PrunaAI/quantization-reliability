@@ -24,7 +24,8 @@ def evaluate_reliability(
     max_entries: int = None,
     save_excel: bool = True,
     num_excel_rows: int = 200,
-    cache_dir: str = None
+    cache_dir: str = None,
+    verbose: bool = False
 ):
     # LOAD DATASET
     qa_dataset = load_dataset_from_name(
@@ -47,7 +48,8 @@ def evaluate_reliability(
     for query_idx, (query, true_answer) in enumerate(qa_dataset):
         run_results = generator.generate_response(query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
         for result_dict in run_results:
-            print(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
+            if verbose:
+                logger.info(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
             # Store the results in the list
             results.append({
                 "Query ID": query_idx,
@@ -62,7 +64,8 @@ def evaluate_reliability(
                 "Is Correct": result_dict['is_correct'],
                 "Token Probabilities": result_dict['token_probs']
             })
-            print(f"    IS_CORRECT: {result_dict['is_correct']}, CLEANED: {result_dict['cleaned']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
+            if verbose:
+                logger.info(f"    IS_CORRECT: {result_dict['is_correct']}, CLEANED: {result_dict['cleaned']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
             n_steps += 1
     
     # Generate custom file name based on parameters
