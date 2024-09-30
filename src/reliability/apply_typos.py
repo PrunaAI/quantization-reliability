@@ -537,7 +537,7 @@ def apply_typo_modifications(query, typo_dict, taxonomy_list):
                 words = word_apply_cmw(words, num_modifications, cmw_dict)
             elif mod_type == 'word_synonym':
                 words = word_synonym_replacement(words, num_modifications)
-            elif mod_type in ['char_noise', 'char_char_substitution', 'char_insertion', 'char_deletion', 'char_replacement', 'char_repetition', 'char_swapping', 'char_LCC']:
+            elif mod_type in ['char_insert_noise', 'char_substitution', 'char_insertion', 'char_deletion', 'char_replacement', 'char_repetition', 'char_swapping', 'char_LCC']:
                 indices = random.sample(range(len(words)), min(num_modifications, len(words)))
                 for idx in indices:
                     if mod_type == 'char_insert_noise':
