@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'typo-test-09-29'
+  name: 'typo-test-10-01'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,14 +18,14 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
-  exp_id: "typo-test-09-29"
+  exp_id: "typo-test-10-01"
   save_excel: True
-  num_excel_rows: 20
+  num_excel_rows: 100
   device: 'cuda'
   seed: 42
   n_repeats: 10
   n_beams: 5
-  max_entries: 20
+  max_entries: None
 
 grid:
   model_name:
@@ -158,6 +158,6 @@ grid:
     type: choice
     options:
       # - 0
-      # - 1
-      # - 2
+      - 1
+      - 2
       - 3
