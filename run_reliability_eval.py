@@ -39,12 +39,65 @@ import torch
 with torch.no_grad():
     torch.cuda.empty_cache()
     
-logging.info("Setting up working directory...")
+print("Setting up working directory...")
 
 #os.chdir('..')
-logging.info(f"Current Working Directory: {os.getcwd()}")
+print(f"Current Working Directory: {os.getcwd()}")
 import sys
 sys.path.append("../") # Add directory containing src/data to path
+
+import os
+import sys
+import importlib.util
+
+def troubleshoot_src_import():
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Python path: {sys.path}")
+    
+    # Check if 'src' directory exists in current directory
+    if os.path.isdir('src'):
+        print("'src' directory found in current directory.")
+        print("Contents of 'src' directory:")
+        for item in os.listdir('src'):
+            print(f"  {item}")
+        
+        # Check for __init__.py
+        if os.path.isfile(os.path.join('src', '__init__.py')):
+            print("'src/__init__.py' found.")
+        else:
+            print("WARNING: 'src/__init__.py' not found. 'src' may not be a proper Python package.")
+    else:
+        print("'src' directory not found in current directory.")
+        
+        # Check parent directory
+        parent_dir = os.path.dirname(os.getcwd())
+        if os.path.isdir(os.path.join(parent_dir, 'src')):
+            print(f"'src' directory found in parent directory: {parent_dir}")
+        else:
+            print(f"'src' directory not found in parent directory: {parent_dir}")
+    
+    # Try to find the 'src' module
+    spec = importlib.util.find_spec("src")
+    if spec is not None:
+        print(f"'src' module found at: {spec.origin}")
+    else:
+        print("'src' module not found by importlib.")
+    
+    # List all directories in sys.path
+    print("\nChecking all directories in sys.path:")
+    for path in sys.path:
+        if os.path.isdir(path):
+            print(f"Directory: {path}")
+            if 'src' in os.listdir(path):
+                print(f"  'src' found in this directory")
+                src_path = os.path.join(path, 'src')
+                if os.path.isfile(os.path.join(src_path, '__init__.py')):
+                    print(f"  'src' is a proper Python package (has __init__.py)")
+                else:
+                    print(f"  WARNING: 'src' is a directory but not a proper Python package (missing __init__.py)")
+
+# Run the troubleshooter
+troubleshoot_src_import()
 
 import importlib
 import src  # Assuming src is the package name
