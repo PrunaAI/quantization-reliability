@@ -49,13 +49,17 @@ def word_random_phrase_translation(word_list, num_translations):
     translator = Translator()
     available_indices = list(range(len(word_list)))
     total_translations = 0
-    
-    # Choose at most two languages
+    failed_translations = 0
+    max_iterations = len(word_list) * 2  # Set a maximum number of iterations
+    iterations = 0
     chosen_languages = []
-    
-    while total_translations < num_translations and len(available_indices) > 0:
+
+    # Ensure num_translations doesn't exceed available words
+    num_translations = min(num_translations, len(word_list))
+
+    while total_translations < num_translations and len(available_indices) > 0 and iterations < max_iterations:
+        iterations += 1
         is_phrase = random.choice([True, False]) if len(available_indices) > 1 else False
-        
         try:
             # Choose language
             if len(chosen_languages) < 2:
@@ -64,7 +68,7 @@ def word_random_phrase_translation(word_list, num_translations):
                     chosen_languages.append(lang)
             else:
                 lang = random.choice(chosen_languages)
-            
+
             if is_phrase and len(available_indices) > 1:
                 start_index = random.choice(available_indices[:-1])
                 if start_index + 1 in available_indices:
@@ -75,16 +79,28 @@ def word_random_phrase_translation(word_list, num_translations):
                     available_indices.remove(start_index + 1)
                     total_translations += 1
                 else:
-                    continue
+                    available_indices.remove(start_index)  # Remove problematic index
             else:
                 word_idx = random.choice(available_indices)
                 translated_word = translator.translate(word_list[word_idx], dest=lang).text
                 word_list[word_idx] = translated_word
                 available_indices.remove(word_idx)
                 total_translations += 1
+
         except Exception as e:
             print(f"Translation error: {e}")
-    
+            failed_translations += 1
+            if word_idx in available_indices:
+                available_indices.remove(word_idx)  # Remove problematic index
+            
+        # Break if too many failed translations
+        if failed_translations > len(word_list):
+            print("Too many failed translations. Stopping.")
+            break
+
+    if iterations >= max_iterations:
+        print("Maximum iterations reached. Stopping.")
+
     return word_list
 
 def char_random_insertion(word, num_insertions):
