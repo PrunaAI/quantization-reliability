@@ -60,6 +60,7 @@ def word_random_phrase_translation(word_list, num_translations):
     while total_translations < num_translations and len(available_indices) > 0 and iterations < max_iterations:
         iterations += 1
         is_phrase = random.choice([True, False]) if len(available_indices) > 1 else False
+        word_idx = None
         try:
             # Choose language
             if len(chosen_languages) < 2:
