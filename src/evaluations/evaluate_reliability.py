@@ -62,7 +62,7 @@ def evaluate_reliability(
 
     for batch_idx, batch in enumerate(dataloader):
         print(f"Batch {batch_idx + 1}/{len(dataloader)}")
-        queries, true_answers = zip(*batch)
+        queries, true_answers = batch
         batch_results = generator.generate_responses(queries, strategy, dataset_name, true_answers, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
         
         for query_idx, (query, true_answer) in enumerate(zip(queries, true_answers)):
