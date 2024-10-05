@@ -8,6 +8,18 @@ from sklearn import metrics
 
 import logging
 logger = logging.getLogger("quant_logger")
+    
+from torch.utils.data import DataLoader, Dataset
+
+class QADataset(Dataset):
+    def __init__(self, qa_pairs):
+        self.qa_pairs = qa_pairs
+
+    def __len__(self):
+        return len(self.qa_pairs)
+
+    def __getitem__(self, idx):
+        return self.qa_pairs[idx]
 
 def evaluate_reliability(
     exp_id: str,
@@ -25,7 +37,8 @@ def evaluate_reliability(
     save_excel: bool = True,
     num_excel_rows: int = 200,
     cache_dir: str = None,
-    verbose: bool = False
+    verbose: bool = False,
+    batch_size: int = 32  # New parameter for batch size
 ):
     # LOAD DATASET
     qa_dataset = load_dataset_from_name(
@@ -36,37 +49,43 @@ def evaluate_reliability(
         typo_intensity=typo_intensity
     )
 
+    # Create DataLoader
+    dataloader = DataLoader(QADataset(qa_dataset), batch_size=batch_size, shuffle=False)
+
     # INITIALIZE RESULTS LIST
     results = []
 
-    n_steps = 0
-    total_steps = len(qa_dataset) * (n_repeats if not use_beam_search else 1)
     generator = ResponseGenerator(
         model_name=model_name,
         cache_dir=cache_dir
     )
-    for query_idx, (query, true_answer) in enumerate(qa_dataset):
-        run_results = generator.generate_response(query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
-        for result_dict in run_results:
-            if verbose:
-                logger.info(f"  TOTAL: {n_steps + 1}/{total_steps}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
-            # Store the results in the list
-            results.append({
-                "Query ID": query_idx,
-                "Query": query,
-                "Answer": true_answer,
-                "Run": result_dict['run'],
-                "Generated Response": result_dict['output_text'],
-                "Cleaned": result_dict['cleaned'],
-                "P": result_dict['beam_prob'],
-                "P_adj": result_dict['beam_prob_adj'],
-                "Entropy": result_dict['entropy'],
-                "Is Correct": result_dict['is_correct'],
-                "Token Probabilities": result_dict['token_probs']
-            })
-            if verbose:
-                logger.info(f"    IS_CORRECT: {result_dict['is_correct']}, CLEANED: {result_dict['cleaned']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
-            n_steps += 1
+
+    for batch_idx, batch in enumerate(dataloader):
+        print(f"Batch {batch_idx + 1}/{len(dataloader)}")
+        queries, true_answers = zip(*batch)
+        batch_results = generator.generate_responses(queries, strategy, dataset_name, true_answers, max_new_tokens, temperature, use_beam_search, n_repeats=n_repeats, n_beams=n_beams)
+        
+        for query_idx, (query, true_answer) in enumerate(zip(queries, true_answers)):
+            for result_dict in batch_results[query_idx]:
+                if verbose:
+                    logger.info(f"  TOTAL: {len(results) + 1}/{len(qa_dataset) * (n_repeats if not use_beam_search else 1)}, MODEL: {model_name}, QUERY: {query_idx}, STRATEGY: {strategy}, MAX_NEW_TOKENS: {max_new_tokens}, RUN: {result_dict['run']}/{n_repeats}")
+                
+                results.append({
+                    "Query ID": len(results),
+                    "Query": query,
+                    "Answer": true_answer,
+                    "Run": result_dict['run'],
+                    "Generated Response": result_dict['output_text'],
+                    "Cleaned": result_dict['cleaned'],
+                    "P": result_dict['beam_prob'],
+                    "P_adj": result_dict['beam_prob_adj'],
+                    "Entropy": result_dict['entropy'],
+                    "Is Correct": result_dict['is_correct'],
+                    "Token Probabilities": result_dict['token_probs']
+                })
+                
+                if verbose:
+                    logger.info(f"    IS_CORRECT: {result_dict['is_correct']}, CLEANED: {result_dict['cleaned']}, PROB: {result_dict['beam_prob']:.2f}, ADJ_PROB: {result_dict['beam_prob_adj']:.2f}, ENTROPY: {result_dict['entropy']:.2f}")
     
     # Generate custom file name based on parameters
     beam_search_str = "beam" if use_beam_search else "sample"

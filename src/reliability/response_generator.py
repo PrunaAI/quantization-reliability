@@ -78,9 +78,9 @@ class ResponseGenerator:
         
         return beam_prob, beam_prob_adj, entropy, cleaned_token_probs
     
-    def generate_response(self, query, strategy, dataset_name, true_answer, max_new_tokens, temperature, use_beam_search, n_repeats=5, n_beams=5):
-        prompt = get_prompt(query, strategy, dataset_name)
-        inputs = self.tokenizer(prompt, return_tensors='pt').to("cuda")
+    def generate_responses(self, queries, strategy, dataset_name, true_answers, max_new_tokens, temperature, use_beam_search, n_repeats=5, n_beams=5):
+        prompts = [get_prompt(query, strategy, dataset_name) for query in queries]
+        inputs = self.tokenizer(prompts, return_tensors='pt', padding=True, truncation=True).to("cuda")
         
         # Generation configuration
         generation_config = {
@@ -96,14 +96,13 @@ class ResponseGenerator:
         }
         
         if use_beam_search:
-            generation_config = {
-                **generation_config,
+            generation_config.update({
                 "num_beams": n_beams,
                 "num_return_sequences": 1,
-            }
+            })
             generation_config.pop("do_sample")
         
-        results = []
+        batch_results = []
 
         if use_beam_search:
             with torch.no_grad():
@@ -113,6 +112,7 @@ class ResponseGenerator:
                     generation_config=GenerationConfig(**generation_config),
                     max_new_tokens=max_new_tokens
                 )
+            
             transition_scores = self.model.compute_transition_scores(
                 outputs.sequences,
                 outputs.scores,
@@ -121,16 +121,16 @@ class ResponseGenerator:
             )
             trans_scores = np.exp(transition_scores.cpu().numpy())
 
-            for i in range(len(outputs.sequences)):
+            for i, (query, true_answer) in enumerate(zip(queries, true_answers)):
                 output_text = self.tokenizer.decode(outputs.sequences[i], skip_special_tokens=True)
                 cleaned_text, is_correct = self.clean_response(query, output_text, true_answer)
 
-                token_probs = [(self.tokenizer.decode([outputs.sequences[i][j + len(inputs['input_ids'][0])]]), round(trans_scores[i, j], 4))
+                token_probs = [(self.tokenizer.decode([outputs.sequences[i][j + len(inputs['input_ids'][i])]]), round(trans_scores[i, j], 4))
                                for j in range(len(trans_scores[i]))]
                 
                 beam_prob, beam_prob_adj, entropy, cleaned_token_probs = self.calculate_probabilities(query, token_probs, true_answer)
 
-                results.append({
+                batch_results.append([{
                     "output_text": output_text,
                     "cleaned": cleaned_text,
                     "beam_prob": beam_prob,
@@ -138,10 +138,11 @@ class ResponseGenerator:
                     "entropy": entropy,
                     "is_correct": is_correct,
                     "token_probs": cleaned_token_probs,
-                    "run": i + 1  # 1-indexed
-                })
+                    "run": 1  # Only one run for beam search
+                }])
 
         else:
+            batch_results = [[] for _ in queries]
             for run in range(n_repeats):
                 with torch.no_grad():
                     outputs = self.model.generate(
@@ -151,19 +152,20 @@ class ResponseGenerator:
                         max_new_tokens=max_new_tokens
                     )
                     
-                    output_text = self.tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+                for i, (query, true_answer) in enumerate(zip(queries, true_answers)):
+                    output_text = self.tokenizer.decode(outputs.sequences[i], skip_special_tokens=True)
                     cleaned_text, is_correct = self.clean_response(query, output_text, true_answer)
                     
                     token_probs = []
                     for pos_idx, beam_scores in enumerate(outputs.scores):
                         softmax_scores = torch.softmax(beam_scores, dim=-1)
-                        token_id = outputs.sequences[0][pos_idx + len(inputs['input_ids'][0])]
-                        token_prob = softmax_scores[0][token_id].item()
+                        token_id = outputs.sequences[i][pos_idx + len(inputs['input_ids'][i])]
+                        token_prob = softmax_scores[i][token_id].item()
                         token_probs.append((self.tokenizer.decode([token_id]), round(token_prob, 4)))
                     
                     beam_prob, beam_prob_adj, entropy, cleaned_token_probs = self.calculate_probabilities(query, token_probs, true_answer)
                     
-                    results.append({
+                    batch_results[i].append({
                         "output_text": output_text,
                         "cleaned": cleaned_text,
                         "beam_prob": beam_prob,
@@ -174,5 +176,5 @@ class ResponseGenerator:
                         "run": run + 1
                     })
 
-        return results
+        return batch_results
     
