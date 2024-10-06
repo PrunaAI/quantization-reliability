@@ -44,8 +44,8 @@ print("Setting up working directory...")
 #os.chdir('..')
 print(f"Current Working Directory: {os.getcwd()}")
 import sys
-sys.path.append(os.path.dirname(os.getcwd())) # Add the parent directory more explicitly
-# sys.path.append("../") # Add directory containing src/data to path
+# sys.path.append(os.path.dirname(os.getcwd())) # Add the parent directory more explicitly
+sys.path.append("../") # Add directory containing src/data to path
 
 import os
 import sys

@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'typo-test-10-01'
+  name: 'typo-quant-test-10-03'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,12 +18,12 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
-  exp_id: "typo-test-10-01"
+  exp_id: "typo-quant-test-10-03"
   save_excel: True
   num_excel_rows: 100
   device: 'cuda'
   seed: 42
-  n_repeats: 10
+  n_repeats: 1
   n_beams: 5
   max_entries: None
 
@@ -31,12 +31,12 @@ grid:
   model_name:
     type: choice
     options:
-      - 'Llama-3-8B'
+      # - 'Llama-3-8B'
       # - 'Bloomz'
       # - 'GPT2-Large'
       # - 'TinyLlama'
       # - 'TinyLlama-Chat'
-      # - 'Llama-3-8B-AWQ-8bit'
+      - 'Llama-3-8B-AWQ-4bit-local'
       # - 'Llama-3-8B-BNB-4bit'
       # - 'Llama-3-8B-BNB-8bit'
       # - 'Llama-3-8B-HQQ-8-uniform'
@@ -51,15 +51,7 @@ grid:
   max_new_tokens:
     type: choice
     options:
-      # - 10
-      # - 15
-      # - 20
       - 25
-      # - 30
-      # - 35
-      # - 40
-      # - 45
-      # - 50
 
   temperature:
     type: choice
@@ -75,34 +67,6 @@ grid:
   strategy:
     type: choice
     options:
-      # - "Original"
-      # - "Direct Answer"
-      # - "Factual Retrieval"
-      # - "Definitive Statement"
-      # - "Completion"
-      # - "Answer Completion"
-      # - "Fact Statement"
-      # - "Fill-in-the-Blank"
-      # - "Structured Answer Prompt"
-      # - "Direct Instruction"
-      # - "Contextual Prompts"
-      # - "Question-Answer Pairs"
-      # - "Q&A Format"
-      # - "Instructional"
-      # - "Summary"
-      # - "Echo"
-      # - "True Completion"
-      # - "Direct Query"
-      # - "First Thought"
-      # - "Deductive Reasoning"
-      # - "Expert Persona"
-      # - "Reflective Reasoning"
-      # - "Zero-Shot"
-      # - "One-Shot"
-      # - "Two-Shot"
-      # - "Three-Shot"
-      # - "Four-Shot"
-      # - "Five-Shot"
       - "Direct Completion"
 
   dataset_name: 
@@ -133,27 +97,26 @@ grid:
   typo_type:
     type: choice
     options:
-      # - "none"
-      # - "char_insertion"
-      # - "char_deletion"
-      # - "char_replacement"
-      # - "char_repetition"
-      # - "char_swapping"
-      # - "word_CMW"
-      # - "char_LCC"
-      # - "word_synonym"
-      # - "char_insert_noise"
-      # - "word_repeat"
-      # - "char_substitution"
-      # - "word_emoji"
-      # - "word_internet_slang"
+      - "none"
+      - "char_insertion"
+      - "char_deletion"
+      - "char_replacement"
+      - "char_repetition"
+      - "char_swapping"
+      - "word_CMW"
+      - "char_LCC"
+      - "word_synonym"
+      - "char_insert_noise"
+      - "word_repeat"
+      - "char_substitution"
+      - "word_emoji"
+      - "word_internet_slang"
       - "word_phrase_translation"
-      # - "word_context_aware_insertion"
-      # - "word_remove_punctuation"
-      # - "word_keyword_only"
-      # - "word_taxonomy_pos"
-      # - "word_taxonomy_neg"
-      # - "random"
+      - "word_context_aware_insertion"
+      - "word_remove_punctuation"
+      - "word_keyword_only"
+      - "word_taxonomy_pos"
+      - "word_taxonomy_neg"
 
   typo_intensity:
     type: choice
