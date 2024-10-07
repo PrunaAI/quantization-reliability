@@ -3,7 +3,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'typo-quant-test-10-03'
+  name: 'pert-awq-bnb-hqq-10-07'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,7 +18,7 @@ slurm:
 
 ###### BEGIN PARAMETER CONFIGURATION ######
 fixed:
-  exp_id: "typo-quant-test-10-03"
+  exp_id: "pert-awq-bnb-hqq-10-07"
   save_excel: True
   num_excel_rows: 100
   device: 'cuda'
@@ -26,27 +26,34 @@ fixed:
   n_repeats: 1
   n_beams: 5
   max_entries: None
+  batch_size: 32
 
 grid:
   model_name:
     type: choice
     options:
-      # - 'Llama-3-8B'
+      - 'Llama-3-8B'
       # - 'Bloomz'
       # - 'GPT2-Large'
       # - 'TinyLlama'
       # - 'TinyLlama-Chat'
       - 'Llama-3-8B-AWQ-4bit-local'
-      # - 'Llama-3-8B-BNB-4bit'
-      # - 'Llama-3-8B-BNB-8bit'
-      # - 'Llama-3-8B-HQQ-8-uniform'
-      # - 'Llama-3-8B-HQQ-mixed'
-      # - 'Llama-3-8B-HQQ-LORA'
-      # - 'Llama-3-8B-QUANTO'
-      # - 'Llama-3-8B-QUANTO-CALIB'
-      # - 'Llama-3-8B-QUANTO-QAT'
-      # - 'Llama-3-8B-AQLM'
-      # - 'Llama-3-8B-AQLM-LORA'
+      - 'Llama-3-8B-BNB-4bit-local'
+      - 'Llama-3-8B-HQQ-mixed-local'
+      # - 'Bloomz'
+      # - 'GPT2-Large'
+      # - 'TinyLlama'
+      # - 'TinyLlama-Chat'
+      # - 'Llama-3-8B-BNB-4bit-local'
+      # - 'Llama-3-8B-BNB-8bit-local'
+      # - 'Llama-3-8B-HQQ-8-uniform-local'
+      # - 'Llama-3-8B-HQQ-mixed-local'
+      # - 'Llama-3-8B-HQQ-LORA-local'
+      # - 'Llama-3-8B-QUANTO-local'
+      # - 'Llama-3-8B-QUANTO-CALIB-local'
+      # - 'Llama-3-8B-QUANTO-QAT-local'
+      # - 'Llama-3-8B-AQLM-local'
+      # - 'Llama-3-8B-AQLM-LORA-local'
 
   max_new_tokens:
     type: choice
@@ -73,26 +80,26 @@ grid:
     type: choice
     options: 
       # - 'toy-qa-dataset'
-      # - 'P101'
-      # - 'P103'
-      # - 'P108'
-      # - 'P127'
-      # - 'P1376'
-      # - 'P1412'
-      # - 'P159'
+      - 'P101'
+      - 'P103'
+      - 'P108'
+      - 'P127'
+      - 'P1376'
+      - 'P1412'
+      - 'P159'
       - 'P17'
-      # - 'P176'
-      # - 'P178'
-      # - 'P19'
-      # - 'P20'
-      # - 'P264'
-      # - 'P27'
-      # - 'P276'
-      # - 'P30'
-      # - 'P364'
-      # - 'P37'
-      # - 'P495'
-      # - 'P740'
+      - 'P176'
+      - 'P178'
+      - 'P19'
+      - 'P20'
+      - 'P264'
+      - 'P27'
+      - 'P276'
+      - 'P30'
+      - 'P364'
+      - 'P37'
+      - 'P495'
+      - 'P740'
 
   typo_type:
     type: choice

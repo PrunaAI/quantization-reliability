@@ -152,6 +152,7 @@ def run_evaluate(
     exp_id: str,
     save_excel: bool = True,
     num_excel_rows: int = 20,
+    batch_size: int = 32,
     
     # Reliability dataset parameters
     seed=123,
@@ -207,7 +208,8 @@ def run_evaluate(
         save_excel=save_excel,
         num_excel_rows=num_excel_rows,
         cache_dir=cache_path,
-        verbose=False
+        verbose=False,
+        batch_size=batch_size
     )
 
     fail_trace = {
