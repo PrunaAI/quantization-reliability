@@ -29,9 +29,9 @@ base_models = {
 # Hugging Face quantized models dictionary
 hf_quantized_models = {
     # AQLM quantized models
-    "Llama-3-8B-AQLM-2Bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
-    "Llama-3-8B-AQLM-PV-2Bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
-    "Llama-3-8B-AQLM-PV-1Bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-1Bit-1x16",
+    "Llama-3-8B-AQLM-2bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
+    "Llama-3-8B-AQLM-PV-2bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
+    "Llama-3-8B-AQLM-PV-1bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-1Bit-1x16",
     
     # AWQ quantized models
     "Llama-3-8B-AWQ-4bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-AWQ-4bit-smashed",
