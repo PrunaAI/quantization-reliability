@@ -5,9 +5,6 @@ from src.algorithms.quantization.config.bnb_config import BNB_4, BNB_8
 from src.algorithms.quantization.config.hqq_config import HQQ_LORA, HQQ_8_uniform, HQQ_mixed
 from src.algorithms.quantization.config.quanto_config import QUANTO, QUANTO_CALIB, QUANTO_QAT
 
-
-DEBUG = True
-
 QUANT_CONFIGS = {
     "NONE": NONE,
     "BNB-4": BNB_4,

@@ -1,6 +1,6 @@
 # LoRA configuration parameters
 
-from src.algorithms.quantization.config import DEBUG
+DEBUG = False
 
 
 AQLM_MODEL_VARIANTS = [
