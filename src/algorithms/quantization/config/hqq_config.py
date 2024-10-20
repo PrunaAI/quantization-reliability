@@ -1,7 +1,7 @@
 import torch
 from hqq.core.quantize import BaseQuantizeConfig as HQQBaseQuantizeConfig
 
-from src.algorithms.quantization.config import DEBUG
+DEBUG = False
 
 ##### HQQ 8-bit uniform
 
