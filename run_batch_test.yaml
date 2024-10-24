@@ -1,0 +1,142 @@
+# Experiment configuration file.
+
+seml:
+  conda_environment: 'env-quant-rel-310'
+  executable: 'run_reliability_eval.py'
+  name: 'batch-test-10-24'
+  output_dir: '/nfs/homedirs/daro/slurm_output/'
+  project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
+
+slurm:
+  experiments_per_job: 1
+  sbatch_options:
+    gres: 'gpu:1'        # num GPUs
+    mem: '128G'          # memory
+    cpus-per-task: 2     # num cores
+    time: '1-00:00'      # max time, D-HH:MM
+    partition: 'gpu_a100' # partition
+
+###### BEGIN PARAMETER CONFIGURATION ######
+fixed:
+  exp_id: "batch-test-10-24"
+  save_excel: True
+  num_excel_rows: 100
+  device: 'cuda'
+  seed: 42
+  n_repeats: 1
+  n_beams: 5
+  max_entries: None
+  batch_size: None
+
+grid:
+  model_name:
+    type: choice
+    options:
+      - 'Llama-3-8B'
+      # - 'Bloomz'
+      # - 'GPT2-Large'
+      # - 'TinyLlama'
+      # - 'TinyLlama-Chat'
+      # - 'Llama-3-8B-AWQ-4bit-local'
+      # - 'Llama-3-8B-BNB-4bit-local'
+      # - 'Llama-3-8B-HQQ-mixed-local'
+      # - 'Llama-3-8B-BNB-8bit-local'
+      # - 'Llama-3-8B-HQQ-8-uniform-local'
+      # - 'Llama-3-8B-AQLM-2Bit'
+      # - GPTQ
+      # - QUAROT -> load the quantized models
+      # - QUANTO -> extract local
+      # - QoQ
+      # - AWQ with OASST
+      # - 'Bloomz'
+      # - 'GPT2-Large'
+      # - 'TinyLlama'
+      # - 'TinyLlama-Chat'
+      # - 'Llama-3-8B-BNB-4bit-local'
+      # - 'Llama-3-8B-BNB-8bit-local'
+      # - 'Llama-3-8B-HQQ-8-uniform-local'
+      # - 'Llama-3-8B-HQQ-mixed-local'
+      # - 'Llama-3-8B-HQQ-LORA-local'
+      # - 'Llama-3-8B-QUANTO-local'
+      # - 'Llama-3-8B-QUANTO-CALIB-local'
+      # - 'Llama-3-8B-QUANTO-QAT-local'
+      # - 'Llama-3-8B-AQLM-local'
+      # - 'Llama-3-8B-AQLM-LORA-local'
+
+  max_new_tokens:
+    type: choice
+    options:
+      - 25
+
+  temperature:
+    type: choice
+    options:
+      - 0.1
+
+  use_beam_search:
+    type: choice
+    options:
+      # - True
+      - False
+
+  strategy:
+    type: choice
+    options:
+      - "Direct Completion"
+
+  dataset_name: 
+    type: choice
+    options: 
+      # - 'toy-qa-dataset'
+      - 'P101'
+      # - 'P103'
+      # - 'P108'
+      # - 'P127'
+      # - 'P1376'
+      # - 'P1412'
+      # - 'P159'
+      # - 'P17'
+      # - 'P176'
+      # - 'P178'
+      # - 'P19'
+      # - 'P20'
+      # - 'P264'
+      # - 'P27'
+      # - 'P276'
+      # - 'P30'
+      # - 'P364'
+      # - 'P37'
+      # - 'P495'
+      # - 'P740'
+
+  typo_type:
+    type: choice
+    options:
+      - "none"
+      # - "char_insertion"
+      # - "char_deletion"
+      # - "char_replacement"
+      # - "char_repetition"
+      # - "char_swapping"
+      # - "word_CMW"
+      # - "char_LCC"
+      # - "word_synonym"
+      # - "char_insert_noise"
+      # - "word_repeat"
+      # - "char_substitution"
+      # - "word_emoji"
+      # - "word_internet_slang"
+      # - "word_phrase_translation"
+      # - "word_context_aware_insertion"
+      # - "word_remove_punctuation"
+      # - "word_keyword_only"
+      # - "word_taxonomy_pos"
+      # - "word_taxonomy_neg"
+
+  typo_intensity:
+    type: choice
+    options:
+      - 0
+      # - 1
+      # - 2
+      # - 3
