@@ -48,6 +48,10 @@ def evaluate_reliability(
         typo_type=typo_type,
         typo_intensity=typo_intensity
     )
+    
+    if batch_size > len(qa_dataset):
+        logger.warning(f"Batch size {batch_size} is larger than the dataset size {len(qa_dataset)}. Setting batch size to dataset size.")
+        batch_size = len(qa_dataset)
 
     # Create DataLoader
     dataloader = DataLoader(QADataset(qa_dataset), batch_size=batch_size, shuffle=False)

@@ -11,7 +11,7 @@ slurm:
   experiments_per_job: 1
   sbatch_options:
     gres: 'gpu:1'        # num GPUs
-    mem: '48G'          # memory
+    mem: '128G'          # memory
     cpus-per-task: 2     # num cores
     time: '1-00:00'      # max time, D-HH:MM
     partition: 'gpu_a100' # partition
@@ -26,7 +26,7 @@ fixed:
   n_repeats: 1
   n_beams: 5
   max_entries: None
-  batch_size: 128
+  batch_size: None
 
 grid:
   model_name:
@@ -41,8 +41,13 @@ grid:
       # - 'Llama-3-8B-BNB-4bit-local'
       # - 'Llama-3-8B-HQQ-mixed-local'
       - 'Llama-3-8B-BNB-8bit-local'
-      - 'Llama-3-8B-HQQ-8-uniform-local'
-      - 'Llama-3-8B-AQLM-2Bit'
+      # - 'Llama-3-8B-HQQ-8-uniform-local'
+      # - 'Llama-3-8B-AQLM-2Bit'
+      # - GPTQ
+      # - QUAROT -> load the quantized models
+      # - QUANTO -> extract local
+      # - QoQ
+      # - AWQ with OASST
       # - 'Bloomz'
       # - 'GPT2-Large'
       # - 'TinyLlama'
@@ -125,8 +130,8 @@ grid:
       - "word_context_aware_insertion"
       - "word_remove_punctuation"
       - "word_keyword_only"
-      - "word_taxonomy_pos"
-      - "word_taxonomy_neg"
+      # - "word_taxonomy_pos"
+      # - "word_taxonomy_neg"
 
   typo_intensity:
     type: choice
