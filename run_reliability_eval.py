@@ -3,7 +3,6 @@ import re
 import os
 import subprocess
 import tempfile
-
 import logging
 
 logger = logging.getLogger("quant_logger")
@@ -35,17 +34,13 @@ import torch
 torch.hub.set_dir(CACHE_PATH)
 
 # Empty the cache
-import torch
 with torch.no_grad():
     torch.cuda.empty_cache()
     
 print("Setting up working directory...")
-
-#os.chdir('..')
 print(f"Current Working Directory: {os.getcwd()}")
 import sys
-# sys.path.append(os.path.dirname(os.getcwd())) # Add the parent directory more explicitly
-sys.path.append("../") # Add directory containing src/data to path
+sys.path.append("../")
 
 import os
 import sys
@@ -55,14 +50,12 @@ def troubleshoot_src_import():
     print(f"Current working directory: {os.getcwd()}")
     print(f"Python path: {sys.path}")
     
-    # Check if 'src' directory exists in current directory
     if os.path.isdir('src'):
         print("'src' directory found in current directory.")
         print("Contents of 'src' directory:")
         for item in os.listdir('src'):
             print(f"  {item}")
         
-        # Check for __init__.py
         if os.path.isfile(os.path.join('src', '__init__.py')):
             print("'src/__init__.py' found.")
         else:
@@ -70,21 +63,18 @@ def troubleshoot_src_import():
     else:
         print("'src' directory not found in current directory.")
         
-        # Check parent directory
         parent_dir = os.path.dirname(os.getcwd())
         if os.path.isdir(os.path.join(parent_dir, 'src')):
             print(f"'src' directory found in parent directory: {parent_dir}")
         else:
             print(f"'src' directory not found in parent directory: {parent_dir}")
     
-    # Try to find the 'src' module
     spec = importlib.util.find_spec("src")
     if spec is not None:
         print(f"'src' module found at: {spec.origin}")
     else:
         print("'src' module not found by importlib.")
     
-    # List all directories in sys.path
     print("\nChecking all directories in sys.path:")
     for path in sys.path:
         if os.path.isdir(path):
@@ -97,19 +87,15 @@ def troubleshoot_src_import():
                 else:
                     print(f"  WARNING: 'src' is a directory but not a proper Python package (missing __init__.py)")
 
-# Run the troubleshooter
 troubleshoot_src_import()
 
 import importlib
-import src  # Assuming src is the package name
-
-# Reload the src module after making changes
+import src
 importlib.reload(src)
 
 logging.info("Setting up working directory...")
 
 # HuggingFace authentication
-import os
 from dotenv import load_dotenv
 from huggingface_hub import login
 
@@ -132,19 +118,43 @@ import seml
 from src.evaluations.evaluate_reliability import evaluate_reliability
 
 logging.info("Setting up GPU memory usage list...")
-# Global list to store GPU memory usage
 gpu_memory_usage = {}
 
 logging.info("Setting up SEML experiment...")
 
-# Set the SEML experiment
 ex = Experiment(save_git_info=False)
 
+def validate_typo_config(typo_type, typo_intensity):
+    """
+    Validates the typo configuration based on the categories defined in the YAML.
+    Returns True if the configuration is valid, False otherwise.
+    """
+    # Base case validation
+    if typo_type == "none":
+        return typo_intensity == 0
+    
+    # Specific perturbations validation
+    if typo_type in ["word_remove_punctuation", "word_synonym"]:
+        return typo_intensity == 1
+    
+    # Standard perturbations validation
+    standard_perturbation_types = [
+        "char_insertion", "char_deletion", "char_replacement",
+        "char_repetition", "char_swapping", "word_CMW",
+        "char_LCC", "char_insert_noise", "word_repeat",
+        "char_substitution", "word_emoji", "word_internet_slang",
+        "word_phrase_translation", "word_context_aware_insertion",
+        "word_keyword_only"
+    ]
+    
+    if typo_type in standard_perturbation_types:
+        return typo_intensity in [1, 2, 3]
+    
+    return False
 
 @ex.post_run_hook
 def collect_stats(_run):
     seml.collect_exp_stats(_run)
-
 
 @ex.automain
 def run_evaluate(
@@ -174,6 +184,13 @@ def run_evaluate(
     device="cuda",
     cache_path=CACHE_PATH
 ):
+    # Validate typo configuration
+    if not validate_typo_config(typo_type, typo_intensity):
+        raise ValueError(
+            f"Invalid typo configuration: type={typo_type}, intensity={typo_intensity}. "
+            f"Please check the configuration categories in the YAML file."
+        )
+
     ##################
     ## Print config ##
     ##################
@@ -184,6 +201,8 @@ def run_evaluate(
     logger.info(f"  Use beam search: {use_beam_search}")
     logger.info(f"  Strategy: {strategy}")
     logger.info(f"  Dataset name: {dataset_name}")
+    logger.info(f"  Typo type: {typo_type}")
+    logger.info(f"  Typo intensity: {typo_intensity}")
     logger.info(f"  Number of repeats: {n_repeats}")
     logger.info(f"  Number of beams: {n_beams}")
     logger.info(f"  Max entries: {max_entries}")
