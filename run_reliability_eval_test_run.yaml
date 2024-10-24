@@ -2,7 +2,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'pert-bnb-hqq-aqlm-10-25'
+  name: 'test-run-10-24'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,9 +18,9 @@ slurm:
 ###### BEGIN PARAMETER CONFIGURATION ######
 
 fixed:
-  exp_id: "pert-bnb-hqq-aqlm-10-25"
+  exp_id: "test-run-10-24"
   save_excel: True
-  num_excel_rows: 20
+  num_excel_rows: 100
   device: 'cuda'
   seed: 42
   n_repeats: 1

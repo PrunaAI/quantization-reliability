@@ -12,13 +12,11 @@ import requests
 from difflib import SequenceMatcher
 import wordfreq
 
-import emoji
-from nltk.stem import PorterStemmer
 import re
 
 import os
 
-from src.reliability.constants import keyboard_adjacency, char_map, internet_slang, stop_words
+from src.reliability.constants import keyboard_adjacency, char_map, internet_slang, stop_words, load_common_emojis
 
 # Set the custom download directory
 nltk_data_dir = '/nfs/students/daro/data/nltk_data'
@@ -434,68 +432,31 @@ def word_internet_slang_insertion(word_list, num_insertions):
         word_list.insert(pos, random.choice(internet_slang))
     return word_list
 
-def load_emoji_mappings():
-    emoji_mappings = {}
-    ps = PorterStemmer()
+def word_append_emoji(word_list, num_emojis):
+    """
+    Append random emojis to the end of the query text.
     
-    for emoji_code, emoji_data in emoji.EMOJI_DATA.items():
-        if 'en' in emoji_data:
-            description = emoji_data['en'].replace(':', '')
-            words = re.findall(r'\w+', description)
-            for word in words:
-                stemmed_word = ps.stem(word.lower())
-                if stemmed_word not in emoji_mappings:
-                    emoji_mappings[stemmed_word] = []
-                emoji_mappings[stemmed_word].append(emoji_code)
+    Parameters:
+    word_list (list): List of words in the query
+    num_emojis (int): Number of emojis to append (intensity)
     
-    return emoji_mappings
-
-def word_emoji_substitution(word_list, num_substitutions):
-    emoji_mappings = load_emoji_mappings()
-    ps = PorterStemmer()
-
-    def find_matching_emoji(word):
-        # Extract punctuation
-        start_punct = re.match(r'^[^\w\s]+', word)
-        end_punct = re.search(r'[^\w\s]+$', word)
+    Returns:
+    list: Modified word list with emojis appended at the end
+    """
+    if num_emojis <= 0:
+        return word_list
         
-        # Remove punctuation and stem the word
-        clean_word = re.sub(r'^[^\w\s]+|[^\w\s]+$', '', word)
-        stemmed_word = ps.stem(clean_word.lower()).lower()
-
-        for key in emoji_mappings.keys():
-            if (f"_{stemmed_word}_" in f"_{key}_" and key.count('_') <= 1) or f"{stemmed_word}s" == key or stemmed_word == key:
-                emoji_code = random.choice(emoji_mappings[key])
-                
-                # Add punctuation back to the emoji
-                result = emoji.emojize(emoji_code)
-                if start_punct:
-                    result = start_punct.group() + result
-                if end_punct:
-                    result = result + end_punct.group()
-                
-                return result
-        return None
-
-    # Pre-process all words to find potential emoji matches
-    substitutable_words = []
-    for i, word in enumerate(word_list):
-        matching_emoji = find_matching_emoji(word)
-        if matching_emoji:
-            substitutable_words.append((i, word, matching_emoji))
-
-    # Perform substitutions
-    substituted_indices = set()
-    total_substitutions = 0
-    while total_substitutions < num_substitutions and substitutable_words:
-        index, word, emoji_replacement = random.choice(substitutable_words)
-        if index not in substituted_indices:
-            word_list[index] = emoji_replacement
-            substituted_indices.add(index)
-            total_substitutions += 1
-            print(f"Substituted '{word}' with '{emoji_replacement}'")
-        substitutable_words = [w for w in substitutable_words if w[0] not in substituted_indices]
-
+    # Load common emojis
+    common_emojis = load_common_emojis()
+    
+    # Select random emojis
+    selected_emojis = random.sample(common_emojis, min(num_emojis, len(common_emojis)))
+    
+    # Add emojis to the end of the word list
+    word_list.extend(selected_emojis)
+    
+    print(f"Added {num_emojis} emojis at the end of the query: {' '.join(selected_emojis)}")
+    
     return word_list
 
 def word_remove_punctuation(words, num_modifications):
@@ -583,7 +544,7 @@ def apply_typo_modifications(query, typo_dict, taxonomy_list):
                     elif mod_type == 'char_LCC':
                         words[idx] = char_random_letter_case(words[idx], 1)
             elif mod_type == 'word_emoji':
-                words = word_emoji_substitution(words, num_modifications)
+                words = word_append_emoji(words, num_modifications)
             elif mod_type == 'word_internet_slang':
                 words = word_internet_slang_insertion(words, num_modifications)
             elif mod_type == 'word_phrase_translation':
