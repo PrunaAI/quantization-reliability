@@ -28,8 +28,8 @@ fixed:
   max_entries: None
   batch_size: None
 
-# Common grid parameters used across all categories
-common_grid:
+# Define common grid parameters with an anchor
+grid_params: &common_grid
   model_name:
     type: choice
     options:
@@ -109,11 +109,10 @@ common_grid:
       # - 'P495'
       # - 'P740'
 
-# Category for base case (no perturbation)
+# Base case (no perturbation)
 base_case:
   grid:
-    <<: *common_grid
-    
+    <<: *common_grid  # Reference the common grid parameters
     typo_type:
       type: choice
       options:
@@ -124,11 +123,10 @@ base_case:
       options:
         - 0
 
-# Category for specific perturbations with intensity 1
+# Specific perturbations with intensity 1
 specific_perturbations:
   grid:
-    <<: *common_grid
-    
+    <<: *common_grid  # Reference the common grid parameters
     typo_type:
       type: choice
       options:
@@ -140,11 +138,10 @@ specific_perturbations:
       options:
         - 1
 
-# Category for all other perturbations with multiple intensities
+# Standard perturbations with multiple intensities
 standard_perturbations:
   grid:
-    <<: *common_grid
-    
+    <<: *common_grid  # Reference the common grid parameters
     typo_type:
       type: choice
       options:
