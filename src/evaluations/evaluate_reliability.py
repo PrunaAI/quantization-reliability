@@ -49,6 +49,10 @@ def evaluate_reliability(
         typo_intensity=typo_intensity
     )
     
+    if batch_size is None:
+        logger.warning("Batch size not provided. Defaulting to length of dataset.")
+        batch_size = len(qa_dataset)
+        
     if batch_size > len(qa_dataset):
         logger.warning(f"Batch size {batch_size} is larger than the dataset size {len(qa_dataset)}. Setting batch size to dataset size.")
         batch_size = len(qa_dataset)
