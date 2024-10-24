@@ -10,7 +10,7 @@ slurm:
   experiments_per_job: 1
   sbatch_options:
     gres: 'gpu:1' # num GPUs
-    mem: '128G' # memory
+    mem: '40GB' # memory
     cpus-per-task: 2 # num cores
     time: '1-00:00' # max time, D-HH:MM
     partition: 'gpu_a100' # partition
@@ -26,7 +26,7 @@ fixed:
   n_repeats: 1
   n_beams: 5
   max_entries: None
-  batch_size: None
+  batch_size: 512
 
 # Define common grid parameters with an anchor
 grid: &common_grid
