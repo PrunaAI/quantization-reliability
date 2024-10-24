@@ -11,7 +11,7 @@ slurm:
   experiments_per_job: 1
   sbatch_options:
     gres: 'gpu:1'        # num GPUs
-    mem: '128G'          # memory
+    mem: '24G'          # memory
     cpus-per-task: 2     # num cores
     time: '1-00:00'      # max time, D-HH:MM
     partition: 'gpu_a100' # partition
@@ -136,7 +136,7 @@ grid:
   typo_intensity:
     type: choice
     options:
-      - 0
-      # - 1
+      # - 0
+      - 1
       # - 2
       # - 3
