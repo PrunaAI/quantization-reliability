@@ -29,7 +29,7 @@ fixed:
   batch_size: None
 
 # Define common grid parameters with an anchor
-grid_params: &common_grid
+grid: &common_grid
   model_name:
     type: choice
     options:
