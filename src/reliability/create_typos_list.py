@@ -1,3 +1,7 @@
+import random
+from typing import Dict
+
+
 def create_typo_dict(typo_type: str, intensity: int) -> Dict[str, int]:
     """
     Creates a dictionary of typo modifications with specified intensity.

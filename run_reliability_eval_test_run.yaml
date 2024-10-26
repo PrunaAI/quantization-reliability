@@ -147,7 +147,7 @@ standard_perturbations:
     typo_type:
       type: choice
       options:
-        - "char_insertion"
+        # - "char_insertion"
         # - "char_deletion"
         # - "char_replacement"
         # - "char_repetition"
@@ -157,7 +157,7 @@ standard_perturbations:
         # - "char_insert_noise"
         # - "word_repeat"
         # - "char_substitution"
-        # - "word_emoji"
+        - "word_emoji"
         # - "word_internet_slang"
         # - "word_phrase_translation"
         # - "word_context_aware_insertion"
