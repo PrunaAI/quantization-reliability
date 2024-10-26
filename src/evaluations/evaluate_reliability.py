@@ -56,6 +56,9 @@ def evaluate_reliability(
     if batch_size > len(qa_dataset):
         logger.warning(f"Batch size {batch_size} is larger than the dataset size {len(qa_dataset)}. Setting batch size to dataset size.")
         batch_size = len(qa_dataset)
+        
+    if dataset_name == "coqa":
+        batch_size = batch_size // 2  # CoQA dataset is larger, so use a smaller batch size to fit in memory
 
     # Create DataLoader
     dataloader = DataLoader(QADataset(qa_dataset), batch_size=batch_size, shuffle=False)
