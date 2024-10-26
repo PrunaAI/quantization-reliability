@@ -26,7 +26,10 @@ fixed:
   n_repeats: 1
   n_beams: 5
   max_entries: None
-  batch_size: 256
+  strategy: "Direct Completion"
+  use_beam_search: False
+  max_new_tokens: 25
+  temperature: 0.1
 
 # Define common grid parameters with an anchor
 grid: &common_grid
@@ -63,27 +66,13 @@ grid: &common_grid
       # - 'Llama-3-8B-QUANTO-QAT-local'
       # - 'Llama-3-8B-AQLM-local'
       # - 'Llama-3-8B-AQLM-LORA-local'
-  
-  max_new_tokens:
+
+  batch_size:
     type: choice
     options:
-      - 25
-  
-  temperature:
-    type: choice
-    options:
-      - 0.1
-  
-  use_beam_search:
-    type: choice
-    options:
-    # - True
-      - False
-  
-  strategy:
-    type: choice
-    options:
-      - "Direct Completion"
+      - 32
+      - 64
+      - 128
   
   dataset_name:
     type: choice
