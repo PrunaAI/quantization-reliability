@@ -13,7 +13,8 @@ runs/
 .ENV_QUANT/
 
 # Excel files with results
-results/*/Llama-3-8B*.*.xlsx
+results/reliability_eval/**/*.xlsx
+results/reliability_eval/**/Llama-3-8B*.xlsx
 
 # Jupyter log files
 jupyter-*.out
