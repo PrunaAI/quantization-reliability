@@ -1,4 +1,4 @@
-from src.data.FKTC_datasets import load_dataset_from_name
+from src.data import load_dataset_from_name
 from src.reliability.response_generator import ResponseGenerator
 
 import os
