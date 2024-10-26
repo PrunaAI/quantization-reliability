@@ -2,7 +2,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'test-run-10-24'
+  name: 'test-run-10-26'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,7 +18,7 @@ slurm:
 ###### BEGIN PARAMETER CONFIGURATION ######
 
 fixed:
-  exp_id: "test-run-10-24"
+  exp_id: "test-run-10-26"
   save_excel: True
   num_excel_rows: 100
   device: 'cuda'
@@ -26,7 +26,7 @@ fixed:
   n_repeats: 1
   n_beams: 5
   max_entries: None
-  batch_size: 512
+  batch_size: 256
 
 # Define common grid parameters with an anchor
 grid: &common_grid
@@ -88,8 +88,10 @@ grid: &common_grid
   dataset_name:
     type: choice
     options:
+      - 'toy-qa-dataset'
+      - 'coqa'
       - 'P101'
-      - 'P103'
+      # - 'P103'
       # - 'P108'
       # - 'P127'
       # - 'P1376'
