@@ -45,7 +45,7 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
     
     return question_answer_pairs
 
-def load_dataset_from_name(dataset_name, max_relations=1, max_entries=None, typo_type="none", typo_intensity=0):
+def load_fktc(dataset_name, max_relations=1, max_entries=None, typo_type="none", typo_intensity=0):
     if dataset_name == "toy-qa-dataset":
         dataset = toy_qa_dataset
         if typo_type != "none":
