@@ -12,6 +12,9 @@ runs/
 # Virtual Environment
 .ENV_QUANT/
 
+# Excel files with results
+results/*/Llama-3-8B*.*.xlsx
+
 # Jupyter log files
 jupyter-*.out
 
