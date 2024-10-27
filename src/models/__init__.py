@@ -96,44 +96,27 @@ LLAMA_3_8B_MODEL_TO_CONFIG_MAP = {
     "Llama-3-8B-AQLM-LORA-local": "AQLM-LORA",
 }
 
-def get_model_num_bits(model_name):
-    """
-    Get the number of bits used for quantization of a given model.
-
-    Args:
-    model_name (str): The name of the model (e.g., 'Llama-3-8B-AWQ-4bit-local', 'Llama-3-8B-AQLM-2bit', 'Llama-3-8B')
-
-    Returns:
-    int: The number of bits used for quantization or storage
-
-    Raises:
-    ValueError: If the model name is not recognized or if num_bits cannot be determined
-    """
-    # Check if it's a locally quantized model
-    if model_name in LLAMA_3_8B_MODEL_TO_CONFIG_MAP:
-        config_short_name = LLAMA_3_8B_MODEL_TO_CONFIG_MAP[model_name]
-        config_dict = QUANT_CONFIGS[config_short_name]
-        num_bits = config_dict.get('num_bits')
-        if num_bits is not None:
-            return int(num_bits)
+MODEL_NUM_BITS = {
+    # Base models
+    "Llama-3-8B": 16,
+    "TinyLlama-Chat": 16,
+    "TinyLlama": 16,
+    "Bloomz": 16,
+    "GPT2-Large": 32,
     
-    # Check if it's a Hugging Face quantized model
-    if model_name in hf_quantized_models:
-        match = re.search(r'(\d+)bit', model_name)
-        if match:
-            return int(match.group(1))
+    # Local quantized models
+    "Llama-3-8B-BNB-8bit-local": 8,
+    "Llama-3-8B-HQQ-8-uniform-local": 8,
+    "Llama-3-8B-BNB-4bit-local": 4,
+    "Llama-3-8B-AWQ-4bit-local": 4,
+    "Llama-3-8B-HQQ-mixed-local": 4,  # Using upper bound of 3-4 range
     
-    # Check if it's a base model
-    if model_name in base_models:
-        # Base models typically use 32-bit (float32) or 16-bit (float16) precision
-        base_model_bits = {
-            "TinyLlama-Chat": 16,  # Assuming TinyLlama models use 16-bit precision
-            "TinyLlama": 16,
-            "Llama-3-8B": 16,  # Assuming Llama-3 uses 16-bit precision
-            "Bloomz": 16,      # Assuming Bloomz uses 16-bit precision
-            "GPT2-Large": 32   # GPT-2 typically uses 32-bit precision
-        }
-        return base_model_bits.get(model_name, 32)  # Default to 32 if not specified
-    
-    # If we've reached here, we couldn't determine the number of bits
-    raise ValueError(f"Unable to determine number of bits for model: {model_name}")
+    # Hugging Face quantized models
+    "Llama-3-8B-HQQ-4bit": 4,
+    "Llama-3-8B-AWQ-4bit": 4,
+    "Llama-3-8B-HQQ-2bit": 2,
+    "Llama-3-8B-AQLM-2bit": 2,
+    "Llama-3-8B-AQLM-PV-2bit": 2,
+    "Llama-3-8B-AQLM-PV-1bit": 1,
+    "Llama-3-8B-HQQ-1bit": 1
+}
