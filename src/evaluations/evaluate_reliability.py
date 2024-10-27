@@ -33,6 +33,7 @@ def evaluate_reliability(
     use_beam_search: bool,
     n_repeats: int,
     n_beams: int,
+    max_relations: int = None,
     max_entries: int = None,
     save_excel: bool = True,
     num_excel_rows: int = 200,
@@ -43,7 +44,7 @@ def evaluate_reliability(
     # LOAD DATASET
     qa_dataset = load_dataset_from_name(
         dataset_name,
-        max_relations=1,
+        max_relations=max_relations,
         max_entries=max_entries,
         typo_type=typo_type,
         typo_intensity=typo_intensity

@@ -175,6 +175,7 @@ def run_evaluate(
     typo_intensity=0,
     n_repeats=10,
     n_beams=5,
+    max_relations=None,
     max_entries=None,
     
     # Model parameters
@@ -205,6 +206,7 @@ def run_evaluate(
     logger.info(f"  Typo intensity: {typo_intensity}")
     logger.info(f"  Number of repeats: {n_repeats}")
     logger.info(f"  Number of beams: {n_beams}")
+    logger.info(f"  Max relations: {max_relations}")
     logger.info(f"  Max entries: {max_entries}")
     logger.info(f"  Seed model: {seed_model}")
     logger.info(f"  Model name: {model_name}")
@@ -223,6 +225,7 @@ def run_evaluate(
         use_beam_search=use_beam_search,
         n_repeats=n_repeats,
         n_beams=n_beams,
+        max_relations=max_relations,
         max_entries=max_entries,
         save_excel=save_excel,
         num_excel_rows=num_excel_rows,

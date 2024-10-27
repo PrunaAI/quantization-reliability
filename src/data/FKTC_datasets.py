@@ -11,6 +11,8 @@ from src.reliability.create_typos_list import create_typo_dict
 
 def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_entries=None, taxonomy_type="0", typo_type="none", typo_intensity=0):
     question_answer_pairs = []
+    if max_relations is None:
+        max_relations = 1000
     
     for dataset_name in dataset_names.split(','):
         dataset_name = dataset_name.strip()
@@ -24,7 +26,7 @@ def load_question_answer_pairs(data_dir, dataset_names, max_relations=1, max_ent
                     print(f"Insufficient data in file: {file_path}")
                     continue
                 
-                relations = lines[0]['relations'][:max_relations]
+                relations = lines[0]['relations'][:min(max_relations, len(lines[0]['relations']))]
                 entries = lines[1:max_entries+1] if max_entries else lines[1:]
                 
                 for entry in entries:
