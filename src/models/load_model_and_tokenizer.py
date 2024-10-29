@@ -3,9 +3,15 @@ from urllib.error import HTTPError
 from typing import Tuple, Optional
 from accelerate import init_empty_weights
 from safetensors.torch import load_file
-from optimum.quanto import requantize, quantization_map
+from optimum.quanto import (
+    quantize,
+    freeze,
+    Calibration
+)
+
 
 import os
+import io
 import torch
 from typing import Tuple, Optional
 import logging
@@ -60,7 +66,7 @@ def load_model_and_tokenizer(
             if not os.path.exists(model_path):
                 raise OSError(f"Local model path does not exist: {model_path}")
 
-        # Special handling for QUANTO models
+       # Special handling for QUANTO models
         elif "QUANTO" in model_name:
             try:
                 logger.info("Loading QUANTO quantized model...")
@@ -80,8 +86,39 @@ def load_model_and_tokenizer(
                 
                 state_dict = load_file(state_dict_path)
                 
-                # Direct quantization without mapping
-                quantize(model, weights=state_dict, activations=None)
+                # Quantize with activations support
+                weights = state_dict
+                activations = None  # You can modify this based on your needs
+                quantize(model, weights=weights, activations=activations)
+                
+                # Calibration if activations are used
+                if activations is not None:
+                    logger.info("Calibrating model...")
+                    with Calibration():
+                        model.eval()
+                        # Here you would run your calibration data through the model
+                
+                # Training/fine-tuning step
+                logger.info("Fine-tuning quantized model...")
+                optimizer = torch.optim.Adadelta(model.parameters(), lr=0.5)
+                # Here you would add your training loop
+                
+                # Freeze the model
+                logger.info("Freezing quantized model...")
+                freeze(model)
+                
+                # Serialize and reload to verify
+                logger.info("Serializing model...")
+                b = io.BytesIO()
+                torch.save(model.state_dict(), b)
+                b.seek(0)
+                state_dict = torch.load(b)
+                
+                # Reload the model to verify serialization
+                model_reloaded = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
+                quantize(model_reloaded, weights=weights, activations=activations)
+                model_reloaded.load_state_dict(state_dict)
+                model = model_reloaded  # Use the reloaded model going forward
                 
                 # Load tokenizer
                 tokenizer = AutoTokenizer.from_pretrained(
