@@ -1,5 +1,12 @@
+import os
 import numpy as np
+from sklearn import metrics
+import matplotlib.pyplot as plt
+
 from src.reliability.constants import dataset_expert_mapping, dataset_example_questions
+
+import logging
+logger = logging.getLogger("quant_logger")
 
 def get_prompt(query, strategy, dataset_name):
     if strategy == "Original":
@@ -99,3 +106,30 @@ Now, please answer the following question:
 
 def calculate_entropy(probs):
     return -np.sum(probs * np.log(probs))
+
+def plot_precision_recall_curve(y_true, y_pred, save_path):
+    """
+    Plot and save the Precision-Recall curve.
+    
+    Args:
+        y_true: Array of ground truth labels
+        y_pred: Array of predicted probabilities
+        save_path: Path to save the plot
+    """
+    precision, recall, _ = metrics.precision_recall_curve(y_true, y_pred)
+    auc_score = metrics.average_precision_score(y_true, y_pred)
+    
+    plt.figure(figsize=(10, 8))
+    plt.plot(recall, precision, color='blue', label=f'AUCPR = {auc_score:.3f}')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Precision-Recall Curve')
+    plt.legend()
+    plt.grid(True)
+    
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    plt.savefig(save_path)
+    plt.close()
+    
+    logger.info(f"Saved AUCPR plot to {save_path}")

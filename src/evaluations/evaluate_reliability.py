@@ -7,6 +7,8 @@ import numpy as np
 from sklearn import metrics
 
 import logging
+
+from src.reliability.utils import plot_precision_recall_curve
 logger = logging.getLogger("quant_logger")
     
 from torch.utils.data import DataLoader, Dataset
@@ -185,6 +187,15 @@ def evaluate_reliability(
         df_scores.to_excel(scores_table_path, index=False)
         logger.info(f"Saved raw results to {raw_table_path}")
         logger.info(f"Saved scores to {scores_table_path}")
+
+    # Plot and save AUCPR curve
+    aucpr_plot_dir = os.path.join(save_dir, f"aucpr_plots_{exp_id}")
+    aucpr_plot_path = os.path.join(aucpr_plot_dir, f"{file_base}_aucpr_curve.png")
+    plot_precision_recall_curve(
+        df_results['Is Correct'].values,
+        df_results['P'].values,
+        aucpr_plot_path
+    )
     
     # Convert df_scores to a dictionary
     scores_dict = df_scores.iloc[0].to_dict()

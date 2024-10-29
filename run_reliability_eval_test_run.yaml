@@ -25,6 +25,7 @@ fixed:
   seed: 42
   n_repeats: 1
   n_beams: 5
+  max_relations: None
   max_entries: None
   strategy: "Direct Completion"
   use_beam_search: False
