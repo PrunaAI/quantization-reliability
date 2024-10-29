@@ -61,16 +61,9 @@ def load_model_and_tokenizer(
                 raise OSError(f"Local model path does not exist: {model_path}")
 
         # Special handling for QUANTO models
-        if "QUANTO" in model_name:
+        elif "QUANTO" in model_name:
             try:
                 logger.info("Loading QUANTO quantized model...")
-                
-                # Load the saved state dict
-                state_dict_path = f"{model_path}.safetensors"
-                if not os.path.exists(state_dict_path):
-                    raise OSError(f"QUANTO state dict not found at: {state_dict_path}")
-                
-                state_dict = load_file(state_dict_path)
                 
                 # Get the base model path for config
                 base_model_path = local_tokenizers[model_name] if is_local_model else model_path
@@ -80,18 +73,15 @@ def load_model_and_tokenizer(
                 with init_empty_weights():
                     model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
                 
-                # Create temporary float model to get quantization map
-                temp_model = AutoModelForCausalLM.from_pretrained(
-                    base_model_path,
-                    torch_dtype="auto",
-                    device_map=device,
-                    trust_remote_code=True,
-                    cache_dir=cache_dir
-                )
+                # Load the quantized state dict
+                state_dict_path = f"{model_path}.safetensors"
+                if not os.path.exists(state_dict_path):
+                    raise OSError(f"QUANTO state dict not found at: {state_dict_path}")
                 
-                # Requantize the model using the saved state
-                requantize(model, state_dict, quantization_map(temp_model), device)
-                del temp_model  # Free up memory
+                state_dict = load_file(state_dict_path)
+                
+                # Direct quantization without mapping
+                quantize(model, weights=state_dict, activations=None)
                 
                 # Load tokenizer
                 tokenizer = AutoTokenizer.from_pretrained(
