@@ -2,7 +2,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'test-run-10-26'
+  name: 'test-run-10-29'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,7 +18,7 @@ slurm:
 ###### BEGIN PARAMETER CONFIGURATION ######
 
 fixed:
-  exp_id: "test-run-10-26"
+  exp_id: "test-run-10-29"
   save_excel: True
   num_excel_rows: 100
   device: 'cuda'
@@ -45,9 +45,13 @@ grid: &common_grid
       # - 'Llama-3-8B-AWQ-4bit-local'
       # - 'Llama-3-8B-BNB-4bit-local'
       # - 'Llama-3-8B-HQQ-mixed-local'
-      - 'Llama-3-8B-BNB-8bit-local'
+      # - 'Llama-3-8B-BNB-8bit-local'
       # - 'Llama-3-8B-HQQ-8-uniform-local'
       # - 'Llama-3-8B-AQLM-2Bit'
+      - 'Llama-3-8B-QUANTO-local'
+      - 'Llama-3-8B-QUANTO-CALIB-local'
+      - 'Llama-3-8B-QUANTO-QAT-local'
+      # - ''
       # - GPTQ
       # - QUAROT -> load the quantized models
       # - QUANTO -> extract local
