@@ -164,7 +164,7 @@ def load_model_and_tokenizer(
             # Load standard models from Hugging Face or local path
             model = AutoModelForCausalLM.from_pretrained(
                 model_path,
-                torch_dtype=device,
+                torch_dtype="auto",
                 device_map=device,
                 max_memory=max_memory,
                 cache_dir=cache_dir
