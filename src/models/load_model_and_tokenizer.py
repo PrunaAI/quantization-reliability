@@ -1,6 +1,9 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 from urllib.error import HTTPError
 from typing import Tuple, Optional
+from accelerate import init_empty_weights
+from safetensors.torch import load_file
+from optimum.quanto import requantize, quantization_map
 
 import os
 import torch
@@ -13,9 +16,6 @@ from awq import AutoAWQForCausalLM
 
 from src.models import base_models, hf_quantized_models, local_quantized_models, local_tokenizers
 logger = logging.getLogger("quant_logger")
-
-
-from src import MODEL_SAVE_PATH
 
 def load_model_and_tokenizer(
     model_name: str,
@@ -30,6 +30,7 @@ def load_model_and_tokenizer(
         model_name (str): Short name of the model to load.
         device (str): Device to load the model on. Defaults to "cuda".
         max_memory (dict, optional): Maximum memory to use for model loading.
+        cache_dir (str, optional): Directory to cache the model.
 
     Returns:
         Tuple[AutoModelForCausalLM, AutoTokenizer]: Loaded model and tokenizer.
@@ -59,21 +60,80 @@ def load_model_and_tokenizer(
             if not os.path.exists(model_path):
                 raise OSError(f"Local model path does not exist: {model_path}")
 
+        # Special handling for QUANTO models
+        if "QUANTO" in model_name:
+            try:
+                logger.info("Loading QUANTO quantized model...")
+                
+                # Load the saved state dict
+                state_dict_path = f"{model_path}.safetensors"
+                if not os.path.exists(state_dict_path):
+                    raise OSError(f"QUANTO state dict not found at: {state_dict_path}")
+                
+                state_dict = load_file(state_dict_path)
+                
+                # Get the base model path for config
+                base_model_path = local_tokenizers[model_name] if is_local_model else model_path
+                
+                # Create an empty model from config
+                config = AutoConfig.from_pretrained(base_model_path, trust_remote_code=True, cache_dir=cache_dir)
+                with init_empty_weights():
+                    model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
+                
+                # Create temporary float model to get quantization map
+                temp_model = AutoModelForCausalLM.from_pretrained(
+                    base_model_path,
+                    torch_dtype="auto",
+                    device_map=device,
+                    trust_remote_code=True,
+                    cache_dir=cache_dir
+                )
+                
+                # Requantize the model using the saved state
+                requantize(model, state_dict, quantization_map(temp_model), device)
+                del temp_model  # Free up memory
+                
+                # Load tokenizer
+                tokenizer = AutoTokenizer.from_pretrained(
+                    base_model_path,
+                    device_map=device,
+                    cache_dir=cache_dir
+                )
+                
+            except Exception as e:
+                logger.error(f"Error loading QUANTO model: {e}")
+                raise
+
         # Special handling for HQQ models
-        if "HQQ" in model_name:
+        elif "HQQ" in model_name:
             try:
                 model = HQQModelForCausalLM.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
             except:
                 model = AutoHQQHFModel.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
-            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto', cache_dir=cache_dir)
+            tokenizer = AutoTokenizer.from_pretrained(
+                local_tokenizers[model_name] if is_local_model else model_path,
+                device_map='auto',
+                cache_dir=cache_dir
+            )
 
-        # Special handling for AWQ model from PrunaAI
+        # Special handling for AWQ model
         elif "AWQ" in model_name:
-            model = AutoAWQForCausalLM.from_pretrained(model_path, trust_remote_code=True, torch_dtype=torch.float16, device_map='auto', cache_dir=cache_dir)
-            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto', cache_dir=cache_dir)
+            model = AutoAWQForCausalLM.from_pretrained(
+                model_path,
+                trust_remote_code=True,
+                torch_dtype=torch.float16,
+                device_map='auto',
+                cache_dir=cache_dir
+            )
+            tokenizer = AutoTokenizer.from_pretrained(
+                local_tokenizers[model_name] if is_local_model else model_path,
+                device_map='auto',
+                cache_dir=cache_dir
+            )
             model.dtype = torch.float16
+            
         else:
-            # Load from Hugging Face or local path
+            # Load standard models from Hugging Face or local path
             model = AutoModelForCausalLM.from_pretrained(
                 model_path,
                 torch_dtype="auto",
@@ -81,8 +141,13 @@ def load_model_and_tokenizer(
                 max_memory=max_memory,
                 cache_dir=cache_dir
             )
-            tokenizer = AutoTokenizer.from_pretrained(local_tokenizers[model_name] if is_local_model else model_path, device_map='auto', cache_dir=cache_dir)
+            tokenizer = AutoTokenizer.from_pretrained(
+                local_tokenizers[model_name] if is_local_model else model_path,
+                device_map='auto',
+                cache_dir=cache_dir
+            )
         
+        # Common post-processing for all models
         model.NAME = model_name
         tokenizer.pad_token_id = tokenizer.eos_token_id
         tokenizer.padding_side = "left"
@@ -91,6 +156,7 @@ def load_model_and_tokenizer(
             logger.warning(f"Tokenizer model max length reduced from {tokenizer.model_max_length} to 2048 to fit in memory")
             tokenizer.model_max_length = 2048
         
+        # Log model information
         logger.info(f"Successfully loaded model: {model_name}")
         logger.info(f"Model configuration:")
         logger.info(f"Model cache directory: {getattr(model, 'cache_dir', 'Not available')}")
