@@ -47,6 +47,8 @@ def load_model_and_tokenizer(
     """
     try:
         logger.info(f"Attempting to load model: {model_name}")
+        model = None
+        tokenizer = None
         
         # Determine the actual model path
         if model_name in local_quantized_models:
@@ -65,8 +67,7 @@ def load_model_and_tokenizer(
             logger.info(f"Loading locally quantized model from: {model_path}")
             if not os.path.exists(model_path):
                 raise OSError(f"Local model path does not exist: {model_path}")
-
-       # Special handling for QUANTO models
+        # Special handling for QUANTO models
         elif "QUANTO" in model_name:
             try:
                 logger.info("Loading QUANTO quantized model...")
@@ -139,7 +140,7 @@ def load_model_and_tokenizer(
                 model = AutoHQQHFModel.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
             tokenizer = AutoTokenizer.from_pretrained(
                 local_tokenizers[model_name] if is_local_model else model_path,
-                device_map='auto',
+                device_map='cuda',
                 cache_dir=cache_dir
             )
 
@@ -149,12 +150,12 @@ def load_model_and_tokenizer(
                 model_path,
                 trust_remote_code=True,
                 torch_dtype=torch.float16,
-                device_map='auto',
+                device_map=device,
                 cache_dir=cache_dir
             )
             tokenizer = AutoTokenizer.from_pretrained(
                 local_tokenizers[model_name] if is_local_model else model_path,
-                device_map='auto',
+                device_map=device,
                 cache_dir=cache_dir
             )
             model.dtype = torch.float16
@@ -163,14 +164,14 @@ def load_model_and_tokenizer(
             # Load standard models from Hugging Face or local path
             model = AutoModelForCausalLM.from_pretrained(
                 model_path,
-                torch_dtype="auto",
+                torch_dtype=device,
                 device_map=device,
                 max_memory=max_memory,
                 cache_dir=cache_dir
             )
             tokenizer = AutoTokenizer.from_pretrained(
                 local_tokenizers[model_name] if is_local_model else model_path,
-                device_map='auto',
+                device_map=device,
                 cache_dir=cache_dir
             )
         
