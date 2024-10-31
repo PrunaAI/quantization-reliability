@@ -65,10 +65,10 @@ def load_model_and_tokenizer(
 
         if is_local_model:
             logger.info(f"Loading locally quantized model from: {model_path}")
-            if "QUANTO" not in model_name and not os.path.exists(model_path):
-                raise OSError(f"Local model path does not exist: {model_path}")
-            elif "QUANTO" in model_name and not model_path.readable():
-                raise OSError(f"Local QUANTO model path is not readable: {model_path}")
+            if "QUANTO" not in model_name:
+                # Check if folder exists for non-QUANTO models
+                if not os.path.exists(model_path):
+                    raise OSError(f"Local model path does not exist: {model_path}")
         # Special handling for QUANTO models
         elif "QUANTO" in model_name:
             try:
