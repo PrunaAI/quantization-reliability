@@ -48,9 +48,12 @@ grid: &common_grid
       # - 'Llama-3-8B-BNB-8bit-local'
       # - 'Llama-3-8B-HQQ-8-uniform-local'
       # - 'Llama-3-8B-AQLM-2Bit'
-      - 'Llama-3-8B-QUANTO-local'
-      - 'Llama-3-8B-QUANTO-CALIB-local'
-      - 'Llama-3-8B-QUANTO-QAT-local'
+      # - 'Llama-3-8B-QUANTO-local'
+      # - 'Llama-3-8B-QUANTO-CALIB-local'
+      # - 'Llama-3-8B-QUANTO-QAT-local'
+      - 'Llama-3-8B-Quanto-2bit'
+      - 'Llama-3-8B-Quanto-4bit'
+      - 'Llama-3-8B-Quanto-8bit'
       # - ''
       # - GPTQ
       # - QUAROT -> load the quantized models

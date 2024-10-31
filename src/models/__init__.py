@@ -41,6 +41,11 @@ hf_quantized_models = {
     "Llama-3-8B-HQQ-4bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-4bit-smashed",
     "Llama-3-8B-HQQ-2bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-2bit-smashed",
     "Llama-3-8B-HQQ-1bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-1bit-smashed",
+    
+    # QUANTO quantized models
+    "Llama-3-8B-Quanto-2bit": "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int2bit-smashed",
+    "Llama-3-8B-Quanto-4bit": "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int4bit-smashed",
+    "Llama-3-8B-Quanto-8bit": "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int8bit-smashed",
 }
 
 local_quantized_models = {
