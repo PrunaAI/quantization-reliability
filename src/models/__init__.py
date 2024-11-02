@@ -8,97 +8,126 @@ from src import MODEL_SAVE_PATH
 from src.algorithms.quantization.config import QUANT_CONFIGS
 logger = logging.getLogger("quant_logger")
 
+TINYLLAMA_CHAT = "TinyLlama-Chat"
+TINYLLAMA = "TinyLlama"
+LLAMA_3_8B = "Llama-3-8B"
+BLOOMZ = "Bloomz"
+GPT2_LARGE = "GPT2-Large"
+LLAMA_3_8B_AQLM_2bit = "Llama-3-8B-AQLM-2bit"
+LLAMA_3_8B_AQLM_PV_2bit = "Llama-3-8B-AQLM-PV-2bit"
+LLAMA_3_8B_AQLM_PV_1bit = "Llama-3-8B-AQLM-PV-1bit"
+LLAMA_3_8B_AWQ_4bit = "Llama-3-8B-AWQ-4bit"
+
+LLAMA_3_8B_16K_BNB_4bit = "Llama-3-8B-16K-BNB-4bit"
+
+LLAMA_3_8B_HQQ_4bit = "Llama-3-8B-HQQ-4bit"
+LLAMA_3_8B_HQQ_2bit = "Llama-3-8B-HQQ-2bit"
+LLAMA_3_8B_HQQ_1bit = "Llama-3-8B-HQQ-1bit"
+LLAMA_3_8B_QUANTO_2bit = "Llama-3-8B-QUANTO-2bit"
+LLAMA_3_8B_QUANTO_4bit = "Llama-3-8B-QUANTO-4bit"
+LLAMA_3_8B_QUANTO_8bit = "Llama-3-8B-QUANTO-8bit"
+
+LLAMA_3_8B_AWQ_4bit_local = "Llama-3-8B-AWQ-4bit-local"
+LLAMA_3_8B_BNB_4bit_local = "Llama-3-8B-BNB-4bit-local"
+LLAMA_3_8B_BNB_8bit_local = "Llama-3-8B-BNB-8bit-local"
+LLAMA_3_8B_HQQ_8_uniform_local = "Llama-3-8B-HQQ-8-uniform-local"
+LLAMA_3_8B_HQQ_mixed_local = "Llama-3-8B-HQQ-mixed-local"
+LLAMA_3_8B_QUANTO_local = "Llama-3-8B-QUANTO-local"
+LLAMA_3_8B_QUANTO_CALIB_local = "Llama-3-8B-QUANTO-CALIB-local"
+LLAMA_3_8B_QUANTO_QAT_local = "Llama-3-8B-QUANTO-QAT-local"
+LLAMA_3_8B_HQQ_LORA_local = "Llama-3-8B-HQQ-LORA-local"
+LLAMA_3_8B_AQLM_LORA_local = "Llama-3-8B-AQLM-LORA-local"
+META_LLAMA_3_8B = "Llama-3-8B"
+
 # Base models dictionary
 base_models = {
     # TinyLlama models
-    "TinyLlama-Chat": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-    "TinyLlama": "TinyLlama/TinyLlama_v1.1",
+    TINYLLAMA_CHAT: "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    TINYLLAMA: "TinyLlama/TinyLlama_v1.1",
     
     # Meta models
-    "Llama-3-8B": "meta-llama/Meta-Llama-3-8B",
+    META_LLAMA_3_8B: "meta-llama/Meta-Llama-3-8B",
     
     # BigScience models
-    "Bloomz": "bigscience/bloomz-1b1",
+    BLOOMZ: "bigscience/bloomz-1b1",
     
     # OpenAI community models
-    "GPT2-Large": "openai-community/gpt2-large",
+    GPT2_LARGE: "openai-community/gpt2-large",
 }
 
 # Hugging Face quantized models dictionary
 hf_quantized_models = {
     # AQLM quantized models
-    "Llama-3-8B-AQLM-2bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
-    "Llama-3-8B-AQLM-PV-2bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
-    "Llama-3-8B-AQLM-PV-1bit": "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-1Bit-1x16",
+    LLAMA_3_8B_AQLM_2bit: "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
+    LLAMA_3_8B_AQLM_PV_2bit: "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
+    LLAMA_3_8B_AQLM_PV_1bit: "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-1Bit-1x16",
     
     # AWQ quantized models
-    "Llama-3-8B-AWQ-4bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-AWQ-4bit-smashed",
+    LLAMA_3_8B_AWQ_4bit: "PrunaAI/meta-llama-Meta-Llama-3-8B-AWQ-4bit-smashed",
     
     # BitsAndBytes (BNB) quantized models
-    "Llama-3-8B-16K-bnb-4bit": "PrunaAI/mattshumer-Llama-3-8B-16K-bnb-4bit-smashed",
+    LLAMA_3_8B_16K_BNB_4bit: "PrunaAI/mattshumer-Llama-3-8B-16K-bnb-4bit-smashed",
     
     # HQQ quantized models
-    "Llama-3-8B-HQQ-4bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-4bit-smashed",
-    "Llama-3-8B-HQQ-2bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-2bit-smashed",
-    "Llama-3-8B-HQQ-1bit": "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-1bit-smashed",
+    LLAMA_3_8B_HQQ_4bit: "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-4bit-smashed",
+    LLAMA_3_8B_HQQ_2bit: "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-2bit-smashed",
+    LLAMA_3_8B_HQQ_1bit: "PrunaAI/meta-llama-Meta-Llama-3-8B-HQQ-1bit-smashed",
     
     # QUANTO quantized models
-    "Llama-3-8B-Quanto-2bit": "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int2bit-smashed",
-    "Llama-3-8B-Quanto-4bit": "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int4bit-smashed",
-    "Llama-3-8B-Quanto-8bit": "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int8bit-smashed",
+    LLAMA_3_8B_QUANTO_2bit: "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int2bit-smashed",
+    LLAMA_3_8B_QUANTO_4bit: "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int4bit-smashed",
+    LLAMA_3_8B_QUANTO_8bit: "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int8bit-smashed",
 }
 
 local_quantized_models = {
     # AWQ models
-    "Llama-3-8B-AWQ-4bit-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AWQ-4"),
+    LLAMA_3_8B_AWQ_4bit_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AWQ-4"),
     
     # BNB models
-    "Llama-3-8B-BNB-8bit-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-8"),
-    "Llama-3-8B-BNB-4bit-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-4"),
+    LLAMA_3_8B_BNB_8bit_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-8"),
+    LLAMA_3_8B_BNB_4bit_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-BNB-4"),
     
     # HQQ models
-    "Llama-3-8B-HQQ-8-uniform-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-8-uniform"),
-    "Llama-3-8B-HQQ-mixed-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-mixed"),
+    LLAMA_3_8B_HQQ_8_uniform_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-8-uniform"),
+    LLAMA_3_8B_HQQ_mixed_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-mixed"),
     
     # QUANTO models
-    "Llama-3-8B-QUANTO-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO"),
-    "Llama-3-8B-QUANTO-CALIB-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-CALIB"),
-    "Llama-3-8B-QUANTO-QAT-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-QAT"),
+    LLAMA_3_8B_QUANTO_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO"),
+    LLAMA_3_8B_QUANTO_CALIB_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-CALIB"),
+    LLAMA_3_8B_QUANTO_QAT_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-QUANTO-QAT"),
     
     # HQQ-LORA models
-    "Llama-3-8B-HQQ-LORA-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-LORA"),
+    LLAMA_3_8B_HQQ_LORA_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-HQQ-LORA"),
     
     # AQLM-LORA models
-    "Llama-3-8B-AQLM-LORA-local": os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AQLM-LORA"),
+    LLAMA_3_8B_AQLM_LORA_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AQLM-LORA"),
 }
 
-META_LLAMA_3_8B = "meta-llama/Meta-Llama-3-8B"
-local_tokenizers = {
-    "Llama-3-8B-AWQ-4bit-local": META_LLAMA_3_8B,
-    "Llama-3-8B-BNB-8bit-local": META_LLAMA_3_8B,
-    "Llama-3-8B-BNB-4bit-local": META_LLAMA_3_8B,
-    "Llama-3-8B-HQQ-8-uniform-local": META_LLAMA_3_8B,
-    "Llama-3-8B-HQQ-mixed-local": META_LLAMA_3_8B,
-    "Llama-3-8B-QUANTO-local": META_LLAMA_3_8B,
-    "Llama-3-8B-QUANTO-CALIB-local": META_LLAMA_3_8B,
-    "Llama-3-8B-QUANTO-QAT-local": META_LLAMA_3_8B,
-    "Llama-3-8B-HQQ-LORA-local": META_LLAMA_3_8B,
-    "Llama-3-8B-AQLM-LORA-local": META_LLAMA_3_8B,
+MODEL_TO_TOKENIZER_MAP = {
+    LLAMA_3_8B_AWQ_4bit_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_BNB_4bit_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_BNB_8bit_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_HQQ_8_uniform_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_HQQ_mixed_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_QUANTO_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_QUANTO_CALIB_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_QUANTO_QAT_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_HQQ_LORA_local: META_LLAMA_3_8B,
+    LLAMA_3_8B_AQLM_LORA_local: META_LLAMA_3_8B,
 }
 
 LLAMA_3_8B_MODEL_TO_CONFIG_MAP = {
-    "Llama-3-8B": "NONE",
-    "Llama-3-8B-BNB-4bit-local": "BNB-4",
-    "Llama-3-8B-BNB-8bit-local": "BNB-8",
-    "Llama-3-8B-AWQ-4bit-local": "AWQ-4",
-    "Llama-3-8B-HQQ-8-uniform-local": "HQQ-8-uniform",
-    "Llama-3-8B-HQQ-mixed-local": "HQQ-mixed",
-    "Llama-3-8B-HQQ-LORA-local": "HQQ-LORA",
-    "Llama-3-8B-QUANTO-local": "QUANTO",
-    "Llama-3-8B-QUANTO-CALIB-local": "QUANTO-CALIB",
-    "Llama-3-8B-QUANTO-QAT-local": "QUANTO-QAT",
-    "Llama-3-8B-AQLM-local": "AQLM",
-    "Llama-3-8B-AQLM-LORA-local": "AQLM-LORA",
+    META_LLAMA_3_8B: "NONE",
+    LLAMA_3_8B_BNB_4bit_local: "BNB-4",
+    LLAMA_3_8B_BNB_8bit_local: "BNB-8",
+    LLAMA_3_8B_AWQ_4bit_local: "AWQ-4",
+    LLAMA_3_8B_HQQ_8_uniform_local: "HQQ-8-uniform",
+    LLAMA_3_8B_HQQ_mixed_local: "HQQ-mixed",
+    LLAMA_3_8B_HQQ_LORA_local: "HQQ-LORA",
+    LLAMA_3_8B_QUANTO_local: "QUANTO",
+    LLAMA_3_8B_QUANTO_CALIB_local: "QUANTO-CALIB",
+    LLAMA_3_8B_QUANTO_QAT_local: "QUANTO-QAT",
+    LLAMA_3_8B_AQLM_LORA_local: "AQLM-LORA",
 }
 
 MODEL_NUM_BITS = {

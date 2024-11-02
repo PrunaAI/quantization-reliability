@@ -70,7 +70,7 @@ def load_model_and_tokenizer(
                 if not os.path.exists(model_path):
                     raise OSError(f"Local model path does not exist: {model_path}")
         # Special handling for QUANTO models
-        elif "QUANTO" in model_name:
+        elif "QUANTO" in model_name and "local" in model_name:
             try:
                 logger.info("Loading QUANTO quantized model...")
                 
@@ -169,7 +169,8 @@ def load_model_and_tokenizer(
                 torch_dtype="auto",
                 device_map=device,
                 max_memory=max_memory,
-                cache_dir=cache_dir
+                cache_dir=cache_dir,
+                trust_remote_code=True
             )
             tokenizer = AutoTokenizer.from_pretrained(
                 local_tokenizers[model_name] if is_local_model else model_path,
