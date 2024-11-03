@@ -1,0 +1,140 @@
+# Experiment configuration file.
+seml:
+  conda_environment: 'env-quant-rel-310'
+  executable: 'run_reliability_eval.py'
+  name: 'aucpr-test-run-11-03'
+  output_dir: '/nfs/homedirs/daro/slurm_output/'
+  project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
+
+slurm:
+  experiments_per_job: 1
+  sbatch_options:
+    gres: 'gpu:1' # num GPUs
+    mem: '40GB' # memory
+    cpus-per-task: 2 # num cores
+    time: '1-00:00' # max time, D-HH:MM
+    partition: 'gpu_a100' # partition
+
+###### BEGIN PARAMETER CONFIGURATION ######
+
+fixed:
+  exp_id: "aucpr-test-run-11-03"
+  save_excel: False
+  num_excel_rows: 20
+  device: 'cuda'
+  seed: 42
+  n_repeats: 1
+  n_beams: 5
+  max_relations: None
+  max_entries: None
+  strategy: "Direct Completion"
+  use_beam_search: False
+  max_new_tokens: 25
+  temperature: 0.1
+
+# Define common grid parameters with an anchor
+grid: &common_grid
+  model_name:
+    type: choice
+    options:
+      # Base Models
+      - 'Llama-3-8B'
+      # - 'TinyLlama'
+      # - 'TinyLlama-Chat'
+      # - 'Bloomz'
+      # - 'GPT2-Large'
+
+      # Hugging Face Quantized Models
+      # AQLM Models
+      # - 'Llama-3-8B-AQLM-2bit'
+      # - 'Llama-3-8B-AQLM-PV-2bit'
+      # - 'Llama-3-8B-AQLM-PV-1bit'
+      
+      # AWQ Models
+      # - 'Llama-3-8B-AWQ-4bit'
+      
+      # BNB Models
+      # - 'Llama-3-8B-16K-BNB-4bit'
+      
+      # HQQ Models
+      # - 'Llama-3-8B-HQQ-4bit'
+      # - 'Llama-3-8B-HQQ-2bit'
+      # - 'Llama-3-8B-HQQ-1bit'
+      
+      # QUANTO HF Models
+      # - 'Llama-3-8B-QUANTO-2bit'
+      # - 'Llama-3-8B-QUANTO-4bit'
+      # - 'Llama-3-8B-QUANTO-8bit'
+
+      # Local Quantized Models
+      # AWQ Local
+      - 'Llama-3-8B-AWQ-4bit-local'
+      
+      # BNB Local
+      # - 'Llama-3-8B-BNB-4bit-local'
+      # - 'Llama-3-8B-BNB-8bit-local'
+      
+      # HQQ Local
+      # - 'Llama-3-8B-HQQ-8-uniform-local'
+      # - 'Llama-3-8B-HQQ-mixed-local'
+      # - 'Llama-3-8B-HQQ-LORA-local'
+      
+      # QUANTO Local
+      # - 'Llama-3-8B-QUANTO-8-local'
+      # - 'Llama-3-8B-QUANTO-CALIB-8-local'
+      # - 'Llama-3-8B-QUANTO-8-mixed-local'
+      
+      # LORA Local
+      # - 'Llama-3-8B-AQLM-LORA-local'
+
+  batch_size:
+    type: choice
+    options:
+      # - 1
+      # - 2
+      # - 4
+      # - 8
+      # - 16
+      # - 32
+      # - 64
+      - 128
+  
+  dataset_name:
+    type: choice
+    options:
+      # - 'toy-qa-dataset'
+      # - 'coqa'
+      - 'P101'
+      # - 'P103'
+      # - 'P108'
+      # - 'P127'
+      # - 'P1376'
+      # - 'P1412'
+      # - 'P159'
+      # - 'P17'
+      # - 'P176'
+      # - 'P178'
+      # - 'P19'
+      # - 'P20'
+      # - 'P264'
+      # - 'P27'
+      # - 'P276'
+      # - 'P30'
+      # - 'P364'
+      # - 'P37'
+      # - 'P495'
+      # - 'P740'
+
+# Base case (no perturbation)
+base_case:
+  grid:
+    <<: *common_grid  # Reference the common grid parameters
+    typo_type:
+      type: choice
+      options:
+        - "none"
+    
+    typo_intensity:
+      type: choice
+      options:
+        - 0

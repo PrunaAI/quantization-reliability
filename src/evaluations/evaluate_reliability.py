@@ -41,7 +41,7 @@ def evaluate_reliability(
     num_excel_rows: int = 200,
     cache_dir: str = None,
     verbose: bool = False,
-    batch_size: int = 32  # New parameter for batch size
+    batch_size: int = 32,  # New parameter for batch size
 ):
     # LOAD DATASET
     qa_dataset = load_dataset_from_name(
@@ -196,6 +196,12 @@ def evaluate_reliability(
         df_results['P'].values,
         aucpr_plot_path
     )
+    
+    # Save the essential columns as csv
+    minimal_df = df_results[['P', 'Is Correct']]
+    csv_path = os.path.join(exp_path, f"{file_base}_minimal.csv")
+    minimal_df.to_csv(csv_path, index=False)
+    logger.info(f"Saved minimal results to {csv_path}")
     
     # Convert df_scores to a dictionary
     scores_dict = df_scores.iloc[0].to_dict()
