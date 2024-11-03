@@ -6,12 +6,14 @@ from safetensors.torch import load_file
 from optimum.quanto import (
     quantize,
     freeze,
-    Calibration
+    Calibration,
+    requantize
 )
 
 
 import os
 import io
+import json
 import torch
 from typing import Tuple, Optional
 import logging
@@ -20,7 +22,7 @@ from hqq.engine.hf import HQQModelForCausalLM
 from hqq.models.hf.base import AutoHQQHFModel
 from awq import AutoAWQForCausalLM
 
-from src.models import BASE_MODELS, HF_QUANTIZED_MODELS, LOCAL_QUANTIZED_MODELS, MODEL_TO_TOKENIZER_MAP
+from src.models import BASE_MODELS, HF_QUANTIZED_MODELS, LLAMA_3_8B, LOCAL_QUANTIZED_MODELS, MODEL_TO_TOKENIZER_MAP
 logger = logging.getLogger("quant_logger")
 
 def load_model_and_tokenizer(
@@ -70,58 +72,29 @@ def load_model_and_tokenizer(
                 if not os.path.exists(model_path):
                     raise OSError(f"Local model path does not exist: {model_path}")
         # Special handling for QUANTO models
-        elif "QUANTO" in model_name and "local" in model_name:
+        elif "QUANTO" in model_name and is_local_model:
             try:
                 logger.info("Loading QUANTO quantized model...")
                 
                 # Get the base model path for config
-                base_model_path = LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path
+                model_path = LOCAL_QUANTIZED_MODELS[model_name]
+                base_model_path = LLAMA_3_8B
+                state_dict_file = os.path.join(model_path, "model.safetensors")
+                quantization_map_file = os.path.join(model_path, "quantization_map.json")
+                
+                # Load quantized weights
+                state_dict = load_file(state_dict_file)
+                with open(quantization_map_file, 'r') as f:
+                    quantization_map = json.load(f)
                 
                 # Create an empty model from config
+                model_reloaded = AutoModelForCausalLM.from_pretrained(base_model_path, trust_remote_code=True)
                 config = AutoConfig.from_pretrained(base_model_path, trust_remote_code=True, cache_dir=cache_dir)
                 with init_empty_weights():
-                    model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
-                
-                # Load the quantized state dict
-                state_dict_path = f"{model_path}.safetensors"
-                if not os.path.exists(state_dict_path):
-                    raise OSError(f"QUANTO state dict not found at: {state_dict_path}")
-                
-                state_dict = load_file(state_dict_path)
-                
-                # Quantize with activations support
-                weights = state_dict
-                activations = None  # You can modify this based on your needs
-                quantize(model, weights=weights, activations=activations)
-                
-                # Calibration if activations are used
-                if activations is not None:
-                    logger.info("Calibrating model...")
-                    with Calibration():
-                        model.eval()
-                        # Here you would run your calibration data through the model
-                
-                # Training/fine-tuning step
-                logger.info("Fine-tuning quantized model...")
-                optimizer = torch.optim.Adadelta(model.parameters(), lr=0.5)
-                # Here you would add your training loop
-                
-                # Freeze the model
-                logger.info("Freezing quantized model...")
-                freeze(model)
-                
-                # Serialize and reload to verify
-                logger.info("Serializing model...")
-                b = io.BytesIO()
-                torch.save(model.state_dict(), b)
-                b.seek(0)
-                state_dict = torch.load(b)
-                
-                # Reload the model to verify serialization
-                model_reloaded = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
-                quantize(model_reloaded, weights=weights, activations=activations)
-                model_reloaded.load_state_dict(state_dict)
-                model = model_reloaded  # Use the reloaded model going forward
+                    model_reloaded = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
+                    
+                requantize(model_reloaded, state_dict, quantization_map, device)
+                model = model_reloaded
                 
                 # Load tokenizer
                 tokenizer = AutoTokenizer.from_pretrained(
