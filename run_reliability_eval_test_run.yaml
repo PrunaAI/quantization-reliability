@@ -2,7 +2,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'quanto-test-run-10-31'
+  name: 'quanto-test-run-11-03'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,8 +18,8 @@ slurm:
 ###### BEGIN PARAMETER CONFIGURATION ######
 
 fixed:
-  exp_id: "quanto-test-run-10-31"
-  save_excel: True
+  exp_id: "quanto-test-run-11-03"
+  save_excel: False
   num_excel_rows: 100
   device: 'cuda'
   seed: 42
@@ -37,42 +37,54 @@ grid: &common_grid
   model_name:
     type: choice
     options:
+      # Base Models
       - 'Llama-3-8B'
-      # - 'Bloomz'
-      # - 'GPT2-Large'
       # - 'TinyLlama'
       # - 'TinyLlama-Chat'
+      # - 'Bloomz'
+      # - 'GPT2-Large'
+
+      # Hugging Face Quantized Models
+      # AQLM Models
+      # - 'Llama-3-8B-AQLM-2bit'
+      # - 'Llama-3-8B-AQLM-PV-2bit'
+      # - 'Llama-3-8B-AQLM-PV-1bit'
+      
+      # AWQ Models
+      # - 'Llama-3-8B-AWQ-4bit'
+      
+      # BNB Models
+      # - 'Llama-3-8B-16K-BNB-4bit'
+      
+      # HQQ Models
+      # - 'Llama-3-8B-HQQ-4bit'
+      # - 'Llama-3-8B-HQQ-2bit'
+      # - 'Llama-3-8B-HQQ-1bit'
+      
+      # QUANTO HF Models
+      # - 'Llama-3-8B-QUANTO-2bit'
+      # - 'Llama-3-8B-QUANTO-4bit'
+      # - 'Llama-3-8B-QUANTO-8bit'
+
+      # Local Quantized Models
+      # AWQ Local
       # - 'Llama-3-8B-AWQ-4bit-local'
-      # - 'Llama-3-8B-BNB-4bit-local'
-      # - 'Llama-3-8B-HQQ-mixed-local'
-      # - 'Llama-3-8B-BNB-8bit-local'
-      # - 'Llama-3-8B-HQQ-8-uniform-local'
-      # - 'Llama-3-8B-AQLM-2Bit'
-      # - 'Llama-3-8B-QUANTO-local'
-      # - 'Llama-3-8B-QUANTO-CALIB-local'
-      # - 'Llama-3-8B-QUANTO-QAT-local'
-      - 'Llama-3-8B-Quanto-2bit'
-      - 'Llama-3-8B-Quanto-4bit'
-      - 'Llama-3-8B-Quanto-8bit'
-      # - ''
-      # - GPTQ
-      # - QUAROT -> load the quantized models
-      # - QUANTO -> extract local
-      # - QoQ
-      # - AWQ with OASST
-      # - 'Bloomz'
-      # - 'GPT2-Large'
-      # - 'TinyLlama'
-      # - 'TinyLlama-Chat'
+      
+      # BNB Local
       # - 'Llama-3-8B-BNB-4bit-local'
       # - 'Llama-3-8B-BNB-8bit-local'
+      
+      # HQQ Local
       # - 'Llama-3-8B-HQQ-8-uniform-local'
       # - 'Llama-3-8B-HQQ-mixed-local'
       # - 'Llama-3-8B-HQQ-LORA-local'
-      # - 'Llama-3-8B-QUANTO-local'
-      # - 'Llama-3-8B-QUANTO-CALIB-local'
-      # - 'Llama-3-8B-QUANTO-QAT-local'
-      # - 'Llama-3-8B-AQLM-local'
+      
+      # QUANTO Local
+      - 'Llama-3-8B-QUANTO-8-local'
+      - 'Llama-3-8B-QUANTO-CALIB-8-local'
+      - 'Llama-3-8B-QUANTO-8-mixed-local'
+      
+      # LORA Local
       # - 'Llama-3-8B-AQLM-LORA-local'
 
   batch_size:
