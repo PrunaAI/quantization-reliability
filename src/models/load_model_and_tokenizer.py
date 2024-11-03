@@ -20,7 +20,7 @@ from hqq.engine.hf import HQQModelForCausalLM
 from hqq.models.hf.base import AutoHQQHFModel
 from awq import AutoAWQForCausalLM
 
-from src.models import BASE_MODELS, HF_QUANTIZED_MODELS, LOCAL_QUANTIZED_MODELS, LOCAL_TOKENIZERS
+from src.models import BASE_MODELS, HF_QUANTIZED_MODELS, LOCAL_QUANTIZED_MODELS, MODEL_TO_TOKENIZER_MAP
 logger = logging.getLogger("quant_logger")
 
 def load_model_and_tokenizer(
@@ -141,7 +141,7 @@ def load_model_and_tokenizer(
             except:
                 model = AutoHQQHFModel.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
             tokenizer = AutoTokenizer.from_pretrained(
-                LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path,
+                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
                 device_map='cuda',
                 cache_dir=cache_dir
             )
@@ -156,7 +156,7 @@ def load_model_and_tokenizer(
                 cache_dir=cache_dir
             )
             tokenizer = AutoTokenizer.from_pretrained(
-                LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path,
+                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
                 device_map=device,
                 cache_dir=cache_dir
             )
@@ -173,7 +173,7 @@ def load_model_and_tokenizer(
                 trust_remote_code=True
             )
             tokenizer = AutoTokenizer.from_pretrained(
-                LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path,
+                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
                 device_map=device,
                 cache_dir=cache_dir
             )
