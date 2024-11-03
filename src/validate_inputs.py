@@ -1,6 +1,6 @@
 import logging
 from typing import Optional
-from src.models import base_models, hf_quantized_models, local_quantized_models
+from src.models import BASE_MODELS, HF_QUANTIZED_MODELS, LOCAL_QUANTIZED_MODELS
 from src.data import base_datasets, DATA_FILES
 
 logger_name = "quant_logger"
@@ -26,9 +26,9 @@ def validate_run_evaluate_inputs(
     Raises ValueError with detailed message if validation fails.
     """
     # Valid model names (combining all model dictionaries)
-    VALID_MODELS = set(list(base_models.keys()) + 
-                      list(hf_quantized_models.keys()) + 
-                      list(local_quantized_models.keys()))
+    VALID_MODELS = set(list(BASE_MODELS.keys()) + 
+                      list(HF_QUANTIZED_MODELS.keys()) + 
+                      list(LOCAL_QUANTIZED_MODELS.keys()))
 
     # Valid datasets (combining all dataset sources)
     VALID_DATASETS = set(list(base_datasets.keys()) + 

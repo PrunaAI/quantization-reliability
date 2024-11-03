@@ -3,9 +3,7 @@ import torch
 import logging
 import re
 
-
 from src import MODEL_SAVE_PATH
-from src.algorithms.quantization.config import QUANT_CONFIGS
 logger = logging.getLogger("quant_logger")
 
 TINYLLAMA_CHAT = "TinyLlama-Chat"
@@ -40,7 +38,7 @@ LLAMA_3_8B_AQLM_LORA_local = "Llama-3-8B-AQLM-LORA-local"
 META_LLAMA_3_8B = "Llama-3-8B"
 
 # Base models dictionary
-base_models = {
+BASE_MODELS = {
     # TinyLlama models
     TINYLLAMA_CHAT: "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     TINYLLAMA: "TinyLlama/TinyLlama_v1.1",
@@ -56,7 +54,7 @@ base_models = {
 }
 
 # Hugging Face quantized models dictionary
-hf_quantized_models = {
+HF_QUANTIZED_MODELS = {
     # AQLM quantized models
     LLAMA_3_8B_AQLM_2bit: "ISTA-DASLab/Meta-Llama-3-8B-AQLM-2Bit-1x16",
     LLAMA_3_8B_AQLM_PV_2bit: "ISTA-DASLab/Meta-Llama-3-8B-AQLM-PV-2Bit-1x16",
@@ -79,7 +77,7 @@ hf_quantized_models = {
     LLAMA_3_8B_QUANTO_8bit: "PrunaAI/NousResearch-Meta-Llama-3-8B-QUANTO-int8bit-smashed",
 }
 
-local_quantized_models = {
+LOCAL_QUANTIZED_MODELS = {
     # AWQ models
     LLAMA_3_8B_AWQ_4bit_local: os.path.join(MODEL_SAVE_PATH, "Meta-Llama-3-8B-AWQ-4"),
     

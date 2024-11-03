@@ -20,7 +20,7 @@ from hqq.engine.hf import HQQModelForCausalLM
 from hqq.models.hf.base import AutoHQQHFModel
 from awq import AutoAWQForCausalLM
 
-from src.models import base_models, hf_quantized_models, local_quantized_models, local_tokenizers
+from src.models import BASE_MODELS, HF_QUANTIZED_MODELS, LOCAL_QUANTIZED_MODELS, LOCAL_TOKENIZERS
 logger = logging.getLogger("quant_logger")
 
 def load_model_and_tokenizer(
@@ -51,14 +51,14 @@ def load_model_and_tokenizer(
         tokenizer = None
         
         # Determine the actual model path
-        if model_name in local_quantized_models:
-            model_path = local_quantized_models[model_name]
+        if model_name in LOCAL_QUANTIZED_MODELS:
+            model_path = LOCAL_QUANTIZED_MODELS[model_name]
             is_local_model = True
-        elif model_name in hf_quantized_models:
-            model_path = hf_quantized_models[model_name]
+        elif model_name in HF_QUANTIZED_MODELS:
+            model_path = HF_QUANTIZED_MODELS[model_name]
             is_local_model = False
-        elif model_name in base_models:
-            model_path = base_models[model_name]
+        elif model_name in BASE_MODELS:
+            model_path = BASE_MODELS[model_name]
             is_local_model = False
         else:
             raise ValueError(f"Model {model_name} not found in any of the model dictionaries")
@@ -75,7 +75,7 @@ def load_model_and_tokenizer(
                 logger.info("Loading QUANTO quantized model...")
                 
                 # Get the base model path for config
-                base_model_path = local_tokenizers[model_name] if is_local_model else model_path
+                base_model_path = LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path
                 
                 # Create an empty model from config
                 config = AutoConfig.from_pretrained(base_model_path, trust_remote_code=True, cache_dir=cache_dir)
@@ -141,7 +141,7 @@ def load_model_and_tokenizer(
             except:
                 model = AutoHQQHFModel.from_quantized(model_path, device_map='auto', cache_dir=cache_dir)
             tokenizer = AutoTokenizer.from_pretrained(
-                local_tokenizers[model_name] if is_local_model else model_path,
+                LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path,
                 device_map='cuda',
                 cache_dir=cache_dir
             )
@@ -156,7 +156,7 @@ def load_model_and_tokenizer(
                 cache_dir=cache_dir
             )
             tokenizer = AutoTokenizer.from_pretrained(
-                local_tokenizers[model_name] if is_local_model else model_path,
+                LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path,
                 device_map=device,
                 cache_dir=cache_dir
             )
@@ -173,7 +173,7 @@ def load_model_and_tokenizer(
                 trust_remote_code=True
             )
             tokenizer = AutoTokenizer.from_pretrained(
-                local_tokenizers[model_name] if is_local_model else model_path,
+                LOCAL_QUANTIZED_MODELS[model_name] if is_local_model else model_path,
                 device_map=device,
                 cache_dir=cache_dir
             )
