@@ -5,7 +5,13 @@ import subprocess
 import tempfile
 import logging
 
-logger = logging.getLogger("quant_logger")
+from src import setup_logging
+from src.validate_inputs import validate_run_evaluate_inputs
+
+logger_name = "quant_logger"
+logger = logging.getLogger(logger_name)
+log_file = setup_logging()
+print(f"Logs will be saved to: {log_file}")
 
 logger.info("Setting up cache paths...")
 
@@ -46,49 +52,6 @@ import os
 import sys
 import importlib.util
 
-def troubleshoot_src_import():
-    print(f"Current working directory: {os.getcwd()}")
-    print(f"Python path: {sys.path}")
-    
-    if os.path.isdir('src'):
-        print("'src' directory found in current directory.")
-        print("Contents of 'src' directory:")
-        for item in os.listdir('src'):
-            print(f"  {item}")
-        
-        if os.path.isfile(os.path.join('src', '__init__.py')):
-            print("'src/__init__.py' found.")
-        else:
-            print("WARNING: 'src/__init__.py' not found. 'src' may not be a proper Python package.")
-    else:
-        print("'src' directory not found in current directory.")
-        
-        parent_dir = os.path.dirname(os.getcwd())
-        if os.path.isdir(os.path.join(parent_dir, 'src')):
-            print(f"'src' directory found in parent directory: {parent_dir}")
-        else:
-            print(f"'src' directory not found in parent directory: {parent_dir}")
-    
-    spec = importlib.util.find_spec("src")
-    if spec is not None:
-        print(f"'src' module found at: {spec.origin}")
-    else:
-        print("'src' module not found by importlib.")
-    
-    print("\nChecking all directories in sys.path:")
-    for path in sys.path:
-        if os.path.isdir(path):
-            print(f"Directory: {path}")
-            if 'src' in os.listdir(path):
-                print(f"  'src' found in this directory")
-                src_path = os.path.join(path, 'src')
-                if os.path.isfile(os.path.join(src_path, '__init__.py')):
-                    print(f"  'src' is a proper Python package (has __init__.py)")
-                else:
-                    print(f"  WARNING: 'src' is a directory but not a proper Python package (missing __init__.py)")
-
-troubleshoot_src_import()
-
 import importlib
 import src
 importlib.reload(src)
@@ -124,34 +87,6 @@ logging.info("Setting up SEML experiment...")
 
 ex = Experiment(save_git_info=False)
 
-def validate_typo_config(typo_type, typo_intensity):
-    """
-    Validates the typo configuration based on the categories defined in the YAML.
-    Returns True if the configuration is valid, False otherwise.
-    """
-    # Base case validation
-    if typo_type == "none":
-        return typo_intensity == 0
-    
-    # Specific perturbations validation
-    if typo_type in ["word_remove_punctuation", "word_synonym"]:
-        return typo_intensity == 1
-    
-    # Standard perturbations validation
-    standard_perturbation_types = [
-        "char_insertion", "char_deletion", "char_replacement",
-        "char_repetition", "char_swapping", "word_CMW",
-        "char_LCC", "char_insert_noise", "word_repeat",
-        "char_substitution", "word_emoji", "word_internet_slang",
-        "word_phrase_translation", "word_context_aware_insertion",
-        "word_keyword_only"
-    ]
-    
-    if typo_type in standard_perturbation_types:
-        return typo_intensity in [1, 2, 3]
-    
-    return False
-
 @ex.post_run_hook
 def collect_stats(_run):
     seml.collect_exp_stats(_run)
@@ -185,13 +120,23 @@ def run_evaluate(
     device="cuda",
     cache_path=CACHE_PATH
 ):
-    # Validate typo configuration
-    if not validate_typo_config(typo_type, typo_intensity):
-        raise ValueError(
-            f"Invalid typo configuration: type={typo_type}, intensity={typo_intensity}. "
-            f"Please check the configuration categories in the YAML file."
-        )
-
+    # Validate inputs
+    validate_run_evaluate_inputs(
+        exp_id=exp_id,
+        model_name=model_name,
+        dataset_name=dataset_name,
+        typo_type=typo_type,
+        typo_intensity=typo_intensity,
+        strategy=strategy,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        use_beam_search=use_beam_search,
+        n_repeats=n_repeats,
+        n_beams=n_beams,
+        max_relations=max_relations,
+        max_entries=max_entries
+    )
+    
     ##################
     ## Print config ##
     ##################
