@@ -71,6 +71,21 @@ def load_model_and_tokenizer(
                 # Check if folder exists for non-QUANTO models
                 if not os.path.exists(model_path):
                     raise OSError(f"Local model path does not exist: {model_path}")
+            
+            # Load standard models from local path
+            model = AutoModelForCausalLM.from_pretrained(
+                model_path,
+                torch_dtype="auto",
+                device_map=device,
+                max_memory=max_memory,
+                cache_dir=cache_dir,
+                trust_remote_code=True
+            )
+            tokenizer = AutoTokenizer.from_pretrained(
+                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
+                device_map=device,
+                cache_dir=cache_dir
+            )
         # Special handling for QUANTO models
         elif "QUANTO" in model_name and is_local_model:
             try:
@@ -146,7 +161,7 @@ def load_model_and_tokenizer(
                 trust_remote_code=True
             )
             tokenizer = AutoTokenizer.from_pretrained(
-                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
+                model_name,
                 device_map=device,
                 cache_dir=cache_dir
             )
