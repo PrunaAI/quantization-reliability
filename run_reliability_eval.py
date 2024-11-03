@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 import logging
 
-from src import setup_logging
+from src.setup_logging import setup_logging
 from src.validate_inputs import validate_run_evaluate_inputs
 
 logger_name = "quant_logger"
