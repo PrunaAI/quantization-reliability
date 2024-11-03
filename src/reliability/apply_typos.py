@@ -16,6 +16,7 @@ import re
 
 import os
 
+from src.reliability import TYPO_TYPES
 from src.reliability.constants import keyboard_adjacency, char_map, internet_slang, stop_words, load_common_emojis
 
 # Set the custom download directory
@@ -519,6 +520,8 @@ def apply_typo_modifications(query, typo_dict, taxonomy_list):
     words = query.split()
     
     for mod_type, num_modifications in typo_dict.items():
+        if mod_type not in TYPO_TYPES:
+            raise ValueError(f"Invalid typo type: {mod_type}. Must be one of: {TYPO_TYPES}")
         if num_modifications > 0:
             if mod_type == 'word_CMW':
                 words = word_apply_cmw(words, num_modifications, cmw_dict)

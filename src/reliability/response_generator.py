@@ -78,7 +78,19 @@ class ResponseGenerator:
         
         return beam_prob, beam_prob_adj, entropy, cleaned_token_probs
     
-    def generate_responses(self, queries, strategy, dataset_name, true_answers, max_new_tokens, temperature, use_beam_search, n_repeats=5, n_beams=5):
+    def generate_responses(
+        self,
+        queries,
+        strategy,
+        dataset_name,
+        true_answers,
+        max_new_tokens,
+        temperature,
+        use_beam_search,
+        n_repeats=5,
+        n_beams=5,
+        past_key_values=None
+    ):
         prompts = [get_prompt(query, strategy, dataset_name) for query in queries]
         inputs = self.tokenizer(prompts, return_tensors='pt', padding=True, truncation=True).to("cuda")
         
@@ -106,6 +118,7 @@ class ResponseGenerator:
 
         if use_beam_search:
             with torch.no_grad():
+                
                 outputs = self.model.generate(
                     inputs['input_ids'],
                     attention_mask=inputs['attention_mask'],

@@ -1,0 +1,22 @@
+TYPO_TYPES = {
+      "none",
+      "word_CMW",
+      "word_synonym",
+      "char_insert_noise",
+      "char_substitution",
+      "char_insertion",
+      "char_deletion",
+      "char_replacement",
+      "char_repetition",
+      "char_swapping",
+      "char_LCC",
+      "word_emoji",
+      "word_internet_slang",
+      "word_phrase_translation",
+      "word_repeat",
+      "word_context_aware_insertion",
+      "word_remove_punctuation",
+      "word_keyword_only",
+      "word_taxonomy_pos",
+      "word_taxonomy_neg"
+  }
