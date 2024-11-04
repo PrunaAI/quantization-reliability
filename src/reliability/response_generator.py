@@ -94,6 +94,9 @@ class ResponseGenerator:
         prompts = [get_prompt(query, strategy, dataset_name) for query in queries]
         inputs = self.tokenizer(prompts, return_tensors='pt', padding=True, truncation=True).to("cuda")
         
+        # Fix: Convert attention mask to boolean. Fixing error: "Expected attn_mask dtype to be bool or to match query dtype..."
+        inputs['attention_mask'] = inputs['attention_mask'].bool()
+        
         # Generation configuration
         generation_config = {
             "temperature": temperature,
@@ -118,7 +121,6 @@ class ResponseGenerator:
 
         if use_beam_search:
             with torch.no_grad():
-                
                 outputs = self.model.generate(
                     inputs['input_ids'],
                     attention_mask=inputs['attention_mask'],
