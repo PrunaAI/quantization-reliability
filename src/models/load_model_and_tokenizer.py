@@ -73,8 +73,7 @@ def load_model_and_tokenizer(
                 logger.info("Loading QUANTO quantized model...")
                 
                 # Get the base model path for config
-                model_path = LOCAL_QUANTIZED_MODELS[model_name]
-                base_model_path = LLAMA_3_8B
+                base_model_path = BASE_MODELS[LLAMA_3_8B]
                 state_dict_file = os.path.join(model_path, "model.safetensors")
                 quantization_map_file = os.path.join(model_path, "quantization_map.json")
                 

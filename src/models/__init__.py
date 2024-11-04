@@ -35,7 +35,6 @@ LLAMA_3_8B_QUANTO_CALIB_8_local = "Llama-3-8B-QUANTO-CALIB-8-local"
 LLAMA_3_8B_QUANTO_8_mixed_local = "Llama-3-8B-QUANTO-8-mixed-local"
 LLAMA_3_8B_HQQ_LORA_local = "Llama-3-8B-HQQ-LORA-local"
 LLAMA_3_8B_AQLM_LORA_local = "Llama-3-8B-AQLM-LORA-local"
-META_LLAMA_3_8B = "Llama-3-8B"
 
 # Base models dictionary
 BASE_MODELS = {
@@ -44,7 +43,7 @@ BASE_MODELS = {
     TINYLLAMA: "TinyLlama/TinyLlama_v1.1",
     
     # Meta models
-    META_LLAMA_3_8B: "meta-llama/Meta-Llama-3-8B",
+    LLAMA_3_8B: "meta-llama/Meta-Llama-3-8B",
     
     # BigScience models
     BLOOMZ: "bigscience/bloomz-1b1",
@@ -102,20 +101,20 @@ LOCAL_QUANTIZED_MODELS = {
 }
 
 MODEL_TO_TOKENIZER_MAP = {
-    LLAMA_3_8B_AWQ_4bit_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_BNB_4bit_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_BNB_8bit_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_HQQ_8_uniform_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_HQQ_mixed_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_QUANTO_8_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_QUANTO_CALIB_8_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_QUANTO_8_mixed_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_HQQ_LORA_local: BASE_MODELS[META_LLAMA_3_8B],
-    LLAMA_3_8B_AQLM_LORA_local: BASE_MODELS[META_LLAMA_3_8B],
+    LLAMA_3_8B_AWQ_4bit_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_BNB_4bit_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_BNB_8bit_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_HQQ_8_uniform_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_HQQ_mixed_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_QUANTO_8_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_QUANTO_CALIB_8_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_QUANTO_8_mixed_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_HQQ_LORA_local: BASE_MODELS[LLAMA_3_8B],
+    LLAMA_3_8B_AQLM_LORA_local: BASE_MODELS[LLAMA_3_8B],
 }
 
 LLAMA_3_8B_MODEL_TO_CONFIG_MAP = {
-    META_LLAMA_3_8B: "NONE",
+    LLAMA_3_8B: "NONE",
     LLAMA_3_8B_BNB_4bit_local: "BNB-4",
     LLAMA_3_8B_BNB_8bit_local: "BNB-8",
     LLAMA_3_8B_AWQ_4bit_local: "AWQ-4",
