@@ -226,7 +226,7 @@ def char_random_letter_case(word, num_case_changes):
     
     return word
 
-def word_synonym_replacement(word_list, num_replacements):
+def word_synonym_replacement(word_list, num_replacements, cache_file_path='cache/synonym_cache.txt'):
     def process_word(word):
         # Extract punctuation
         start_punct = re.match(r'^[^\w\s]+', word)
@@ -243,6 +243,23 @@ def word_synonym_replacement(word_list, num_replacements):
             result = result + end_punct.group()
         return result
 
+    def load_cache(cache_file_path):
+        cache = {}
+        try:
+            with open(cache_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():  # Skip empty lines
+                        word, syn = line.strip().split('\t')
+                        if word not in cache:  # Only keep the first occurrence
+                            cache[word] = syn
+        except FileNotFoundError:
+            pass
+        return cache
+    
+    def save_to_cache(word, synonym, cache_file_path):
+        with open(cache_file_path, 'a', encoding='utf-8') as f:
+            f.write(f"{word}\t{synonym}\n")
+
     def get_synonyms(word):
         url = f"http://api.conceptnet.io/c/en/{word}?rel=/r/Synonym&limit=1000"
         response = requests.get(url)
@@ -253,22 +270,28 @@ def word_synonym_replacement(word_list, num_replacements):
                 synonyms.append(edge['end']['label'])
         return list(set(synonyms))
 
-    def get_valid_synonym(word, synonyms, max_depth=3):
+    def get_valid_synonym(word, synonyms, cache, max_depth=3):
+        # First check if word is in cache
+        if word.lower() in cache:
+            print(f"Using cached synonym for '{word}': '{cache[word.lower()]}'")
+            return cache[word.lower()]
+
         word_frequency = wordfreq.word_frequency(word, 'en')
         sorted_synonyms = sorted(synonyms, key=lambda x: wordfreq.word_frequency(x, 'en'), reverse=True)
         for i, synonym in enumerate(sorted_synonyms):
             if i >= max_depth:
                 print(f"Reached maximum depth for '{word}'")
-                return None  # Stop if we've reached the maximum depth
+                return None
             if synonym.lower() == word.lower():
                 print(f"Skipped '{word}' and '{synonym}' (same word)")
                 continue
             synonym_frequency = wordfreq.word_frequency(synonym, 'en')
-            # Check if the synonym frequency is at least 1% of the original word frequency
             if synonym_frequency >= word_frequency * 0.01:
                 if not is_similar(word, synonym):
                     print(f"Replaced '{word}' with '{synonym}'")
                     print(f"Frequencies: Word={word_frequency}, Synonym={synonym_frequency}")
+                    # Save valid pair to cache
+                    save_to_cache(word.lower(), synonym, cache_file_path)
                     return synonym
                 else:
                     print(f"Skipped '{word}' and '{synonym}' (too similar)")
@@ -277,38 +300,42 @@ def word_synonym_replacement(word_list, num_replacements):
         return None
 
     def is_similar(word1, word2):
-        # Check if one word is contained within the other
         if word1.lower() in word2.lower() or word2.lower() in word1.lower():
             return True
-        # Check if the words differ by only one character
         if abs(len(word1) - len(word2)) <= 1:
             matcher = SequenceMatcher(None, word1.lower(), word2.lower())
-            return matcher.ratio() > 0.8  # Adjust this threshold as needed
+            return matcher.ratio() > 0.8
         return False
+
+    # Load the cache at the start
+    synonym_cache = load_cache(cache_file_path)
 
     words_with_synonyms = []
     for i, word in enumerate(word_list):
         clean_word, start_punct, end_punct = process_word(word)
-        synonyms = get_synonyms(clean_word)
-        if synonyms and get_valid_synonym(clean_word, synonyms):
-            words_with_synonyms.append((i, word, clean_word, start_punct, end_punct, synonyms))
+        # First check cache
+        if clean_word.lower() in synonym_cache:
+            words_with_synonyms.append((i, word, clean_word, start_punct, end_punct, [synonym_cache[clean_word.lower()]]))
+        else:
+            synonyms = get_synonyms(clean_word)
+            if synonyms and get_valid_synonym(clean_word, synonyms, synonym_cache):
+                words_with_synonyms.append((i, word, clean_word, start_punct, end_punct, synonyms))
 
     replacements_made = 0
-    attempted_indices = set()  # Keep track of attempted indices
+    attempted_indices = set()
     while replacements_made < num_replacements and words_with_synonyms and len(attempted_indices) < len(words_with_synonyms):
-        # Choose a random word that hasn't been attempted yet
         available_words = [(i, w) for i, w in enumerate(words_with_synonyms) if i not in attempted_indices]
         if not available_words:
             break
             
         idx, (index, original_word, clean_word, start_punct, end_punct, synonyms) = random.choice(available_words)
-        attempted_indices.add(idx)  # Mark this index as attempted
+        attempted_indices.add(idx)
         
-        valid_synonym = get_valid_synonym(clean_word, synonyms)
+        valid_synonym = get_valid_synonym(clean_word, synonyms, synonym_cache)
         if valid_synonym:
             word_list[index] = restore_punctuation(valid_synonym.replace('_', ' '), start_punct, end_punct)
             replacements_made += 1
-            words_with_synonyms.pop(idx)  # Remove the successfully replaced word
+            words_with_synonyms.pop(idx)
 
     return word_list
 
