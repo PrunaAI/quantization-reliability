@@ -49,6 +49,8 @@ def load_model_and_tokenizer(
     """
     try:
         logger.info(f"Attempting to load model: {model_name}")
+        model_path = None
+        is_local_model = False
         model = None
         tokenizer = None
         
@@ -65,29 +67,8 @@ def load_model_and_tokenizer(
         else:
             raise ValueError(f"Model {model_name} not found in any of the model dictionaries")
 
-        if is_local_model:
-            logger.info(f"Loading locally quantized model from: {model_path}")
-            if "QUANTO" not in model_name:
-                # Check if folder exists for non-QUANTO models
-                if not os.path.exists(model_path):
-                    raise OSError(f"Local model path does not exist: {model_path}")
-            
-            # Load standard models from local path
-            model = AutoModelForCausalLM.from_pretrained(
-                model_path,
-                torch_dtype="auto",
-                device_map=device,
-                max_memory=max_memory,
-                cache_dir=cache_dir,
-                trust_remote_code=True
-            )
-            tokenizer = AutoTokenizer.from_pretrained(
-                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
-                device_map=device,
-                cache_dir=cache_dir
-            )
         # Special handling for QUANTO models
-        elif "QUANTO" in model_name and is_local_model:
+        if is_local_model and "QUANTO" in model_name:
             try:
                 logger.info("Loading QUANTO quantized model...")
                 
@@ -149,9 +130,12 @@ def load_model_and_tokenizer(
                 cache_dir=cache_dir
             )
             model.dtype = torch.float16
-            
         else:
-            # Load standard models from Hugging Face or local path
+            logger.info(f"Loading locally quantized model from: {model_path}")
+            if not os.path.exists(model_path):
+                raise OSError(f"Local model path does not exist: {model_path}")
+            
+            # Load standard models from local path
             model = AutoModelForCausalLM.from_pretrained(
                 model_path,
                 torch_dtype="auto",
@@ -161,7 +145,7 @@ def load_model_and_tokenizer(
                 trust_remote_code=True
             )
             tokenizer = AutoTokenizer.from_pretrained(
-                model_name,
+                MODEL_TO_TOKENIZER_MAP[model_name] if is_local_model else model_path,
                 device_map=device,
                 cache_dir=cache_dir
             )
