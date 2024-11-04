@@ -2,7 +2,7 @@
 seml:
   conda_environment: 'env-quant-rel-310'
   executable: 'run_reliability_eval.py'
-  name: 'quanto-test-run-11-03-4'
+  name: 'quanto-test-run-11-03-5'
   output_dir: '/nfs/homedirs/daro/slurm_output/'
   project_root_dir: '/nfs/homedirs/daro/git/quantization-reliability/'
 
@@ -18,7 +18,7 @@ slurm:
 ###### BEGIN PARAMETER CONFIGURATION ######
 
 fixed:
-  exp_id: "quanto-test-run-11-03-4"
+  exp_id: "quanto-test-run-11-03-5"
   save_excel: False
   num_excel_rows: 100
   device: 'cuda'
