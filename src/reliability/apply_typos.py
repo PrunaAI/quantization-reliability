@@ -294,13 +294,21 @@ def word_synonym_replacement(word_list, num_replacements):
             words_with_synonyms.append((i, word, clean_word, start_punct, end_punct, synonyms))
 
     replacements_made = 0
-    while replacements_made < num_replacements and words_with_synonyms:
-        index, original_word, clean_word, start_punct, end_punct, synonyms = random.choice(words_with_synonyms)
+    attempted_indices = set()  # Keep track of attempted indices
+    while replacements_made < num_replacements and words_with_synonyms and len(attempted_indices) < len(words_with_synonyms):
+        # Choose a random word that hasn't been attempted yet
+        available_words = [(i, w) for i, w in enumerate(words_with_synonyms) if i not in attempted_indices]
+        if not available_words:
+            break
+            
+        idx, (index, original_word, clean_word, start_punct, end_punct, synonyms) = random.choice(available_words)
+        attempted_indices.add(idx)  # Mark this index as attempted
+        
         valid_synonym = get_valid_synonym(clean_word, synonyms)
         if valid_synonym:
             word_list[index] = restore_punctuation(valid_synonym.replace('_', ' '), start_punct, end_punct)
             replacements_made += 1
-        words_with_synonyms = [w for w in words_with_synonyms if w[0] != index]
+            words_with_synonyms.pop(idx)  # Remove the successfully replaced word
 
     return word_list
 
