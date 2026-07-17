@@ -1,10 +1,10 @@
 # Reliability Evaluation of Extreme Quantization for Large Language Models
 
-[![Paper](https://img.shields.io/badge/Paper-OpenReview-red)](https://openreview.net/forum?id=UUBijehMQO) [![Poster](https://img.shields.io/badge/Poster-Google%20Drive-4285F4)](https://drive.google.com/file/d/1mwWKyoR03iH0K4S17mO-G17IGpjMORgv/view?usp=sharing) [![Stars](https://img.shields.io/github/stars/PrunaAI/quantization-reliability?style=social)](https://github.com/PrunaAI/quantization-reliability)
+[![Paper](https://img.shields.io/badge/Paper-OpenReview-red)](https://openreview.net/forum?id=UUBijehMQO) [![TMLR](https://img.shields.io/badge/TMLR-2026-blue)](https://openreview.net/forum?id=UUBijehMQO) [![Poster](https://img.shields.io/badge/Poster-Google%20Drive-4285F4)](https://drive.google.com/file/d/1mwWKyoR03iH0K4S17mO-G17IGpjMORgv/view?usp=sharing) [![PrunaAI](https://img.shields.io/badge/PrunaAI-purple)](https://github.com/PrunaAI) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Stars](https://img.shields.io/github/stars/PrunaAI/quantization-reliability?style=social)](https://github.com/PrunaAI/quantization-reliability)
 
-*Authors: Sirine Ayadi, Sándor Daróczi, Stephan Günneman, Bertrand Charpentier*
+*Sirine Ayadi, Sándor Daróczi, Stephan Günnemann, Bertrand Charpentier*
 
-*Published at TMLR 2026 & ICML 2026 SCALE Workshop*
+*Published at [TMLR 2026](https://openreview.net/forum?id=UUBijehMQO) & [ICML 2026 SCALE Workshop](https://scale-icml-2026.github.io/)*
 
 We study reliability bit-level scaling laws for quantized LLMs to find the optimal precision that maximizes the reliability under a fixed bit budget. Our reliability evaluation covers uncertainty, calibration, and robustness to 15 natural input perturbations. We find that 4-bit precision offers the best reliability-efficiency tradeoff across tasks, model families, and quantization methods.
 
