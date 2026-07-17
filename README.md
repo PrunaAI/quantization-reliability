@@ -1,6 +1,6 @@
 # Reliability Evaluation of Extreme Quantization for Large Language Models
 
-[![Paper](https://img.shields.io/badge/Paper-OpenReview-red)](https://openreview.net/forum?id=jehhhDHum2&nesting=2&sort=date-desc) [![Poster](https://img.shields.io/badge/Poster-Google%20Drive-4285F4)](https://drive.google.com/file/d/1mwWKyoR03iH0K4S17mO-G17IGpjMORgv/view?usp=sharing) [![Stars](https://img.shields.io/github/stars/sandordaroczi/quantization-reliability?style=social)](https://github.com/sandordaroczi/quantization-reliability)
+[![Paper](https://img.shields.io/badge/Paper-OpenReview-red)](https://openreview.net/forum?id=UUBijehMQO) [![Poster](https://img.shields.io/badge/Poster-Google%20Drive-4285F4)](https://drive.google.com/file/d/1mwWKyoR03iH0K4S17mO-G17IGpjMORgv/view?usp=sharing) [![Stars](https://img.shields.io/github/stars/PrunaAI/quantization-reliability?style=social)](https://github.com/PrunaAI/quantization-reliability)
 
 *Authors: Sirine Ayadi, Sándor Daróczi, Stephan Günneman, Bertrand Charpentier*
 
@@ -10,19 +10,18 @@ We study reliability bit-level scaling laws for quantized LLMs to find the optim
 
 ## Robustness under text perturbations
 
-Real users type with tpyos, slang, 
-emoji :), and miXeD CasE. We implement **15 natural input perturbations** on the character- and word-level to evaluate model robustness.
+Real users type with tpyos, slang, emoji :), and miXeD CasE. We implement **15 natural input perturbations** on the character- and word-level to evaluate model robustness.
 
 <p align="center">
-  <img src="figures/perturbations.png">
+  <img src="figures/perturbations.png" width="90%">
   <br>
   <em>Overview of our character-level and word-level input perturbations. Illustrated is an example where perturbations with intensity level 1 are applied to a standard question prompt.</em>
 </p>
 
 <p align="center">
-  <img src="figures/robustness_radar.png">
+  <img src="figures/robustness_radar.png" width="80%">
   <br>
-  <em>Radar plots of the accuracy (Top) and AUCROC (Entropy) (bottom) across all 15 character-level and word-level perturbations for two intensities. We evaluate the base LLaMa-3-8B model and five 4-bit quantization methods. Quantized models can provide more reliable uncertainty estimates under natural perturbations compared to their base counterparts, while maintaining close performance.</em>
+  <em>Radar plots of the accuracy (Top) and AUCROC (Entropy) (bottom) across all 15 character-level and word-level perturbations for two intensities. We evaluate the base LLaMA-3-8B model and five 4-bit quantization methods. Quantized models can provide more reliable uncertainty estimates under natural perturbations compared to their base counterparts, while maintaining close performance.</em>
 </p>
 
 ---
@@ -32,7 +31,7 @@ emoji :), and miXeD CasE. We implement **15 natural input perturbations** on the
 We characterize trends in reliability as the total number of bits scales. We model a metric as a function of total bits using a log quadratic scaling law.
 
 <p align="center">
-  <img src="figures/intro.png">
+  <img src="figures/intro.png" width="90%">
   <br>
   <em>Bit-level scaling trends of the accuracy and AUCROC (Entropy) on TriviaQA. We use four base models (blue): LLaMA-3.2-1B, LLaMA-3.2-3B, LLaMA-3-8B, and LLaMA-3-70B, and their corresponding quantized variants using six quantization methods and different bitwidths.</em>
 </p>
@@ -41,7 +40,7 @@ We characterize trends in reliability as the total number of bits scales. We mod
 
 ## Code
 
-> **Full code release comign soon.** Star this repo to get notified when it drops.
+> **Full code release coming soon.** Star this repo to get notified when it drops.
 
 The release will include:
 
@@ -54,6 +53,19 @@ The release will include:
 ---
 
 ## Citation
+
+```bibtex
+@article{
+ayadi2026reliability,
+title={Reliability Scaling Laws for Quantized Large Language Models},
+author={Sirine Ayadi and S{\'a}ndor Dar{\'o}czi and Stephan G{\"u}nnemann and Bertrand Charpentier},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2026},
+url={https://openreview.net/forum?id=UUBijehMQO},
+note={}
+}
+```
 
 ---
 
