@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Jupyter
+.ipynb_checkpoints
+jupyter-*.out
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Hydra outputs
+outputs/
+multirun/
+
+# Test/coverage
+.pytest_cache/
+.coverage
+htmlcov/

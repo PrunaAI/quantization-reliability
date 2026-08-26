@@ -1,0 +1,6 @@
+# Single-GPU setup. Works on any GPU.
+# Set vram_gb to your GPU's VRAM (used for auto batch sizing).
+device: cuda
+max_memory: null
+vram_gb: 30        # override for your GPU: e.g. 11 for GTX 1080, 24 for RTX 3090, 40 for A100
+apply_compile: false

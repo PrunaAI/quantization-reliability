@@ -1,0 +1,10 @@
+# Five-GPU setup (device_map=auto). Adjust max_memory per GPU to match your VRAM.
+device: auto
+max_memory:
+  "0": "35GB"
+  "1": "35GB"
+  "2": "35GB"
+  "3": "35GB"
+  "4": "35GB"
+vram_gb: 35
+apply_compile: false
