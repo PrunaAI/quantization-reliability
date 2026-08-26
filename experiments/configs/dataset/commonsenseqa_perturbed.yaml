@@ -1,0 +1,4 @@
+type: COMMONSENSEQA
+# Override both in --multirun sweep
+perturbation_type: ???
+perturbation_intensity: ???

@@ -40,15 +40,33 @@ We characterize trends in reliability as the total number of bits scales. We mod
 
 ## Code
 
-> **Full code release coming soon.** Star this repo to get notified when it drops.
+Clone the repo and set up the environment:
 
-The release will include:
+```bash
+git clone https://github.com/PrunaAI/quantization-reliability.git
+cd quantization-reliability
+conda env create -f environment.yml
+conda activate quant-rel
+```
 
-- Model quantization and loading scripts
-- Reliability evaluation pipeline
-- KL divergence evaluation scripts
-- Hydra configs for all experiments in the paper
-- Notebooks to reproduce the figures
+Run a reliability evaluation:
+
+```bash
+python experiments/run.py \
+  exp_id=my_run \
+  model_name=llama32_1b \
+  hardware=single_gpu \
+  dataset=triviaqa
+```
+
+This loads the model, runs generation, scores the outputs (accuracy, calibration,
+uncertainty), and saves the results to an Excel file under `results/`.
+
+- `model_name`: any model in `src/model_loading/registry/models.py`, base or quantized
+- `dataset`: a config in `experiments/configs/dataset/`
+- `hardware`: a config in `experiments/configs/hardware/`. Use `cpu` for a quick smoke test, but quantized models need a GPU (`single_gpu` / `multi_gpu_*`)
+
+Every parameter is Hydra-configurable, see `experiments/configs/config.yaml` for the full list (batch size, temperature, number of examples, W&B logging, etc.).
 
 ---
 

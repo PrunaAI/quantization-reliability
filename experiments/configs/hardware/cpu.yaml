@@ -1,0 +1,5 @@
+# CPU-only. For smoke testing only — not suitable for real experiments.
+device: cpu
+max_memory: null
+vram_gb: 8
+apply_compile: false

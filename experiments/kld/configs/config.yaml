@@ -1,0 +1,19 @@
+defaults:
+  - hardware: a100
+  - dataset: c4
+  - _self_
+
+exp_id: ???
+model_name: ???
+
+random_seed: 42
+num_samples: 10
+seqlen: 512
+apply_compile: false
+
+# Output directories (relative to working dir)
+output_dir: ./quantization_error_results
+results_dir: ./exp_results
+
+# W&B is off by default — KLD eval saves results to CSV
+use_wandb: false

@@ -1,0 +1,10 @@
+defaults:
+  - hardware: gtx
+  - task: triviaqa
+  - _self_
+
+exp_id: ???
+model_name: ???
+num_entries: 1000   # set to null for full dataset
+num_fewshot: 0
+output_dir: ../../lm_eval_harness_results

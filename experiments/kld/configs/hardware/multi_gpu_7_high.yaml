@@ -1,0 +1,12 @@
+# Seven-GPU setup with 40GB per GPU (for LLaMA 70B which needs more memory than Qwen 32B).
+device: auto
+max_memory:
+  "0": "40GB"
+  "1": "40GB"
+  "2": "40GB"
+  "3": "40GB"
+  "4": "40GB"
+  "5": "40GB"
+  "6": "40GB"
+vram_gb: 40
+apply_compile: false
