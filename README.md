@@ -45,7 +45,7 @@ Clone the repo and set up the environment:
 ```bash
 git clone https://github.com/PrunaAI/quantization-reliability.git
 cd quantization-reliability
-conda env create -f environment.yml
+bash setup_env.sh
 conda activate quant-rel
 ```
 
